@@ -24,10 +24,10 @@ export default class extends Phaser.Scene {
     // this.load.audio('gameMusic', 'assets/audio/game-music.mp3')
     // this.load.audio('coin', 'assets/audio/coin.mp3', { instances: 5 })
 
-    // this.load.spritesheet('icon', 'assets/images/icons.png', {
-    //   frameWidth: 100,
-    //   frameHeight: 100,
-    // })
+    this.load.spritesheet('tiles', 'assets/images/tiles.png', {
+      frameWidth: 5,
+      frameHeight: 5,
+    })
 
     this.load.on('complete', () => {
       progress.destroy()

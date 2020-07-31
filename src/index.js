@@ -6,6 +6,8 @@ var config = {
   width: 64,
   height: 64,
   backgroundColor: '#000',
+  pixelArt: true,
+  zoom: 4,
   parent: 'phaser-example',
   scale: {
     mode: Phaser.Scale.FIT,
