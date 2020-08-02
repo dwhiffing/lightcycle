@@ -1,10 +1,16 @@
-// improve rng by shuffling full sets
-// add tile holding
-// add composite placed tiles
-// add score/timer
-// add cross/3 way tile? (seems too complicated for loop checking)
 import Map from '../gameObjects/map'
 import UI from '../gameObjects/ui'
+
+// add composite placed tiles
+// add score/timer
+// improve rng by shuffling full sets
+// add tile holding
+// add menu and score screen
+// add credits
+// title graphic
+// sounds
+// fancy effects on placing/clearing tiles
+// score multiplier
 
 export default class extends Phaser.Scene {
   constructor() {

@@ -1,3 +1,9 @@
+import {
+  TILE_CONNECTIONS,
+  DIRECTION_ADJACENCY,
+  TILE_DIRECTIONS,
+} from '../constants'
+
 export default class {
   constructor(scene) {
     this.scene = scene
@@ -15,52 +21,16 @@ export default class {
     const y = _y / 5
     if (this.map.getTileAt(x, y).index > 1) return null
 
-    this.map.putTileAt(index, x, y)
+    const tile = this.map.putTileAt(index, x, y)
+    tile.tint = 0x999999
+
     this.checkForLoops()
     return true
   }
 
-  checkForLoops() {
-    let tiles = this.map.layer.data.flat().filter((tile) => tile.index > 1)
-    let loopTiles = []
-
-    tiles.forEach((tile) => (tile.tint = 0x999999))
-
-    while (tiles.length > 1) {
-      let isLoop = false
-
-      loopTiles = []
-      let startTile = tiles[0]
-      let current = startTile
-      let direction = ''
-
-      while (current) {
-        loopTiles.push(current)
-        tiles = tiles.filter((t) => t !== current || current === startTile)
-        const d = direction ? DIRECTIONS[current.index][direction] : ''
-        let [next] = this.getNeighbour(tiles, current, d)
-
-        isLoop = next && next.x === loopTiles[0].x && next.y === loopTiles[0].y
-
-        let [neighbour, dir] = this.getNeighbour(
-          tiles.filter((t) => t !== loopTiles[0]),
-          current,
-          d,
-        )
-        current = neighbour
-        direction = dir
-      }
-
-      if (isLoop) {
-        this.clearTiles([...loopTiles])
-      }
-
-      tiles.shift()
-    }
-  }
-
   clearTiles(tiles) {
     tiles.forEach((tile) => (tile.tint = 0xffffff))
+
     this.scene.time.addEvent({
       delay: 1000,
       callback: () =>
@@ -70,55 +40,47 @@ export default class {
     })
   }
 
-  getNeighbour(tiles, tile, directionFilter = '') {
-    let direction
+  checkForLoops() {
+    let tiles = this.map.layer.data.flat().filter(({ index }) => index > 1)
 
-    const neighbour = tiles.find((_tile) => {
-      const data = LOOP_DATA[tile.index]
+    while (tiles.length > 1) {
+      let loop = []
+      let current = tiles[0]
+      this.loopDirection = null
 
-      const check = (dir) => {
-        const { x, y } = ADJACENCIES[dir]
-        if (
-          _tile.x === tile.x + x &&
-          _tile.y === tile.y + y &&
-          (data[dir] || []).includes(_tile.index) &&
-          directionFilter.match(new RegExp(`${dir}|^$`))
-        ) {
-          direction = dir
-          return true
+      while (current) {
+        loop.push(current)
+        tiles = tiles.filter((t) => t !== current)
+        current = this.getNextInLoop([...tiles, loop[0]], current)
+
+        if (current === loop[0]) {
+          return this.clearTiles([...loop])
         }
       }
-      const isAdjacent =
-        check('up') || check('down') || check('left') || check('right')
-
-      return isAdjacent && _tile !== tile
-    })
-
-    return [neighbour, direction]
+    }
   }
-}
 
-const LOOP_DATA = {
-  2: { down: [2, 4, 7], up: [2, 5, 6] },
-  3: { right: [3, 5, 7], left: [3, 4, 6] },
-  4: { up: [2, 5, 6], right: [3, 5, 7] },
-  5: { down: [2, 4, 7], left: [3, 4, 6] },
-  6: { down: [2, 4, 7], right: [3, 5, 7] },
-  7: { up: [2, 5, 6], left: [3, 4, 6] },
-}
+  getNextInLoop(tiles, sourceTile) {
+    // TODO: This shouldn't use loopDirection, directions should be passed in instead
+    // but how do we set loopDirection properly?
+    const directions = this.loopDirection
+      ? [TILE_DIRECTIONS[sourceTile.index][this.loopDirection]]
+      : ['up', 'down', 'left', 'right']
 
-const DIRECTIONS = {
-  2: { up: 'up', down: 'down' },
-  3: { left: 'left', right: 'right' },
-  4: { down: 'right', left: 'up' },
-  5: { up: 'left', right: 'down' },
-  6: { left: 'down', up: 'right' },
-  7: { down: 'left', right: 'up' },
-}
+    return tiles.find((tile) =>
+      directions.some((direction) => {
+        this.loopDirection = direction
+        return this.getIsConnected(tile, sourceTile, direction)
+      }),
+    )
+  }
 
-const ADJACENCIES = {
-  up: { x: 0, y: -1 },
-  down: { x: 0, y: 1 },
-  left: { x: -1, y: 0 },
-  right: { x: 1, y: 0 },
+  getIsConnected(tileA, tileB, direction) {
+    const { x, y } = DIRECTION_ADJACENCY[direction]
+    const isAdjacent = tileA.x === tileB.x + x && tileA.y === tileB.y + y
+    const validConnections = TILE_CONNECTIONS[tileB.index][direction] || []
+    const isConnected = validConnections.includes(tileA.index)
+
+    return isAdjacent && isConnected && tileA !== tileB
+  }
 }

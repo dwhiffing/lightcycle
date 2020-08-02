@@ -70,9 +70,6 @@ export default class {
       .fillRect(28, 55, 1, 1)
       .fillRect(28, 57, 1, 1)
 
-    // this.graphics.fillRect(0, 51, 1, 15)
-    // this.graphics.fillRect(63, 51, 1, 15)
-
     this.timerBar = this.scene.add
       .graphics()
       .fillStyle(0xffffff, 1)
@@ -86,5 +83,4 @@ export default class {
   }
 }
 
-// const TILE_ORDER = [4, 6, 5, 7, 2, 3]
 const TILE_ORDER = [4, 6, 5, 7, 2, 2, 2, 3, 3, 3]
