@@ -2,8 +2,9 @@
 // improve rng by shuffling full sets
 // add tile holding
 // add composite placed tiles
-// add cross tile
-// add 3 way tile
+// add score/timer
+// add cross/3 way tile? (seems too complicated for loop checking)
+
 export default class extends Phaser.Scene {
   constructor() {
     super({ key: 'Game' })
@@ -16,18 +17,54 @@ export default class extends Phaser.Scene {
     this.tileIndex = 2
 
     const data = []
-    for (let y = 0; y < 9; y++) {
+    for (let y = 0; y < 10; y++) {
       data.push([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
     }
 
     this.map = this.make.tilemap({ data, tileWidth: 5, tileHeight: 5 })
-    this.map.createDynamicLayer(0, this.map.addTilesetImage('tiles'), 2, 2)
+    this.map.createDynamicLayer(0, this.map.addTilesetImage('tiles'), 2, 0)
 
     this.marker = this.add
-      .sprite(2, 2, 'tiles', 0)
+      .sprite(2, 0, 'tiles', 0)
       .setOrigin(0, 0)
       .setFrame(this.tileIndex)
       .setTint(0x44cc44)
+
+    this.uiGraphics = this.add.graphics()
+    this.uiGraphics.fillStyle(0xffffff, 0.25)
+    this.uiGraphics.fillRect(0, 51, 64, 13)
+    this.uiGraphics.fillStyle(0x000000)
+    this.uiGraphics.fillRect(1, 52, 7, 7)
+    this.uiGraphics.fillRect(9, 52, 15, 7)
+    this.uiGraphics.fillRect(25, 52, 10, 7)
+    this.uiGraphics.fillRect(36, 52, 27, 7)
+    this.uiGraphics.fillRect(1, 60, 62, 3)
+    this.uiGraphics.fillStyle(0xffffff)
+    this.uiGraphics.fillRect(27, 56, 1, 1)
+    this.uiGraphics.fillRect(26, 55, 1, 1)
+    this.uiGraphics.fillRect(26, 57, 1, 1)
+    this.uiGraphics.fillRect(28, 55, 1, 1)
+    this.uiGraphics.fillRect(28, 57, 1, 1)
+
+    this.timerBar = this.add.graphics()
+    this.timerBar.fillStyle(0xffffff, 1)
+    this.timerBar.fillRect(1, 60, 62, 3)
+
+    // this.graphics.fillRect(0, 51, 1, 15)
+    // this.graphics.fillRect(63, 51, 1, 15)
+
+    this.livesText = this.add
+      .bitmapText(7, 53, 'pixel-dan', '2', 5)
+      .setOrigin(1, 0)
+    this.loopCountText = this.add
+      .bitmapText(23, 53, 'pixel-dan', '999', 5)
+      .setOrigin(1, 0)
+    this.multiplyerText = this.add
+      .bitmapText(35, 53, 'pixel-dan', '9', 5)
+      .setOrigin(1, 0)
+    this.scoreText = this.add
+      .bitmapText(62, 53, 'pixel-dan', '999999', 5)
+      .setOrigin(1, 0)
 
     this.keys = this.input.keyboard.addKeys('W,A,S,D,SPACE')
 

@@ -24,6 +24,12 @@ export default class extends Phaser.Scene {
     // this.load.audio('gameMusic', 'assets/audio/game-music.mp3')
     // this.load.audio('coin', 'assets/audio/coin.mp3', { instances: 5 })
 
+    this.load.bitmapFont(
+      'pixel-dan',
+      'assets/pixel-dan.png',
+      'assets/pixel-dan.xml',
+    )
+
     this.load.spritesheet('tiles', 'assets/images/tiles.png', {
       frameWidth: 5,
       frameHeight: 5,
