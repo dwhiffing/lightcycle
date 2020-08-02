@@ -23,43 +23,32 @@ export default class {
   checkForLoops() {
     let tiles = this.map.layer.data.flat().filter((tile) => tile.index > 1)
     let loopTiles = []
+
     tiles.forEach((tile) => (tile.tint = 0x999999))
 
     while (tiles.length > 1) {
       let isLoop = false
-      loopTiles = [tiles[0]]
 
-      let [neighbour, direction] = this.getNeighbour(
-        tiles.filter((t) => t !== loopTiles[0]),
-        loopTiles[0],
-      )
+      loopTiles = []
+      let startTile = tiles[0]
+      let current = startTile
+      let direction = ''
 
-      tiles = tiles.filter((p) => p !== neighbour)
-      if (neighbour) {
-        loopTiles.push(neighbour)
-      }
+      while (current) {
+        loopTiles.push(current)
+        tiles = tiles.filter((t) => t !== current || current === startTile)
+        const d = direction ? DIRECTIONS[current.index][direction] : ''
+        let [next] = this.getNeighbour(tiles, current, d)
 
-      while (neighbour) {
-        let [next] = this.getNeighbour(
-          tiles,
-          neighbour,
-          DIRECTIONS[neighbour.index][direction],
-        )
         isLoop = next && next.x === loopTiles[0].x && next.y === loopTiles[0].y
 
-        let [newNeighbour, newDirection] = this.getNeighbour(
+        let [neighbour, dir] = this.getNeighbour(
           tiles.filter((t) => t !== loopTiles[0]),
-          neighbour,
+          current,
+          d,
         )
-        neighbour = newNeighbour
-        direction = newDirection
-        if (neighbour) {
-          loopTiles.push(newNeighbour)
-        }
-
-        if (neighbour !== loopTiles[0]) {
-          tiles = tiles.filter((p) => p !== neighbour)
-        }
+        current = neighbour
+        direction = dir
       }
 
       if (isLoop) {
@@ -69,45 +58,6 @@ export default class {
       tiles.shift()
     }
   }
-
-  // checkForLoops() {
-  //   let tiles = this.map.layer.data.flat().filter((tile) => tile.index > 1)
-  //   let loopTiles = []
-  //   const startTile = tiles[0]
-
-  //   while (tiles.length > 1) {
-  //     let isLoop = false
-  //     let direction
-  //     let currentTile = startTile
-  //     loopTiles = []
-
-  //     while (currentTile) {
-  //       loopTiles.push(currentTile)
-  //       tiles = tiles.filter((t) => t !== currentTile || t === startTile)
-  //       console.log({
-  //         currentTile: `${currentTile.x}, ${currentTile.y}`,
-  //         direction,
-  //         tiles: loopTiles.map((t) => `${t.x}, ${t.y}`),
-  //         other: tiles,
-  //       })
-
-  //       let [neighbour, _direction] = this.getNeighbour(
-  //         tiles,
-  //         currentTile,
-  //         direction,
-  //       )
-  //       currentTile = neighbour
-  //       direction = _direction
-  //       isLoop = neighbour === startTile
-  //     }
-
-  //     if (isLoop) {
-  //       this.clearTiles([...loopTiles])
-  //     }
-
-  //     tiles.shift()
-  //   }
-  // }
 
   clearTiles(tiles) {
     tiles.forEach((tile) => (tile.tint = 0xffffff))
@@ -138,8 +88,10 @@ export default class {
           return true
         }
       }
+      const isAdjacent =
+        check('up') || check('down') || check('left') || check('right')
 
-      return check('up') || check('down') || check('left') || check('right')
+      return isAdjacent && _tile !== tile
     })
 
     return [neighbour, direction]

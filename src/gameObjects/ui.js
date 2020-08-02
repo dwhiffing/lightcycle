@@ -1,18 +1,12 @@
 export default class {
   constructor(scene) {
-    this.moveTimer = 0
-    this.tileIndex = 2
     this.scene = scene
+    this.moveTimer = 0
     this.moveMarker = this.moveMarker.bind(this)
     this.placeTile = this.placeTile.bind(this)
 
     this.drawInterface()
-
-    this.marker = scene.add
-      .sprite(2, 0, 'tiles', 0)
-      .setOrigin(0, 0)
-      .setFrame(this.tileIndex)
-      .setTint(0x44cc44)
+    this.setMarker()
 
     this.livesText = this.getText(7, 53, '2')
     this.loopCountText = this.getText(23, 53, '999')
@@ -39,9 +33,23 @@ export default class {
       this.tileIndex,
     )
     if (tiledPlaced) {
-      this.tileIndex = Phaser.Math.RND.between(2, 7)
-      this.marker.setFrame(this.tileIndex)
+      this.setMarker()
     }
+  }
+
+  setMarker() {
+    if (!this.marker) {
+      this.pickedTileCounter = 0
+      this.marker = this.scene.add
+        .sprite(2, 0, 'tiles', 0)
+        .setOrigin(0, 0)
+        .setFrame(0)
+        .setTint(0x44cc44)
+    }
+    // this.tileIndex = Phaser.Math.RND.between(2, 7)
+    this.tileIndex = TILE_ORDER[this.pickedTileCounter % TILE_ORDER.length]
+    this.marker.setFrame(this.tileIndex)
+    this.pickedTileCounter++
   }
 
   drawInterface() {
@@ -77,3 +85,6 @@ export default class {
       .setOrigin(1, 0)
   }
 }
+
+// const TILE_ORDER = [4, 6, 5, 7, 2, 3]
+const TILE_ORDER = [4, 6, 5, 7, 2, 2, 2, 3, 3, 3]
