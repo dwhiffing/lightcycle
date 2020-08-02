@@ -16,6 +16,8 @@
     <char id="56" x="32" y="1" width="3" height="5" xoffset="0" yoffset="0" xadvance="4" page="0" chnl="15"/>
     <char id="57" x="36" y="1" width="3" height="5" xoffset="0" yoffset="0" xadvance="4" page="0" chnl="15"/>
     
+    <char id="32" x="0" y="0" width="0" height="0" xoffset="0" yoffset="0" xadvance="2" page="0" chnl="15"/>
+
     <char id="65" x="40" y="1" width="3" height="5" xoffset="0" yoffset="0" xadvance="4" page="0" chnl="15"/>
     <char id="66" x="44" y="1" width="3" height="5" xoffset="0" yoffset="0" xadvance="4" page="0" chnl="15"/>
     <char id="67" x="48" y="1" width="3" height="5" xoffset="0" yoffset="0" xadvance="4" page="0" chnl="15"/>

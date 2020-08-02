@@ -1,17 +1,64 @@
+const TIME_DURATION = 10000
+
 export default class {
   constructor(scene) {
     this.scene = scene
     this.moveTimer = 0
     this.moveMarker = this.moveMarker.bind(this)
-    this.placeTile = this.placeTile.bind(this)
+    this.tickTimer = this.tickTimer.bind(this)
+    this.data = this.scene.registry
+    this.timer = TIME_DURATION
+
+    this.data.set('score', 0)
+    this.data.set('lives', 3)
+    this.data.set('loops', 0)
+    this.data.set('multi', 1)
 
     this.drawInterface()
-    this.setMarker()
 
-    this.livesText = this.getText(7, 53, '2')
-    this.loopCountText = this.getText(23, 53, '999')
-    this.multiplyerText = this.getText(35, 53, '9')
-    this.scoreText = this.getText(62, 53, '999999')
+    this.pickedTileCounter = 0
+    this.marker = this.scene.add
+      .sprite(2, 0, 'tiles', 0)
+      .setOrigin(0, 0)
+      .setFrame(0)
+      .setTint(0x44cc44)
+    this.getNewTile()
+
+    this.livesText = this.getText(7, 53, this.data.get('lives'))
+    this.loopText = this.getText(23, 53, this.data.get('loops'))
+    this.multiText = this.getText(35, 53, this.data.get('multi'))
+    this.scoreText = this.getText(62, 53, this.data.get('score'))
+  }
+
+  updateScore(score) {
+    this.data.set('score', this.data.get('score') + score)
+    this.scoreText.setText(this.data.get('score'))
+  }
+
+  updateLives(lives) {
+    this.data.set('lives', this.data.get('lives') + lives)
+    this.livesText.setText(this.data.get('lives'))
+  }
+
+  updateMulti(multi) {
+    this.data.set('multi', this.data.get('multi') + multi)
+    this.multiText.setText(this.data.get('multi'))
+  }
+
+  updateLoops(loops) {
+    this.data.set('loops', this.data.get('loops') + loops)
+    this.loopText.setText(this.data.get('loops'))
+  }
+
+  tickTimer() {
+    this.timer -= 100
+    this.updateTimer()
+  }
+
+  updateTimer() {
+    this.timerBar.clear()
+    const percent = this.timer / TIME_DURATION
+    this.timerBar.fillRect(1, 60, 62 * percent, 3)
   }
 
   moveMarker(direction) {
@@ -26,29 +73,12 @@ export default class {
     }
   }
 
-  placeTile() {
-    const tiledPlaced = this.scene.map.placeTile(
-      this.marker.x,
-      this.marker.y,
-      this.tileIndex,
-    )
-    if (tiledPlaced) {
-      this.setMarker()
-    }
-  }
-
-  setMarker() {
-    if (!this.marker) {
-      this.pickedTileCounter = 0
-      this.marker = this.scene.add
-        .sprite(2, 0, 'tiles', 0)
-        .setOrigin(0, 0)
-        .setFrame(0)
-        .setTint(0x44cc44)
-    }
-    // this.tileIndex = Phaser.Math.RND.between(2, 7)
-    this.tileIndex = TILE_ORDER[this.pickedTileCounter % TILE_ORDER.length]
-    this.marker.setFrame(this.tileIndex)
+  getNewTile() {
+    // const newIndex = Phaser.Math.RND.between(2, 7)
+    this.timer = TIME_DURATION
+    this.updateTimer()
+    const newIndex = TILE_ORDER[this.pickedTileCounter % TILE_ORDER.length]
+    this.marker.setFrame(newIndex)
     this.pickedTileCounter++
   }
 

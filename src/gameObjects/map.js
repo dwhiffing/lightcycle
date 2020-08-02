@@ -24,7 +24,6 @@ export default class {
     const tile = this.map.putTileAt(index, x, y)
     tile.tint = 0x999999
 
-    this.checkForLoops()
     return true
   }
 
@@ -40,7 +39,7 @@ export default class {
     })
   }
 
-  checkForLoops() {
+  getLoop() {
     let tiles = this.map.layer.data.flat().filter(({ index }) => index > 1)
 
     while (tiles.length > 1) {
@@ -51,16 +50,16 @@ export default class {
       while (current) {
         loop.push(current)
         tiles = tiles.filter((t) => t !== current)
-        current = this.getNextInLoop([...tiles, loop[0]], current)
+        current = this.getNextTileInLoop([...tiles, loop[0]], current)
 
         if (current === loop[0]) {
-          return this.clearTiles([...loop])
+          return loop
         }
       }
     }
   }
 
-  getNextInLoop(tiles, sourceTile) {
+  getNextTileInLoop(tiles, sourceTile) {
     // TODO: This shouldn't use loopDirection, directions should be passed in instead
     // but how do we set loopDirection properly?
     const directions = this.loopDirection
