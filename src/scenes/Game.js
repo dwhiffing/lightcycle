@@ -25,10 +25,10 @@ export default class extends Phaser.Scene {
 
     this.input.keyboard.removeAllKeys(true)
     this.keys = this.input.keyboard.addKeys('W,A,S,D,Q,E,R,SPACE')
-    this.keys.W.on('down', this.marker.moveUp)
-    this.keys.A.on('down', this.marker.moveLeft)
-    this.keys.S.on('down', this.marker.moveDown)
-    this.keys.D.on('down', this.marker.moveRight)
+    this.keys.W.on('down', this.marker.moveUp).setEmitOnRepeat(true)
+    this.keys.A.on('down', this.marker.moveLeft).setEmitOnRepeat(true)
+    this.keys.S.on('down', this.marker.moveDown).setEmitOnRepeat(true)
+    this.keys.D.on('down', this.marker.moveRight).setEmitOnRepeat(true)
     this.keys.Q.on('down', this.marker.rotateLeft)
     this.keys.E.on('down', this.marker.rotateRight)
     this.keys.R.on('down', this.marker.hold)
@@ -59,27 +59,21 @@ export default class extends Phaser.Scene {
     const loop = this.map.clearLoop() || []
     this.addScore(loop.length * 100)
     this.data.set('timer', this.data.get('timerMax'))
-    this.marker.getNextMino()
   }
 
   addScore = (value) => {
     if (value === 0) return
 
-    const { loops, score, multi } = this.data.values
-    const newScore = Number(score) + value * multi
+    if (this.data.get('loops') % 10 === 0) this.updateLives(1)
+
+    const newScore = +this.data.get('score') + value * this.data.get('multi')
     this.data.set('score', newScore)
     this.data.set('multi', getMultiFromScore(newScore))
 
     const newTimerMax = TIME_DURATION - (this.data.get('multi') - 1) * 600
     this.data.set('timerMax', newTimerMax)
-
-    if (loops % 10 === 0) {
-      this.updateLives(1)
-    }
   }
 
-  updateLives = (value) => {
-    const { lives } = this.data.values
-    this.data.set('lives', Math.min(10, lives + value))
-  }
+  updateLives = (value) =>
+    this.data.set('lives', Math.min(10, this.data.get('lives') + value))
 }

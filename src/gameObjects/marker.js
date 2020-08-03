@@ -85,6 +85,7 @@ export default class {
       if (frame > -1) this.scene.map.placeTile(x, y, frame)
     })
 
+    this.getNextMino()
     return true
   }
 
