@@ -13,6 +13,7 @@ var config = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
+  // debug: true,
   scene: Object.values(scenes),
 }
 

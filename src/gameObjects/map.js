@@ -16,9 +16,7 @@ export default class {
     this.map.createDynamicLayer(0, this.map.addTilesetImage('tiles'), 2, 0)
   }
 
-  placeTile(_x, _y, index) {
-    const x = (_x - 2) / 5
-    const y = _y / 5
+  placeTile(x, y, index) {
     if (this.map.getTileAt(x, y).index > 1) return null
 
     const tile = this.map.putTileAt(index, x, y)

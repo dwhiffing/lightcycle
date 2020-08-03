@@ -1,3 +1,5 @@
+import { TYPES, LARGE_CORNER, BIG_SNAKE_LEFT } from '../constants'
+
 const TIME_DURATION = 10000
 
 export default class {
@@ -17,11 +19,8 @@ export default class {
     this.drawInterface()
 
     this.pickedTileCounter = 0
-    this.marker = this.scene.add
-      .sprite(2, 0, 'tiles', 0)
-      .setOrigin(0, 0)
-      .setFrame(0)
-      .setTint(0x44cc44)
+    this.marker = this.scene.add.container(7, 5)
+
     this.getNewTile()
 
     this.livesText = this.getText(7, 53, this.data.get('lives'))
@@ -63,9 +62,9 @@ export default class {
 
   moveMarker(direction) {
     if (direction === 'up') {
-      this.marker.y -= this.marker.y < 3 ? 0 : 5
+      this.marker.y -= this.marker.y < -2 ? 0 : 5
     } else if (direction === 'left') {
-      this.marker.x -= this.marker.x < 3 ? 0 : 5
+      this.marker.x -= this.marker.x < -2 ? 0 : 5
     } else if (direction === 'down') {
       this.marker.y += this.marker.y > 40 ? 0 : 5
     } else if (direction === 'right') {
@@ -73,12 +72,43 @@ export default class {
     }
   }
 
+  rotateMarker(direction) {
+    this.rotationIndex += direction
+    if (this.rotationIndex < 0) {
+      this.rotationIndex = this.markerLayout.length - 1
+    }
+    if (this.rotationIndex > this.markerLayout.length - 1) {
+      this.rotationIndex = 0
+    }
+    this.updateMarker()
+  }
+
+  updateMarker() {
+    this.marker.remove(this.marker.list, true)
+    this.marker.frames = this.markerLayout[this.rotationIndex]
+    this.marker.frames.forEach((frame, index) => {
+      const x = 5 * (index % 3)
+      const y = 5 * window.Math.floor(index / 3)
+
+      if (frame > -1) {
+        this.marker.add(
+          this.scene.add
+            .sprite(x, y, 'tiles', frame)
+            .setOrigin(0, 0)
+            .setTint(0x44cc44),
+        )
+      }
+    })
+  }
+
   getNewTile() {
-    // const newIndex = Phaser.Math.RND.between(2, 7)
+    this.markerLayout = Phaser.Math.RND.pick(TYPES)
+    this.rotationIndex = 0
+
+    this.updateMarker()
+
     this.timer = TIME_DURATION
     this.updateTimer()
-    const newIndex = TILE_ORDER[this.pickedTileCounter % TILE_ORDER.length]
-    this.marker.setFrame(newIndex)
     this.pickedTileCounter++
   }
 
@@ -112,5 +142,3 @@ export default class {
       .setOrigin(1, 0)
   }
 }
-
-const TILE_ORDER = [4, 6, 5, 7, 2, 2, 2, 3, 3, 3]
