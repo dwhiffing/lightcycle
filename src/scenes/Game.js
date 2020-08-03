@@ -34,26 +34,36 @@ export default class extends Phaser.Scene {
     this.time.addEvent({
       delay: 100,
       repeat: -1,
-      callback: this.updateTimer.bind(this),
+      callback: this.tick.bind(this),
     })
+  }
+
+  tick() {
+    this.ui.tickTimer()
+    if (this.ui.timer < 1) this.loseLife()
   }
 
   move(direction) {
     this.ui.moveMarker(direction)
   }
 
-  hold() {
-    this.ui.hold()
-  }
-
   rotate(direction) {
     this.ui.rotateMarker(direction)
   }
 
+  hold() {
+    this.ui.hold()
+  }
+
+  // TODO: Refactor me
   placeTiles() {
     const { x, y } = this.ui.marker
 
-    if (!this.canPlaceTile()) return
+    const canPlaceTile = this.ui
+      .getMarkerTiles()
+      .every((tile) => tile === -1 || (tile && tile.index < 2))
+
+    if (!canPlaceTile) return
 
     this.ui.marker.frames.forEach((frame, index) => {
       const _x = (x - 2) / 5 + (index % 3)
@@ -69,22 +79,11 @@ export default class extends Phaser.Scene {
     this.ui.getNewTile()
   }
 
-  canPlaceTile() {
-    return this.ui
-      .getMarkerTiles()
-      .every((tile) => (tile === -1 ? true : tile && tile.index < 2))
-  }
-
-  updateTimer() {
-    this.ui.tickTimer()
-    if (this.ui.timer < 1) {
-      this.ui.updateLives(-1)
-      this.ui.getNewTile()
-      if (this.registry.get('lives') < 0) {
-        this.scene.start('Menu')
-      }
+  loseLife() {
+    this.ui.updateLives(-1)
+    this.ui.getNewTile()
+    if (this.registry.get('lives') < 0) {
+      this.scene.start('Menu')
     }
   }
-
-  update() {}
 }
