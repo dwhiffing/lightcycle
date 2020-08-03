@@ -1,71 +1,52 @@
-import { TIME_DURATION, Y_OFFSET, SCORES } from '../constants'
+import { UI_Y_POS } from '../constants'
 
 export default class {
   constructor(scene) {
     this.scene = scene
-    this.timer = TIME_DURATION
+    this.data = scene.registry
+    this.data.events.on('changedata', this.update)
 
     this._drawInterface()
 
-    const lives = this.scene.registry.get('lives')
-    const multi = this.scene.registry.get('multi')
-    const score = this.scene.registry.get('score')
+    const lives = this.data.get('lives')
+    const multi = this.data.get('multi')
+    const score = this.data.get('score')
 
-    // TODO: make text game object
-    this.livesText = this._getText(63, Y_OFFSET + 2, lives)
-    this.multiText = this._getText(57, Y_OFFSET + 2, multi)
-    this.scoreText = this._getText(46, Y_OFFSET + 2, score)
+    this.livesText = this._getText(63, UI_Y_POS + 2, lives)
+    this.multiText = this._getText(57, UI_Y_POS + 2, multi)
+    this.scoreText = this._getText(46, UI_Y_POS + 2, score)
   }
 
-  updateScore = (score) => {
-    const multi = this.scene.registry.get('multi')
-    const newScore = +this.scene.registry.get('score') + score * multi
+  update = () => {
+    const {
+      lives,
+      score,
+      multi,
+      timer,
+      timerMax,
+      nextMino,
+      heldMino,
+    } = this.data.getAll()
 
-    this.scene.registry.set('score', `${newScore}`)
-    this.scene.registry.set('multi', this._getMulti())
-
-    // TODO: extra lives every x points
-    // if (this.scene.registry.get('loops') % 25 === 0) {
-    //   this.updateLives(1)
-    // }
-
-    this.multiText.setText(this.scene.registry.get('multi'))
-    this.scoreText.setText(this.scene.registry.get('score'))
-  }
-
-  updateLives = (value) => {
-    const lives = this.scene.registry.get('lives')
-    this.scene.registry.set('lives', Math.min(10, lives + value))
+    this.multiText.setText(multi)
+    this.scoreText.setText(score)
     this.livesText.setText(lives)
-  }
 
-  renderTimer = () => {
     this.timerBar.clear()
-    const percent = this.timer / this._getTimerMax()
-    const rounded = Math.round(Y_OFFSET * percent)
-    this.timerBar.fillRect(0, Y_OFFSET - rounded, 64, rounded)
-  }
+    const percent = timer / timerMax
+    const rounded = Math.round(UI_Y_POS * percent)
+    this.timerBar.fillRect(0, UI_Y_POS - rounded, 64, rounded)
 
-  resetTimer = () => {
-    this.timer = this._getTimerMax()
-    this.renderTimer()
+    nextMino &&
+      this._renderMino(this.nextMinoGraphics, 2, UI_Y_POS + 2, nextMino)
+    heldMino &&
+      this._renderMino(this.heldMinoGraphics, 10, UI_Y_POS + 2, heldMino)
   }
-
-  renderNextMino = (nextTile) => {
-    this._setTileGraphics(this.nextTileGraphics, 2, Y_OFFSET + 2, nextTile)
-  }
-
-  renderHeldMino = (heldTile) => {
-    this._setTileGraphics(this.heldTileGraphics, 10, Y_OFFSET + 2, heldTile)
-  }
-
-  _getTimerMax = () =>
-    TIME_DURATION - (this.scene.registry.get('multi') - 1) * 600
 
   _getText = (x, y, string) =>
     this.scene.add.bitmapText(x, y, 'pixel-dan', string, 5).setOrigin(1, 0)
 
-  _setTileGraphics = (graphics, x, y, frames) => {
+  _renderMino = (graphics, x, y, frames) => {
     graphics.clear()
     frames.forEach((frame, index) => {
       if (frame <= 1) return
@@ -75,39 +56,38 @@ export default class {
     })
   }
 
-  _getMulti = () => {
-    const score = this.scene.registry.get('score')
-    for (let key in SCORES) {
-      if (score < key) return SCORES[key]
-    }
-    return 9
-  }
-
   _drawInterface = () => {
     this.uiGraphics = this.scene.add
       .graphics()
+      // draw frame
       .fillStyle(0xffffff, 0.25)
-      .fillRect(0, Y_OFFSET, 64, 13)
+      .fillRect(0, UI_Y_POS, 64, 13)
+      // draw boxes
       .fillStyle(0x000000)
-      .fillRect(1, Y_OFFSET + 1, 7, 7)
-      .fillRect(9, Y_OFFSET + 1, 7, 7)
-      .fillRect(17, Y_OFFSET + 1, 29, 7)
-      .fillRect(47, Y_OFFSET + 1, 10, 7)
-      .fillRect(58, Y_OFFSET + 1, 5, 7)
-      .fillRect(1, Y_OFFSET + 9, 62, 3)
+      // next tile box
+      .fillRect(1, UI_Y_POS + 1, 7, 7)
+      // held tile box
+      .fillRect(9, UI_Y_POS + 1, 7, 7)
+      // score tile box
+      .fillRect(17, UI_Y_POS + 1, 29, 7)
+      // multi box
+      .fillRect(47, UI_Y_POS + 1, 10, 7)
+      // lives box
+      .fillRect(58, UI_Y_POS + 1, 5, 7)
+      // draw multiplier x
       .fillStyle(0xffffff)
-      .fillRect(49, Y_OFFSET + 5, 1, 1)
-      .fillRect(48, Y_OFFSET + 4, 1, 1)
-      .fillRect(48, Y_OFFSET + 6, 1, 1)
-      .fillRect(50, Y_OFFSET + 4, 1, 1)
-      .fillRect(50, Y_OFFSET + 6, 1, 1)
+      .fillRect(49, UI_Y_POS + 5, 1, 1)
+      .fillRect(48, UI_Y_POS + 4, 1, 1)
+      .fillRect(48, UI_Y_POS + 6, 1, 1)
+      .fillRect(50, UI_Y_POS + 4, 1, 1)
+      .fillRect(50, UI_Y_POS + 6, 1, 1)
 
     this.timerBar = this.scene.add
       .graphics()
       .fillStyle(0xffffff, 1)
       .setDepth(-1)
 
-    this.nextTileGraphics = this.scene.add.graphics().fillStyle(0xffffff, 1)
-    this.heldTileGraphics = this.scene.add.graphics().fillStyle(0xffffff, 1)
+    this.nextMinoGraphics = this.scene.add.graphics().fillStyle(0xffffff, 1)
+    this.heldMinoGraphics = this.scene.add.graphics().fillStyle(0xffffff, 1)
   }
 }

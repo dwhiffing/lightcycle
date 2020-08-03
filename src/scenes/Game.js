@@ -1,6 +1,7 @@
 import Map from '../gameObjects/map'
 import UI from '../gameObjects/ui'
 import Marker from '../gameObjects/marker'
+import { TICK, SCORES, TIME_DURATION } from '../constants'
 
 // add wildcard tile
 // clear tiles inside loop
@@ -22,14 +23,15 @@ export default class extends Phaser.Scene {
     this.registry.set('score', 0)
     this.registry.set('lives', 3)
     this.registry.set('multi', 1)
-
-    this.input.keyboard.removeAllKeys(true)
-    this.keys = this.input.keyboard.addKeys('W,A,S,D,Q,E,R,SPACE')
+    this.registry.set('timerMax', TIME_DURATION)
+    this.registry.set('timer', TIME_DURATION)
 
     this.map = new Map(this)
     this.ui = new UI(this)
     this.marker = new Marker(this)
 
+    this.input.keyboard.removeAllKeys(true)
+    this.keys = this.input.keyboard.addKeys('W,A,S,D,Q,E,R,SPACE')
     this.keys.W.on('down', this.marker.moveUp)
     this.keys.A.on('down', this.marker.moveLeft)
     this.keys.S.on('down', this.marker.moveDown)
@@ -39,13 +41,13 @@ export default class extends Phaser.Scene {
     this.keys.R.on('down', this.marker.hold)
     this.keys.SPACE.on('down', this.placeTiles)
 
-    this.time.addEvent({ delay: 100, repeat: -1, callback: this.tick })
+    this.time.addEvent({ delay: TICK, repeat: -1, callback: this.tick })
   }
 
   tick = () => {
-    this.ui.timer -= 100
-    this.ui.renderTimer()
-    if (this.ui.timer < 1) this.loseLife()
+    const timer = this.registry.get('timer')
+    this.registry.set('timer', timer - TICK)
+    if (timer < 1) this.timeOut()
   }
 
   placeTiles = () => {
@@ -56,18 +58,48 @@ export default class extends Phaser.Scene {
     const loop = this.map.getLoop()
     if (loop) {
       this.map.clearTiles(loop)
-      this.ui.updateScore(loop.length * 100)
+      this.addScore(loop.length * 100)
     }
     this.marker.getNextMino()
-    this.ui.resetTimer()
+
+    this.registry.set('timer', this.registry.get('timerMax'))
   }
 
-  loseLife = () => {
-    this.ui.updateLives(-1)
+  timeOut = () => {
+    this.updateLives(-1)
     this.marker.getNextMino()
-    this.ui.resetTimer()
+    this.registry.set('timer', this.registry.get('timerMax'))
     if (this.registry.get('lives') < 0) {
       this.scene.start('Menu')
     }
+  }
+
+  addScore = (score) => {
+    this.registry.set('multi', this._getMulti())
+    const newScore =
+      +this.registry.get('score') + score * this.registry.get('multi')
+    this.registry.set('score', newScore)
+
+    this.registry.set(
+      'timerMax',
+      TIME_DURATION - (this.registry.get('multi') - 1) * 600,
+    )
+
+    // TODO: extra lives every x points
+    // if (this.registry.get('loops') % 25 === 0) {
+    //   this.updateLives(1)
+    // }
+  }
+
+  updateLives = (value) => {
+    this.registry.set('lives', Math.min(10, this.registry.get('lives') + value))
+  }
+
+  _getMulti = () => {
+    const score = this.registry.get('score')
+    for (let key in SCORES) {
+      if (score < key) return SCORES[key]
+    }
+    return 9
   }
 }

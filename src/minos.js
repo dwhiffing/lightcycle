@@ -80,6 +80,8 @@ export const BIG_ARCH = [
 export const LEVEL1 = [
   [SMALL_LINE],
   [SMALL_CORNER],
+  [SMALL_CORNER],
+  [SMALL_CORNER],
   [SMALL_LINE, SMALL_CORNER],
   [BIG_LINE, MEDIUM_CORNER],
 ]
