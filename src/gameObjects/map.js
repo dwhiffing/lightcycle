@@ -2,42 +2,38 @@ import {
   TILE_CONNECTIONS,
   DIRECTION_ADJACENCY,
   TILE_DIRECTIONS,
+  MAP_SIZE_Y,
+  MAP_SIZE_X,
 } from '../constants'
 
 export default class {
   constructor(scene) {
     this.scene = scene
     const data = []
-    for (let y = 0; y < 11; y++) {
-      data.push([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+    for (let y = 0; y < MAP_SIZE_Y; y++) {
+      data.push(new Array(MAP_SIZE_X).fill(1))
     }
 
     this.map = this.scene.make.tilemap({ data, tileWidth: 5, tileHeight: 5 })
     this.map.createDynamicLayer(0, this.map.addTilesetImage('tiles'), 2, 0)
   }
 
-  getTile(x, y) {
-    return this.map.getTileAt(x, y)
-  }
+  getTile = (x, y) => this.map.getTileAt(x, y)
 
-  placeTile(x, y, index) {
+  placeTile = (x, y, index) => {
     if (this.map.getTileAt(x, y).index > 1) return null
 
     const tile = this.map.putTileAt(index, x, y)
     tile.tint = 0x999999
-
     return true
   }
 
-  clearTiles(tiles) {
+  clearTiles = (tiles) => {
     tiles.forEach((tile) => (tile.tint = 0xffffff))
 
     this.scene.time.addEvent({
       delay: 1000,
-      callback: () =>
-        tiles.forEach((t) => {
-          this.map.putTileAt(1, t.x, t.y)
-        }),
+      callback: () => tiles.forEach((t) => this.map.putTileAt(1, t.x, t.y)),
     })
   }
 
@@ -66,7 +62,7 @@ export default class {
     // but how do we set loopDirection properly?
     const directions = this.loopDirection
       ? [TILE_DIRECTIONS[sourceTile.index][this.loopDirection]]
-      : ['up', 'down', 'left', 'right']
+      : [0, 2, 3, 1]
 
     return tiles.find((tile) =>
       directions.some((direction) => {

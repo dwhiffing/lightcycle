@@ -1,4 +1,4 @@
-import { LEVELS, SMALL_LINE, TIME_DURATION } from '../constants'
+import { LEVELS, SMALL_LINE } from '../constants'
 
 export default class {
   constructor(scene) {
@@ -8,10 +8,10 @@ export default class {
     this.getNextMino()
   }
 
-  moveUp = () => this.move('up')
-  moveLeft = () => this.move('left')
-  moveRight = () => this.move('right')
-  moveDown = () => this.move('down')
+  moveUp = () => this.move(0)
+  moveLeft = () => this.move(3)
+  moveRight = () => this.move(1)
+  moveDown = () => this.move(2)
 
   rotateLeft = () => this.rotate(-1)
   rotateRight = () => this.rotate(1)
@@ -34,13 +34,13 @@ export default class {
   }
 
   move = (direction) => {
-    if (direction === 'up') {
+    if (direction === 0) {
       this.container.y -= this.container.y < -2 ? 0 : 5
-    } else if (direction === 'left') {
+    } else if (direction === 3) {
       this.container.x -= this.container.x < -2 ? 0 : 5
-    } else if (direction === 'down') {
+    } else if (direction === 2) {
       this.container.y += this.container.y > 40 ? 0 : 5
-    } else if (direction === 'right') {
+    } else if (direction === 1) {
       this.container.x += this.container.x > 53 ? 0 : 5
     }
 
