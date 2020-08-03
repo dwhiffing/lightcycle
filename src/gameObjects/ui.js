@@ -14,7 +14,7 @@ export default class {
 
     this.data.set('score', 0)
     this.data.set('lives', 3)
-    this.data.set('multi', 1)
+    this.data.set('multi', 9)
 
     this.drawInterface()
 
@@ -24,13 +24,13 @@ export default class {
     this.getNewTile()
 
     this.livesText = this.getText(63, 53, this.data.get('lives'))
-    this.multiText = this.getText(56, 53, this.data.get('multi'))
-    this.scoreText = this.getText(46, 53, `${this.data.get('score')}`)
+    this.multiText = this.getText(57, 53, this.data.get('multi'))
+    this.scoreText = this.getText(46, 53, `9234567`)
   }
 
   updateScore(score) {
     const multi = this.data.get('multi')
-    const newScore = this.data.get('score') + score * multi
+    const newScore = +this.data.get('score') + score * multi
 
     this.data.set('score', `${newScore}`)
     // TODO: extra lives every x points
@@ -146,16 +146,16 @@ export default class {
       .fillStyle(0x000000)
       .fillRect(1, 52, 7, 7)
       .fillRect(9, 52, 7, 7)
-      .fillRect(17, 52, 30, 7)
-      .fillRect(48, 52, 9, 7)
+      .fillRect(17, 52, 29, 7)
+      .fillRect(47, 52, 10, 7)
       .fillRect(58, 52, 5, 7)
       .fillRect(1, 60, 62, 3)
       .fillStyle(0xffffff)
-      .fillRect(50, 56, 1, 1)
-      .fillRect(49, 55, 1, 1)
-      .fillRect(49, 57, 1, 1)
-      .fillRect(51, 55, 1, 1)
-      .fillRect(51, 57, 1, 1)
+      .fillRect(49, 56, 1, 1)
+      .fillRect(48, 55, 1, 1)
+      .fillRect(48, 57, 1, 1)
+      .fillRect(50, 55, 1, 1)
+      .fillRect(50, 57, 1, 1)
 
     this.timerBar = this.scene.add
       .graphics()
