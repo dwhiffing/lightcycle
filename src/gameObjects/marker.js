@@ -83,22 +83,33 @@ export default class {
     this.scene.ui.renderTimer()
   }
 
-  getTiles = () => {
-    const { x, y } = this.container
-    return this.container.frames.map((frame, index) => {
-      const _x = (x - 2) / 5 + (index % 3)
-      const _y = y / 5 + window.Math.floor(index / 3)
-      if (frame === -1) return -1
-      return this.scene.map.map.getTileAt(_x, _y, frame)
+  canPlaceTiles = () =>
+    this._getTiles().every(
+      ({ x, y, frame }) =>
+        frame === -1 || this.scene.map.getTile(x, y).index < 2,
+    )
+
+  placeTiles = () => {
+    this._getTiles().forEach(({ x, y, frame }) => {
+      if (frame > -1) this.scene.map.placeTile(x, y, frame)
+    })
+  }
+
+  _getTiles = () => {
+    const { x: _x, y: _y } = this.container
+    return this.layout.map((frame, index) => {
+      const x = (_x - 2) / 5 + (index % 3)
+      const y = _y / 5 + window.Math.floor(index / 3)
+      return { x, y, frame }
     })
   }
 
   _render = () => {
     this.container.remove(this.container.list, true)
-    this.container.frames = this.containerLayout[
+    this.layout = this.containerLayout[
       Math.min(this.rotationIndex, this.containerLayout.length - 1)
     ]
-    this.container.frames.forEach((frame, index) => {
+    this.layout.forEach((frame, index) => {
       const x = 5 * (index % 3)
       const y = 5 * window.Math.floor(index / 3)
 
@@ -112,11 +123,11 @@ export default class {
       }
     })
 
-    this.getTiles().forEach((tile, index) => {
-      if (typeof tile !== 'number') {
-        const frame = this.container.list.find((tile) => tile.__index === index)
-        frame && frame.setTint(tile && tile.index > 1 ? 0xcc4444 : 0x44cc44)
-      }
+    // TODO: fix tinting
+    this._getTiles().forEach(({ x, y }, index) => {
+      const tile = this.scene.map.getTile(x, y)
+      const sprite = this.container.list.find((tile) => tile.__index === index)
+      sprite && sprite.setTint(tile.index > 1 ? 0xcc4444 : 0x44cc44)
     })
   }
 }

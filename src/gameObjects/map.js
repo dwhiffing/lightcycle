@@ -16,6 +16,10 @@ export default class {
     this.map.createDynamicLayer(0, this.map.addTilesetImage('tiles'), 2, 0)
   }
 
+  getTile(x, y) {
+    return this.map.getTileAt(x, y)
+  }
+
   placeTile(x, y, index) {
     if (this.map.getTileAt(x, y).index > 1) return null
 
@@ -48,7 +52,7 @@ export default class {
       while (current) {
         loop.push(current)
         tiles = tiles.filter((t) => t !== current)
-        current = this.getNextTileInLoop([...tiles, loop[0]], current)
+        current = this._getNextTileInLoop([...tiles, loop[0]], current)
 
         if (current === loop[0]) {
           return loop
@@ -57,7 +61,7 @@ export default class {
     }
   }
 
-  getNextTileInLoop(tiles, sourceTile) {
+  _getNextTileInLoop(tiles, sourceTile) {
     // TODO: This shouldn't use loopDirection, directions should be passed in instead
     // but how do we set loopDirection properly?
     const directions = this.loopDirection
@@ -67,12 +71,12 @@ export default class {
     return tiles.find((tile) =>
       directions.some((direction) => {
         this.loopDirection = direction
-        return this.getIsConnected(tile, sourceTile, direction)
+        return this._getIsConnected(tile, sourceTile, direction)
       }),
     )
   }
 
-  getIsConnected(tileA, tileB, direction) {
+  _getIsConnected(tileA, tileB, direction) {
     const { x, y } = DIRECTION_ADJACENCY[direction]
     const isAdjacent = tileA.x === tileB.x + x && tileA.y === tileB.y + y
     const validConnections = TILE_CONNECTIONS[tileB.index][direction] || []

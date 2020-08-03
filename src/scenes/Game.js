@@ -15,7 +15,7 @@ export default class extends Phaser.Scene {
     super({ key: 'Game' })
   }
 
-  init(opts) {}
+  init() {}
 
   create() {
     this.input.keyboard.removeAllKeys(true)
@@ -42,21 +42,10 @@ export default class extends Phaser.Scene {
     if (this.ui.timer < 1) this.loseLife()
   }
 
-  // TODO: Refactor me
   placeTiles = () => {
-    const { x, y } = this.marker.container
+    if (!this.marker.canPlaceTiles()) return
 
-    const canPlaceTile = this.marker
-      .getTiles()
-      .every((tile) => tile === -1 || (tile && tile.index < 2))
-
-    if (!canPlaceTile) return
-
-    this.marker.container.frames.forEach((frame, index) => {
-      const _x = (x - 2) / 5 + (index % 3)
-      const _y = y / 5 + window.Math.floor(index / 3)
-      if (frame > -1) this.map.placeTile(_x, _y, frame)
-    })
+    this.marker.placeTiles()
 
     const loop = this.map.getLoop()
     if (loop) {
