@@ -24,7 +24,9 @@ export default class extends Phaser.Scene {
     this.marker = new Marker(this)
 
     this.input.keyboard.removeAllKeys(true)
-    this.keys = this.input.keyboard.addKeys('W,A,S,D,Q,E,R,SPACE')
+    this.keys = this.input.keyboard.addKeys(
+      'W,A,S,D,Q,E,R,UP,DOWN,LEFT,RIGHT,Z,X,C,SPACE',
+    )
     this.keys.W.on('down', this.marker.moveUp).setEmitOnRepeat(true)
     this.keys.A.on('down', this.marker.moveLeft).setEmitOnRepeat(true)
     this.keys.S.on('down', this.marker.moveDown).setEmitOnRepeat(true)
@@ -32,6 +34,15 @@ export default class extends Phaser.Scene {
     this.keys.Q.on('down', this.marker.rotateLeft)
     this.keys.E.on('down', this.marker.rotateRight)
     this.keys.R.on('down', this.marker.hold)
+
+    this.keys.UP.on('down', this.marker.moveUp).setEmitOnRepeat(true)
+    this.keys.LEFT.on('down', this.marker.moveLeft).setEmitOnRepeat(true)
+    this.keys.DOWN.on('down', this.marker.moveDown).setEmitOnRepeat(true)
+    this.keys.RIGHT.on('down', this.marker.moveRight).setEmitOnRepeat(true)
+    this.keys.Z.on('down', this.marker.rotateLeft)
+    this.keys.X.on('down', this.marker.rotateRight)
+    this.keys.C.on('down', this.marker.hold)
+
     this.keys.SPACE.on('down', this.placeMino)
 
     this.time.addEvent({ delay: TICK, repeat: -1, callback: this.tick })
