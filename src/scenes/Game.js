@@ -1,15 +1,16 @@
 import Map from '../gameObjects/map'
 import UI from '../gameObjects/ui'
 
-// add composite placed tiles
-// improve rng by shuffling full sets
-// extra life every 25 loops
-// score multiplier
-// add tile holding
+// score multiplier (level), increases as loops are gained
+// higher level means faster timer
+// higher level means more complex pieces
+// add wildcard tile
+// show blocking tiles as red
+
 // sounds
 // fancy effects on placing/clearing tiles
 // title graphic
-// add credits
+// add credit
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -22,13 +23,14 @@ export default class extends Phaser.Scene {
     this.map = new Map(this)
     this.ui = new UI(this)
 
-    this.keys = this.input.keyboard.addKeys('W,A,S,D,Q,E,SPACE')
+    this.keys = this.input.keyboard.addKeys('W,A,S,D,Q,E,R,SPACE')
     this.keys.W.on('down', () => this.move('up'))
     this.keys.A.on('down', () => this.move('left'))
     this.keys.S.on('down', () => this.move('down'))
     this.keys.D.on('down', () => this.move('right'))
     this.keys.Q.on('down', () => this.rotate(-1))
     this.keys.E.on('down', () => this.rotate(1))
+    this.keys.R.on('down', () => this.hold())
     this.keys.SPACE.on('down', this.placeTiles.bind(this))
 
     this.time.addEvent({
@@ -40,6 +42,10 @@ export default class extends Phaser.Scene {
 
   move(direction) {
     this.ui.moveMarker(direction)
+  }
+
+  hold() {
+    this.ui.hold()
   }
 
   rotate(direction) {
@@ -60,7 +66,6 @@ export default class extends Phaser.Scene {
     const loop = this.map.getLoop()
     if (loop) {
       this.map.clearTiles(loop)
-      this.ui.updateLoops(1)
       this.ui.updateScore(loop.length * 100)
     }
     this.ui.getNewTile()
