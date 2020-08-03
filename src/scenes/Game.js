@@ -21,33 +21,29 @@ export default class extends Phaser.Scene {
     this.input.keyboard.removeAllKeys(true)
     this.keys = this.input.keyboard.addKeys('W,A,S,D,Q,E,R,SPACE')
 
-    this.keys.W.on('down', () => this.marker.move('up'))
-    this.keys.A.on('down', () => this.marker.move('left'))
-    this.keys.S.on('down', () => this.marker.move('down'))
-    this.keys.D.on('down', () => this.marker.move('right'))
-    this.keys.Q.on('down', () => this.marker.rotate(-1))
-    this.keys.E.on('down', () => this.marker.rotate(1))
-    this.keys.R.on('down', () => this.marker.hold())
-    this.keys.SPACE.on('down', this.placeTiles.bind(this))
-
     this.map = new Map(this)
     this.ui = new UI(this)
     this.marker = new Marker(this)
 
-    this.time.addEvent({
-      delay: 100,
-      repeat: -1,
-      callback: this.tick.bind(this),
-    })
+    this.keys.W.on('down', this.marker.moveUp)
+    this.keys.A.on('down', this.marker.moveLeft)
+    this.keys.S.on('down', this.marker.moveDown)
+    this.keys.D.on('down', this.marker.moveRight)
+    this.keys.Q.on('down', this.marker.rotateLeft)
+    this.keys.E.on('down', this.marker.rotateRight)
+    this.keys.R.on('down', this.marker.hold)
+    this.keys.SPACE.on('down', this.placeTiles)
+
+    this.time.addEvent({ delay: 100, repeat: -1, callback: this.tick })
   }
 
-  tick() {
+  tick = () => {
     this.ui.tickTimer()
     if (this.ui.timer < 1) this.loseLife()
   }
 
   // TODO: Refactor me
-  placeTiles() {
+  placeTiles = () => {
     const { x, y } = this.marker.container
 
     const canPlaceTile = this.marker
@@ -70,7 +66,7 @@ export default class extends Phaser.Scene {
     this.marker.getNewTile()
   }
 
-  loseLife() {
+  loseLife = () => {
     this.ui.updateLives(-1)
     this.marker.getNewTile()
     if (this.registry.get('lives') < 0) {

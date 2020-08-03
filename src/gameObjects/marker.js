@@ -3,14 +3,12 @@ import { LEVELS, SMALL_LINE, TIME_DURATION } from '../constants'
 export default class {
   constructor(scene) {
     this.scene = scene
-    this.move = this.move.bind(this)
-    this.getTiles = this.getTiles.bind(this)
     this.upcomingTypes = [SMALL_LINE]
     this.container = this.scene.add.container(7, 5)
     this.getNewTile()
   }
 
-  move(direction) {
+  move = (direction) => {
     if (direction === 'up') {
       this.container.y -= this.container.y < -2 ? 0 : 5
     } else if (direction === 'left') {
@@ -21,20 +19,14 @@ export default class {
       this.container.x += this.container.x > 53 ? 0 : 5
     }
 
-    this.updateMarker()
+    this._render()
   }
+  moveUp = () => this.move('up')
+  moveLeft = () => this.move('left')
+  moveRight = () => this.move('right')
+  moveDown = () => this.move('down')
 
-  getTiles() {
-    const { x, y } = this.container
-    return this.container.frames.map((frame, index) => {
-      const _x = (x - 2) / 5 + (index % 3)
-      const _y = y / 5 + window.Math.floor(index / 3)
-      if (frame === -1) return -1
-      return this.scene.map.map.getTileAt(_x, _y, frame)
-    })
-  }
-
-  rotate(direction) {
+  rotate = (direction) => {
     this.rotationIndex += direction
     if (this.rotationIndex < 0) {
       this.rotationIndex = this.containerLayout.length - 1
@@ -42,17 +34,19 @@ export default class {
     if (this.rotationIndex > this.containerLayout.length - 1) {
       this.rotationIndex = 0
     }
-    this.updateMarker()
+    this._render()
   }
+  rotateLeft = () => this.rotate(-1)
+  rotateRight = () => this.rotate(1)
 
-  hold() {
+  hold = () => {
     if (!this.canHold) return
 
     if (this.heldTile) {
       let temp = this.containerLayout
       this.containerLayout = this.heldTile
       this.heldTile = temp
-      this.updateMarker()
+      this._render()
     } else {
       this.heldTile = this.containerLayout
       this.getNewTile()
@@ -64,7 +58,7 @@ export default class {
     this.scene.ui.setHoldTileGraphics(this.heldTile, this.rotationIndex)
   }
 
-  getNewTile() {
+  getNewTile = () => {
     this.canHold = true
     this.containerLayout = this.upcomingTypes.shift()
     if (this.upcomingTypes.length === 0) {
@@ -80,16 +74,26 @@ export default class {
       this.containerLayout.length - 1,
     )
 
-    this.updateMarker()
+    this._render()
 
     // TODO: move elsewhere?
     this.scene.ui.setNextTileGraphics(this.upcomingTypes[0], this.rotationIndex)
     this.scene.ui.timer =
       TIME_DURATION - (this.scene.registry.get('multi') - 1) * 600
-    this.scene.ui.updateTimer()
+    this.scene.ui.renderTimer()
   }
 
-  updateMarker() {
+  getTiles = () => {
+    const { x, y } = this.container
+    return this.container.frames.map((frame, index) => {
+      const _x = (x - 2) / 5 + (index % 3)
+      const _y = y / 5 + window.Math.floor(index / 3)
+      if (frame === -1) return -1
+      return this.scene.map.map.getTileAt(_x, _y, frame)
+    })
+  }
+
+  _render = () => {
     this.container.remove(this.container.list, true)
     this.container.frames = this.containerLayout[
       Math.min(this.rotationIndex, this.containerLayout.length - 1)

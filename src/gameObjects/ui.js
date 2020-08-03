@@ -3,49 +3,58 @@ import { TIME_DURATION, Y_OFFSET } from '../constants'
 export default class {
   constructor(scene) {
     this.scene = scene
-    this.moveTimer = 0
-    this.tickTimer = this.tickTimer.bind(this)
-    this.setNextTileGraphics = this.setNextTileGraphics.bind(this)
-    this.setHoldTileGraphics = this.setHoldTileGraphics.bind(this)
-    this.setTileGraphics = this.setTileGraphics.bind(this)
-    this.data = this.scene.registry
+    // TODO: Timer should be defined in game, ui should just render it?
     this.timer = TIME_DURATION
 
-    this.data.set('score', 0)
-    this.data.set('lives', 3)
-    this.data.set('multi', 1)
+    // TODO: Timer should be set in game?
+    this.scene.registry.set('score', 0)
+    this.scene.registry.set('lives', 3)
+    this.scene.registry.set('multi', 1)
 
-    this.drawInterface()
+    this._drawInterface()
 
-    this.livesText = this.getText(63, Y_OFFSET + 2, this.data.get('lives'))
-    this.multiText = this.getText(57, Y_OFFSET + 2, this.data.get('multi'))
-    this.scoreText = this.getText(46, Y_OFFSET + 2, 0)
+    // TODO: make text game object
+    this.livesText = this._getText(
+      63,
+      Y_OFFSET + 2,
+      this.scene.registry.get('lives'),
+    )
+    this.multiText = this._getText(
+      57,
+      Y_OFFSET + 2,
+      this.scene.registry.get('multi'),
+    )
+    this.scoreText = this._getText(46, Y_OFFSET + 2, 0)
   }
 
-  updateScore(score) {
-    const multi = this.data.get('multi')
-    const newScore = +this.data.get('score') + score * multi
+  updateScore = (score) => {
+    const multi = this.scene.registry.get('multi')
+    const newScore = +this.scene.registry.get('score') + score * multi
 
-    this.data.set('score', `${newScore}`)
+    this.scene.registry.set('score', `${newScore}`)
     // TODO: extra lives every x points
-    // if (this.data.get('loops') % 25 === 0) {
+    // if (this.scene.registry.get('loops') % 25 === 0) {
     //   this.updateLives(1)
     // }
 
-    this.data.set('multi', this.getMulti())
-    this.multiText.setText(this.data.get('multi'))
-    this.scoreText.setText(this.data.get('score'))
+    this.scene.registry.set('multi', this._getMulti())
+    this.multiText.setText(this.scene.registry.get('multi'))
+    this.scoreText.setText(this.scene.registry.get('score'))
   }
 
-  updateLives(lives) {
-    this.data.set('lives', Math.min(10, this.data.get('lives') + lives))
-    this.livesText.setText(this.data.get('lives'))
+  updateLives = (lives) => {
+    this.scene.registry.set(
+      'lives',
+      Math.min(10, this.scene.registry.get('lives') + lives),
+    )
+    this.livesText.setText(this.scene.registry.get('lives'))
   }
 
-  updateTimer() {
+  renderTimer = () => {
     this.timerBar.clear()
     const percent =
-      this.timer / (TIME_DURATION - (this.data.get('multi') - 1) * 600)
+      this.timer /
+      (TIME_DURATION - (this.scene.registry.get('multi') - 1) * 600)
     this.timerBar.fillRect(
       0,
       Y_OFFSET - Math.round(Y_OFFSET * percent),
@@ -54,12 +63,45 @@ export default class {
     )
   }
 
-  tickTimer() {
+  tickTimer = () => {
     this.timer -= 100
-    this.updateTimer()
+    this.renderTimer()
   }
 
-  drawInterface() {
+  setNextTileGraphics = (nextTile, rotationIndex) => {
+    // TODO: refactor these
+    this._setTileGraphics(
+      this.nextTileGraphics,
+      2,
+      Y_OFFSET + 2,
+      nextTile[Math.min(rotationIndex, nextTile.length - 1)],
+    )
+  }
+
+  setHoldTileGraphics = (heldTile, rotationIndex) => {
+    // TODO: refactor these
+    this._setTileGraphics(
+      this.heldTileGraphics,
+      10,
+      Y_OFFSET + 2,
+      heldTile[Math.min(rotationIndex, heldTile.length - 1)],
+    )
+  }
+
+  _setTileGraphics = (graphics, x, y, frames) => {
+    graphics.clear()
+    frames.forEach((frame, index) => {
+      if (frame <= 1) return
+      const _x = x + (index % 3) * 2
+      const _y = y + Math.floor(index / 3) * 2
+      graphics.fillRect(_x, _y, 1, 1)
+    })
+  }
+
+  _getText = (x, y, string) =>
+    this.scene.add.bitmapText(x, y, 'pixel-dan', string, 5).setOrigin(1, 0)
+
+  _drawInterface = () => {
     this.uiGraphics = this.scene.add
       .graphics()
       .fillStyle(0xffffff, 0.25)
@@ -87,46 +129,8 @@ export default class {
     this.heldTileGraphics = this.scene.add.graphics().fillStyle(0xffffff, 1)
   }
 
-  setNextTileGraphics(nextTile, rotationIndex) {
-    this.setTileGraphics(
-      this.nextTileGraphics,
-      2,
-      Y_OFFSET + 2,
-      nextTile[Math.min(rotationIndex, nextTile.length - 1)],
-    )
-  }
-
-  setHoldTileGraphics(heldTile, rotationIndex) {
-    this.setTileGraphics(
-      this.heldTileGraphics,
-      10,
-      Y_OFFSET + 2,
-      heldTile[Math.min(rotationIndex, heldTile.length - 1)],
-    )
-  }
-
-  setTileGraphics(graphics, x, y, frames) {
-    graphics.clear()
-    frames.forEach((frame, index) => {
-      if (frame <= 1) return
-
-      graphics.fillRect(
-        x + (index % 3) * 2,
-        y + Math.floor(index / 3) * 2,
-        1,
-        1,
-      )
-    })
-  }
-
-  getText(x, y, string) {
-    return this.scene.add
-      .bitmapText(x, y, 'pixel-dan', string, 5)
-      .setOrigin(1, 0)
-  }
-
-  getMulti() {
-    const score = this.data.get('score')
+  _getMulti = () => {
+    const score = this.scene.registry.get('score')
     if (score < 1000) return 1
     if (score < 5000) return 2
     if (score < 10000) return 3
