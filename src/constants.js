@@ -67,7 +67,7 @@ export const MEDIUM_CORNER = [
   [-1, 2, -1, 3, 7, -1, -1, -1, -1],
 ]
 
-export const LARGE_CORNER = [
+export const BIG_CORNER = [
   [2, -1, -1, 2, -1, -1, 4, 3, 3],
   [6, 3, 3, 2, -1, -1, 2, -1, -1],
   [3, 3, 5, -1, -1, 2, -1, -1, 2],
@@ -88,16 +88,37 @@ export const RIGHT_BEND = [
   [6, 3, 3, 2, -1, -1, -1, -1, -1],
 ]
 
+export const SMALL_ARCH = [
+  [6, 3, 5, 2, -1, 2, -1, -1, -1],
+  [-1, 3, 5, -1, -1, 2, -1, 3, 7],
+  [-1, -1, -1, 2, -1, 2, 4, 3, 7],
+  [6, 3, -1, 2, -1, -1, 4, 3, -1],
+]
+
+export const BIG_ARCH = [
+  [6, 3, 5, 2, -1, 2, 2, -1, 2],
+  [3, 3, 5, -1, -1, 2, 3, 3, 7],
+  [2, -1, 2, 2, -1, 2, 4, 3, 7],
+  [6, 3, 3, 2, -1, -1, 4, 3, 3],
+]
+
 export const TYPES = [
   SMALL_LINE,
-  BIG_LINE,
   SMALL_CORNER,
+  BIG_LINE,
   MEDIUM_CORNER,
-  LARGE_CORNER,
+  BIG_CORNER,
   LEFT_BEND,
   RIGHT_BEND,
   SMALL_SNAKE_LEFT,
   SMALL_SNAKE_RIGHT,
   BIG_SNAKE_LEFT,
   BIG_SNAKE_RIGHT,
+  SMALL_ARCH,
+  BIG_ARCH,
 ]
+
+// LINES: SMALL_LINE, BIG_LINE
+// CORNERS: SMALL_CORNER, MEDIUM_CORNER, BIG_CORNER, LEFT_BEND, RIGHT_BEND
+// SNAKES: SMALL_SNAKE_LEFT, SMALL_SNAKE_RIGHT, BIG_SNAKE_LEFT, BIG_SNAKE_RIGHT
+// ARCH: SMALL_ARCH, BIG_ARCH
