@@ -1,6 +1,9 @@
+revamp scoring
+  - should be based on length of loop and number of corner tiles
+  - rewrite multiplier system
 better help
-prevent marker from being outside playing area
 sounds
 fancy effects on placing/clearing tiles
-clear tiles inside loop
-title graphic
+
+clear tiles inside loop?
+title graphic?

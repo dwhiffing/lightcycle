@@ -56,8 +56,8 @@ export default class extends Phaser.Scene {
     if (this.optionIndex < 0) this.optionIndex = 1
     if (this.optionIndex > 1) this.optionIndex = 0
     this.arrow
-      .fillRect(17, 34 + 9 * this.optionIndex, 2, 3)
-      .fillRect(19, 35 + 9 * this.optionIndex, 1, 1)
+      .fillRect(17, 35 + 8 * this.optionIndex, 2, 3)
+      .fillRect(19, 36 + 8 * this.optionIndex, 1, 1)
   }
 
   selectOption = () => {

@@ -43,7 +43,7 @@ export default class {
     } else if (direction === 2) {
       this.container.y += this.container.y > 40 ? 0 : 5
     } else if (direction === 1) {
-      this.container.x += this.container.x > 53 ? 0 : 5
+      this.container.x += this.container.x > 50 ? 0 : 5
     }
 
     this._render()
@@ -95,12 +95,12 @@ export default class {
   }
 
   _render = () => {
-    this.container.remove(this.container.list, true)
-
     this.frames = this._getMinoFrames().map((frame, i) => ({
       ...this._getCoords(i),
       frame,
     }))
+
+    this.container.remove(this.container.list, true)
 
     this.frames.forEach(({ frame }, index) => {
       if (frame === -1) return
@@ -115,6 +115,12 @@ export default class {
           .setTint(canPlace ? 0x44cc44 : 0xcc4444),
       )
     })
+
+    const { x: _x, y: _y, list } = this.container
+    if (!list.every(({ x }) => x + _x > -1)) this.moveRight()
+    if (!list.every(({ y }) => y + _y > -1)) this.moveDown()
+    if (!list.every(({ x }) => x + _x < 62)) this.moveLeft()
+    if (!list.every(({ y }) => y + _y < 54)) this.moveUp()
   }
 
   _getMinoFrames = (mino = this.mino) =>
