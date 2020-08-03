@@ -2,13 +2,12 @@ import Map from '../gameObjects/map'
 import UI from '../gameObjects/ui'
 
 // add wildcard tile
-// show blocked tiles as red
 // clear tiles inside loop
-
 // sounds
 // fancy effects on placing/clearing tiles
 // title graphic
-// add credit
+// add credits/help
+// prevent marker from being outside playing area
 
 export default class extends Phaser.Scene {
   constructor() {

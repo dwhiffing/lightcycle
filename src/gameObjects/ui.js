@@ -1,6 +1,7 @@
 import { LEVELS, SMALL_LINE } from '../constants'
 
 const TIME_DURATION = 10000
+const Y_OFFSET = 55
 
 export default class {
   constructor(scene) {
@@ -22,9 +23,9 @@ export default class {
     this.pickedTileCounter = 0
     this.marker = this.scene.add.container(7, 5)
 
-    this.livesText = this.getText(63, 53, this.data.get('lives'))
-    this.multiText = this.getText(57, 53, this.data.get('multi'))
-    this.scoreText = this.getText(46, 53, 0)
+    this.livesText = this.getText(63, Y_OFFSET + 2, this.data.get('lives'))
+    this.multiText = this.getText(57, Y_OFFSET + 2, this.data.get('multi'))
+    this.scoreText = this.getText(46, Y_OFFSET + 2, 0)
 
     this.getNewTile()
   }
@@ -129,7 +130,12 @@ export default class {
     this.timerBar.clear()
     const percent =
       this.timer / (TIME_DURATION - (this.data.get('multi') - 1) * 600)
-    this.timerBar.fillRect(1, 60, 62 * percent, 3)
+    this.timerBar.fillRect(
+      0,
+      Y_OFFSET - Math.round(Y_OFFSET * percent),
+      64,
+      Math.round(Y_OFFSET * percent),
+    )
   }
 
   tickTimer() {
@@ -168,25 +174,25 @@ export default class {
     this.uiGraphics = this.scene.add
       .graphics()
       .fillStyle(0xffffff, 0.25)
-      .fillRect(0, 51, 64, 13)
+      .fillRect(0, Y_OFFSET, 64, 13)
       .fillStyle(0x000000)
-      .fillRect(1, 52, 7, 7)
-      .fillRect(9, 52, 7, 7)
-      .fillRect(17, 52, 29, 7)
-      .fillRect(47, 52, 10, 7)
-      .fillRect(58, 52, 5, 7)
-      .fillRect(1, 60, 62, 3)
+      .fillRect(1, Y_OFFSET + 1, 7, 7)
+      .fillRect(9, Y_OFFSET + 1, 7, 7)
+      .fillRect(17, Y_OFFSET + 1, 29, 7)
+      .fillRect(47, Y_OFFSET + 1, 10, 7)
+      .fillRect(58, Y_OFFSET + 1, 5, 7)
+      .fillRect(1, Y_OFFSET + 9, 62, 3)
       .fillStyle(0xffffff)
-      .fillRect(49, 56, 1, 1)
-      .fillRect(48, 55, 1, 1)
-      .fillRect(48, 57, 1, 1)
-      .fillRect(50, 55, 1, 1)
-      .fillRect(50, 57, 1, 1)
+      .fillRect(49, Y_OFFSET + 5, 1, 1)
+      .fillRect(48, Y_OFFSET + 4, 1, 1)
+      .fillRect(48, Y_OFFSET + 6, 1, 1)
+      .fillRect(50, Y_OFFSET + 4, 1, 1)
+      .fillRect(50, Y_OFFSET + 6, 1, 1)
 
     this.timerBar = this.scene.add
       .graphics()
       .fillStyle(0xffffff, 1)
-      .fillRect(1, 60, 62, 3)
+      .setDepth(-1)
 
     this.nextTileGraphics = this.scene.add.graphics().fillStyle(0xffffff, 1)
     this.heldTileGraphics = this.scene.add.graphics().fillStyle(0xffffff, 1)
@@ -196,7 +202,7 @@ export default class {
     this.setTileGraphics(
       this.nextTileGraphics,
       2,
-      53,
+      Y_OFFSET + 2,
       this.upcomingTypes[0][
         Math.min(this.rotationIndex, this.upcomingTypes[0].length - 1)
       ],
@@ -207,7 +213,7 @@ export default class {
     this.setTileGraphics(
       this.heldTileGraphics,
       10,
-      53,
+      Y_OFFSET + 2,
       this.heldTile[Math.min(this.rotationIndex, this.heldTile.length - 1)],
     )
   }

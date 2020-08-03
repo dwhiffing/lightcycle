@@ -8,7 +8,7 @@ export default class {
   constructor(scene) {
     this.scene = scene
     const data = []
-    for (let y = 0; y < 10; y++) {
+    for (let y = 0; y < 11; y++) {
       data.push([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
     }
 
