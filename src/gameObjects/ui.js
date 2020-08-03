@@ -1,18 +1,15 @@
-import { LEVELS, SMALL_LINE } from '../constants'
-
-const TIME_DURATION = 10000
-const Y_OFFSET = 55
+import { TIME_DURATION, Y_OFFSET } from '../constants'
 
 export default class {
   constructor(scene) {
     this.scene = scene
     this.moveTimer = 0
-    this.moveMarker = this.moveMarker.bind(this)
     this.tickTimer = this.tickTimer.bind(this)
-    this.getMarkerTiles = this.getMarkerTiles.bind(this)
+    this.setNextTileGraphics = this.setNextTileGraphics.bind(this)
+    this.setHoldTileGraphics = this.setHoldTileGraphics.bind(this)
+    this.setTileGraphics = this.setTileGraphics.bind(this)
     this.data = this.scene.registry
     this.timer = TIME_DURATION
-    this.upcomingTypes = [SMALL_LINE]
 
     this.data.set('score', 0)
     this.data.set('lives', 3)
@@ -20,14 +17,9 @@ export default class {
 
     this.drawInterface()
 
-    this.pickedTileCounter = 0
-    this.marker = this.scene.add.container(7, 5)
-
     this.livesText = this.getText(63, Y_OFFSET + 2, this.data.get('lives'))
     this.multiText = this.getText(57, Y_OFFSET + 2, this.data.get('multi'))
     this.scoreText = this.getText(46, Y_OFFSET + 2, 0)
-
-    this.getNewTile()
   }
 
   updateScore(score) {
@@ -50,82 +42,6 @@ export default class {
     this.livesText.setText(this.data.get('lives'))
   }
 
-  moveMarker(direction) {
-    if (direction === 'up') {
-      this.marker.y -= this.marker.y < -2 ? 0 : 5
-    } else if (direction === 'left') {
-      this.marker.x -= this.marker.x < -2 ? 0 : 5
-    } else if (direction === 'down') {
-      this.marker.y += this.marker.y > 40 ? 0 : 5
-    } else if (direction === 'right') {
-      this.marker.x += this.marker.x > 53 ? 0 : 5
-    }
-
-    this.updateMarker()
-  }
-
-  getMarkerTiles() {
-    const { x, y } = this.marker
-    return this.marker.frames.map((frame, index) => {
-      const _x = (x - 2) / 5 + (index % 3)
-      const _y = y / 5 + window.Math.floor(index / 3)
-      if (frame === -1) return -1
-      return this.scene.map.map.getTileAt(_x, _y, frame)
-    })
-  }
-
-  rotateMarker(direction) {
-    this.rotationIndex += direction
-    if (this.rotationIndex < 0) {
-      this.rotationIndex = this.markerLayout.length - 1
-    }
-    if (this.rotationIndex > this.markerLayout.length - 1) {
-      this.rotationIndex = 0
-    }
-    this.updateMarker()
-  }
-
-  hold() {
-    if (!this.canHold) return
-
-    if (this.heldTile) {
-      let temp = this.markerLayout
-      this.markerLayout = this.heldTile
-      this.heldTile = temp
-      this.updateMarker()
-    } else {
-      this.heldTile = this.markerLayout
-      this.getNewTile()
-    }
-
-    this.canHold = false
-    this.setHoldTileGraphics()
-  }
-
-  getNewTile() {
-    this.canHold = true
-    this.markerLayout = this.upcomingTypes.shift()
-    if (this.upcomingTypes.length === 0) {
-      const types = Phaser.Math.RND.shuffle([
-        ...LEVELS[this.data.get('multi') - 1],
-      ])
-      this.upcomingTypes = types.map((types) =>
-        Phaser.Math.RND.weightedPick(types),
-      )
-    }
-    this.rotationIndex = Phaser.Math.RND.between(
-      0,
-      this.markerLayout.length - 1,
-    )
-
-    this.updateMarker()
-    this.setNextTileGraphic()
-
-    this.timer = TIME_DURATION - (this.data.get('multi') - 1) * 600
-    this.updateTimer()
-    this.pickedTileCounter++
-  }
-
   updateTimer() {
     this.timerBar.clear()
     const percent =
@@ -141,33 +57,6 @@ export default class {
   tickTimer() {
     this.timer -= 100
     this.updateTimer()
-  }
-
-  updateMarker() {
-    this.marker.remove(this.marker.list, true)
-    this.marker.frames = this.markerLayout[
-      Math.min(this.rotationIndex, this.markerLayout.length - 1)
-    ]
-    this.marker.frames.forEach((frame, index) => {
-      const x = 5 * (index % 3)
-      const y = 5 * window.Math.floor(index / 3)
-
-      if (frame > -1) {
-        const tile = this.scene.add
-          .sprite(x, y, 'tiles', frame)
-          .setOrigin(0, 0)
-          .setTint(0x44cc44)
-        tile.__index = index
-        this.marker.add(tile)
-      }
-    })
-
-    this.getMarkerTiles().forEach((tile, index) => {
-      if (typeof tile !== 'number') {
-        const frame = this.marker.list.find((tile) => tile.__index === index)
-        frame && frame.setTint(tile && tile.index > 1 ? 0xcc4444 : 0x44cc44)
-      }
-    })
   }
 
   drawInterface() {
@@ -198,23 +87,21 @@ export default class {
     this.heldTileGraphics = this.scene.add.graphics().fillStyle(0xffffff, 1)
   }
 
-  setNextTileGraphic() {
+  setNextTileGraphics(nextTile, rotationIndex) {
     this.setTileGraphics(
       this.nextTileGraphics,
       2,
       Y_OFFSET + 2,
-      this.upcomingTypes[0][
-        Math.min(this.rotationIndex, this.upcomingTypes[0].length - 1)
-      ],
+      nextTile[Math.min(rotationIndex, nextTile.length - 1)],
     )
   }
 
-  setHoldTileGraphics() {
+  setHoldTileGraphics(heldTile, rotationIndex) {
     this.setTileGraphics(
       this.heldTileGraphics,
       10,
       Y_OFFSET + 2,
-      this.heldTile[Math.min(this.rotationIndex, this.heldTile.length - 1)],
+      heldTile[Math.min(rotationIndex, heldTile.length - 1)],
     )
   }
 

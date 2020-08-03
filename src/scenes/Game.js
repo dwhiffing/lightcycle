@@ -1,5 +1,6 @@
 import Map from '../gameObjects/map'
 import UI from '../gameObjects/ui'
+import Marker from '../gameObjects/marker'
 
 // add wildcard tile
 // clear tiles inside loop
@@ -14,22 +15,24 @@ export default class extends Phaser.Scene {
     super({ key: 'Game' })
   }
 
-  init(opts) {
-    this.input.keyboard.removeAllKeys(true)
-    this.keys = this.input.keyboard.addKeys('W,A,S,D,Q,E,R,SPACE')
-    this.keys.W.on('down', () => this.move('up'))
-    this.keys.A.on('down', () => this.move('left'))
-    this.keys.S.on('down', () => this.move('down'))
-    this.keys.D.on('down', () => this.move('right'))
-    this.keys.Q.on('down', () => this.rotate(-1))
-    this.keys.E.on('down', () => this.rotate(1))
-    this.keys.R.on('down', () => this.hold())
-    this.keys.SPACE.on('down', this.placeTiles.bind(this))
-  }
+  init(opts) {}
 
   create() {
+    this.input.keyboard.removeAllKeys(true)
+    this.keys = this.input.keyboard.addKeys('W,A,S,D,Q,E,R,SPACE')
+
+    this.keys.W.on('down', () => this.marker.move('up'))
+    this.keys.A.on('down', () => this.marker.move('left'))
+    this.keys.S.on('down', () => this.marker.move('down'))
+    this.keys.D.on('down', () => this.marker.move('right'))
+    this.keys.Q.on('down', () => this.marker.rotate(-1))
+    this.keys.E.on('down', () => this.marker.rotate(1))
+    this.keys.R.on('down', () => this.marker.hold())
+    this.keys.SPACE.on('down', this.placeTiles.bind(this))
+
     this.map = new Map(this)
     this.ui = new UI(this)
+    this.marker = new Marker(this)
 
     this.time.addEvent({
       delay: 100,
@@ -43,29 +46,17 @@ export default class extends Phaser.Scene {
     if (this.ui.timer < 1) this.loseLife()
   }
 
-  move(direction) {
-    this.ui.moveMarker(direction)
-  }
-
-  rotate(direction) {
-    this.ui.rotateMarker(direction)
-  }
-
-  hold() {
-    this.ui.hold()
-  }
-
   // TODO: Refactor me
   placeTiles() {
-    const { x, y } = this.ui.marker
+    const { x, y } = this.marker.container
 
-    const canPlaceTile = this.ui
-      .getMarkerTiles()
+    const canPlaceTile = this.marker
+      .getTiles()
       .every((tile) => tile === -1 || (tile && tile.index < 2))
 
     if (!canPlaceTile) return
 
-    this.ui.marker.frames.forEach((frame, index) => {
+    this.marker.container.frames.forEach((frame, index) => {
       const _x = (x - 2) / 5 + (index % 3)
       const _y = y / 5 + window.Math.floor(index / 3)
       if (frame > -1) this.map.placeTile(_x, _y, frame)
@@ -76,12 +67,12 @@ export default class extends Phaser.Scene {
       this.map.clearTiles(loop)
       this.ui.updateScore(loop.length * 100)
     }
-    this.ui.getNewTile()
+    this.marker.getNewTile()
   }
 
   loseLife() {
     this.ui.updateLives(-1)
-    this.ui.getNewTile()
+    this.marker.getNewTile()
     if (this.registry.get('lives') < 0) {
       this.scene.start('Menu')
     }

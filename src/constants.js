@@ -1,6 +1,9 @@
 import { LEVEL1, LEVEL2, LEVEL3 } from './minos'
 export * from './minos'
 
+export const TIME_DURATION = 10000
+export const Y_OFFSET = 55
+
 export const TILE_CONNECTIONS = {
   2: { down: [2, 4, 7], up: [2, 5, 6] },
   3: { right: [3, 5, 7], left: [3, 4, 6] },
