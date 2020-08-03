@@ -34,7 +34,7 @@ export default class extends Phaser.Scene {
       this.nextOption()
 
       this.add
-        .bitmapText(32, 32, 'pixel-dan', `SCORE ${score}`, 5)
+        .bitmapText(32, 25, 'pixel-dan', `SCORE ${score}`, 5)
         .setOrigin(0.5)
     }
 

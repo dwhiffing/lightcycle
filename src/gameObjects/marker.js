@@ -1,8 +1,10 @@
-import { LEVELS, SMALL_LINE } from '../constants'
+import { SMALL_LINE } from '../constants'
+import { generateUpcomingMinos } from '../utils'
 
 export default class {
   constructor(scene) {
     this.scene = scene
+    this.data = scene.data
     this.upcomingMinos = [SMALL_LINE]
     this.container = this.scene.add.container(7, 5)
     this.getNextMino()
@@ -30,7 +32,7 @@ export default class {
     }
 
     this.canHold = false
-    this.scene.data.set('heldMino', this._getMinoFrames(this.heldMino))
+    this.data.set('heldMino', this._getMinoFrames(this.heldMino))
   }
 
   move = (direction) => {
@@ -64,21 +66,24 @@ export default class {
     this.rotation = Phaser.Math.RND.between(0, this.mino.length - 1)
 
     if (this.upcomingMinos.length === 0) {
-      this.upcomingMinos = this._generateUpcomingMinos()
+      this.upcomingMinos = generateUpcomingMinos(this.data.get('multi') - 1)
     }
 
     const nextMino = this.upcomingMinos[0]
-    this.scene.data.set('nextMino', this._getMinoFrames(nextMino))
+    this.data.set('nextMino', this._getMinoFrames(nextMino))
 
     this._render()
   }
 
-  placeMino = () => {
-    const canPlaceMino = this.frames.every(({ x, y, frame }) => {
-      const tile = this.scene.map.getTile(x, y)
-      return frame === -1 || (tile && tile.index < 2)
-    })
+  canPlaceTile = ({ x, y, frame }) => {
+    const tile = this.scene.map.getTile(x, y)
+    const isWildcard = frame === 8
+    const isVacant = frame === -1 || (tile && tile.index < 2)
+    return isWildcard ? !isVacant : isVacant
+  }
 
+  placeMino = () => {
+    const canPlaceMino = this.frames.every(this.canPlaceTile)
     if (!canPlaceMino) return false
 
     this.frames.forEach(({ x, y, frame }) => {
@@ -102,30 +107,18 @@ export default class {
 
       const x = 5 * (index % 3)
       const y = 5 * Math.floor(index / 3)
-      const tile = this._getTileFromIndex(index)
+      const canPlace = this.canPlaceTile({ ...this._getCoords(index), frame })
       this.container.add(
         this.scene.add
           .sprite(x, y, 'tiles', frame)
           .setOrigin(0, 0)
-          .setTint(tile && tile.index > 1 ? 0xcc4444 : 0x44cc44),
+          .setTint(canPlace ? 0x44cc44 : 0xcc4444),
       )
     })
   }
 
   _getMinoFrames = (mino = this.mino) =>
     mino[Math.min(this.rotation, mino.length - 1)]
-
-  _getTileFromIndex = (index) => {
-    const { x, y } = this._getCoords(index)
-    return this.scene.map.getTile(x, y)
-  }
-
-  _generateUpcomingMinos = () => {
-    const types = Phaser.Math.RND.shuffle([
-      ...LEVELS[this.scene.data.get('multi') - 1],
-    ])
-    return types.map((types) => Phaser.Math.RND.weightedPick(types))
-  }
 
   _getCoords = (index) => {
     const { x: _x, y: _y } = this.container

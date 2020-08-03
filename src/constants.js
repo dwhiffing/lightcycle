@@ -8,13 +8,19 @@ export const TIME_DURATION = 10000
 export const UI_Y_POS = 55
 export const DIRECTIONS = ['up', 'right', 'down', 'left']
 
+const UP = { 0: [2, 5, 6] }
+const RIGHT = { 1: [3, 5, 7] }
+const DOWN = { 2: [2, 4, 7] }
+const LEFT = { 3: [3, 4, 6] }
+
 export const TILE_CONNECTIONS = {
-  2: { 2: [2, 4, 7], 0: [2, 5, 6] },
-  3: { 1: [3, 5, 7], 3: [3, 4, 6] },
-  4: { 0: [2, 5, 6], 1: [3, 5, 7] },
-  5: { 2: [2, 4, 7], 3: [3, 4, 6] },
-  6: { 2: [2, 4, 7], 1: [3, 5, 7] },
-  7: { 0: [2, 5, 6], 3: [3, 4, 6] },
+  2: { ...DOWN, ...UP },
+  3: { ...RIGHT, ...LEFT },
+  4: { ...UP, ...RIGHT },
+  5: { ...DOWN, ...LEFT },
+  6: { ...DOWN, ...RIGHT },
+  7: { ...UP, ...LEFT },
+  8: { ...UP, ...RIGHT, ...DOWN, ...LEFT },
 }
 
 export const TILE_DIRECTIONS = {
@@ -24,6 +30,7 @@ export const TILE_DIRECTIONS = {
   5: { 0: 3, 1: 2 },
   6: { 3: 2, 0: 1 },
   7: { 2: 3, 1: 0 },
+  8: { 0: 0, 1: 1, 2: 2, 3: 3 },
 }
 
 export const DIRECTION_ADJACENCY = {

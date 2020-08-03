@@ -1,3 +1,5 @@
+export const WILDCARD = [[-1, -1, -1, -1, 8, -1, -1, -1, -1]]
+
 export const SMALL_LINE = [
   [-1, -1, -1, -1, 2, -1, -1, -1, -1],
   [-1, -1, -1, -1, 3, -1, -1, -1, -1],
@@ -84,6 +86,7 @@ export const LEVEL1 = [
   [SMALL_CORNER],
   [SMALL_LINE, SMALL_CORNER],
   [BIG_LINE, MEDIUM_CORNER],
+  [WILDCARD],
 ]
 export const LEVEL2 = [
   [SMALL_LINE],
@@ -92,6 +95,7 @@ export const LEVEL2 = [
   [SMALL_LINE, SMALL_CORNER],
   [BIG_LINE, MEDIUM_CORNER],
   [BIG_LINE, MEDIUM_CORNER, LEFT_BEND, RIGHT_BEND, BIG_CORNER],
+  [WILDCARD],
 ]
 export const LEVEL3 = [
   [SMALL_CORNER],
@@ -109,6 +113,7 @@ export const LEVEL3 = [
     BIG_ARCH,
   ],
   [SMALL_SNAKE_LEFT, SMALL_SNAKE_RIGHT, BIG_SNAKE_LEFT, BIG_SNAKE_RIGHT],
+  [WILDCARD],
 ]
 
 export const LEVELS = [

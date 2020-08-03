@@ -21,7 +21,7 @@ export default class {
   getTile = (x, y) => this.map.getTileAt(x, y)
 
   placeTile = (x, y, index) => {
-    if (this.map.getTileAt(x, y).index > 1) return null
+    if (index < 8 && this.map.getTileAt(x, y).index > 1) return null
 
     const tile = this.map.putTileAt(index, x, y)
     tile.tint = 0x999999
@@ -33,7 +33,10 @@ export default class {
 
     this.scene.time.addEvent({
       delay: 1000,
-      callback: () => tiles.forEach((t) => this.map.putTileAt(1, t.x, t.y)),
+      callback: () => {
+        tiles.forEach((t) => this.map.putTileAt(1, t.x, t.y))
+        this.scene.marker._render()
+      },
     })
   }
 
@@ -47,21 +50,37 @@ export default class {
   }
 
   getLoop() {
-    let tiles = this.map.layer.data.flat().filter(({ index }) => index > 1)
+    let allTiles = this.map.layer.data.flat().filter(({ index }) => index > 1)
+    let tiles = [...allTiles]
 
-    while (tiles.length > 1) {
+    while (tiles.length > 0) {
       let loop = []
       let current = tiles[0]
       this.loopDirection = null
 
+      // TODO: need to refactor
+      // clear normal loops
       while (current) {
         loop.push(current)
         tiles = tiles.filter((t) => t !== current)
-        current = this._getNextTileInLoop([...tiles, loop[0]], current)
 
-        if (current === loop[0]) {
-          return loop
+        current = this._getNextTileInLoop([...tiles, loop[0]], current)
+        if (current === loop[0]) return loop
+      }
+
+      // clear wildcard loops
+      if (loop.some((t) => t.index === 8)) {
+        this.loopDirection = null
+        let tiles = allTiles.filter((t) => !loop.find((_t) => t === _t))
+        current = this._getNextTileInLoop(tiles, loop[0])
+
+        while (current) {
+          loop.push(current)
+          tiles = tiles.filter((t) => t !== current)
+          current = this._getNextTileInLoop(tiles, current)
         }
+
+        return loop
       }
     }
   }
