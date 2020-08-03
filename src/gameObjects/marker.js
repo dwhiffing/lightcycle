@@ -3,9 +3,34 @@ import { LEVELS, SMALL_LINE, TIME_DURATION } from '../constants'
 export default class {
   constructor(scene) {
     this.scene = scene
-    this.upcomingTypes = [SMALL_LINE]
+    this.upcomingMinos = [SMALL_LINE]
     this.container = this.scene.add.container(7, 5)
-    this.getNewTile()
+    this.getNextMino()
+  }
+
+  moveUp = () => this.move('up')
+  moveLeft = () => this.move('left')
+  moveRight = () => this.move('right')
+  moveDown = () => this.move('down')
+
+  rotateLeft = () => this.rotate(-1)
+  rotateRight = () => this.rotate(1)
+
+  hold = () => {
+    if (!this.canHold) return
+
+    if (this.heldMino) {
+      let temp = this.mino
+      this.mino = this.heldMino
+      this.heldMino = temp
+      this._render()
+    } else {
+      this.heldMino = this.mino
+      this.getNextMino()
+    }
+
+    this.canHold = false
+    this.scene.ui.renderHeldMino(this._getMinoFrames(this.heldMino))
   }
 
   move = (direction) => {
@@ -21,113 +46,84 @@ export default class {
 
     this._render()
   }
-  moveUp = () => this.move('up')
-  moveLeft = () => this.move('left')
-  moveRight = () => this.move('right')
-  moveDown = () => this.move('down')
 
   rotate = (direction) => {
-    this.rotationIndex += direction
-    if (this.rotationIndex < 0) {
-      this.rotationIndex = this.containerLayout.length - 1
+    this.rotation += direction
+    if (this.rotation < 0) {
+      this.rotation = this.mino.length - 1
     }
-    if (this.rotationIndex > this.containerLayout.length - 1) {
-      this.rotationIndex = 0
+    if (this.rotation > this.mino.length - 1) {
+      this.rotation = 0
     }
     this._render()
   }
-  rotateLeft = () => this.rotate(-1)
-  rotateRight = () => this.rotate(1)
 
-  hold = () => {
-    if (!this.canHold) return
-
-    if (this.heldTile) {
-      let temp = this.containerLayout
-      this.containerLayout = this.heldTile
-      this.heldTile = temp
-      this._render()
-    } else {
-      this.heldTile = this.containerLayout
-      this.getNewTile()
-    }
-
-    this.canHold = false
-
-    // TODO: move elsewhere?
-    this.scene.ui.setHoldTileGraphics(this.heldTile, this.rotationIndex)
-  }
-
-  getNewTile = () => {
+  getNextMino = () => {
     this.canHold = true
-    this.containerLayout = this.upcomingTypes.shift()
-    if (this.upcomingTypes.length === 0) {
-      const types = Phaser.Math.RND.shuffle([
-        ...LEVELS[this.scene.registry.get('multi') - 1],
-      ])
-      this.upcomingTypes = types.map((types) =>
-        Phaser.Math.RND.weightedPick(types),
-      )
+    this.mino = this.upcomingMinos.shift()
+    this.rotation = Phaser.Math.RND.between(0, this.mino.length - 1)
+
+    if (this.upcomingMinos.length === 0) {
+      this.upcomingMinos = this._generateUpcomingMinos()
     }
-    this.rotationIndex = Phaser.Math.RND.between(
-      0,
-      this.containerLayout.length - 1,
-    )
 
     this._render()
-
-    // TODO: move elsewhere?
-    this.scene.ui.setNextTileGraphics(this.upcomingTypes[0], this.rotationIndex)
-    this.scene.ui.timer =
-      TIME_DURATION - (this.scene.registry.get('multi') - 1) * 600
-    this.scene.ui.renderTimer()
+    this.scene.ui.renderNextMino(this._getMinoFrames(this.upcomingMinos[0]))
   }
 
   canPlaceTiles = () =>
-    this._getTiles().every(
-      ({ x, y, frame }) =>
-        frame === -1 || this.scene.map.getTile(x, y).index < 2,
-    )
+    this.frames.every(({ x, y, frame }) => {
+      const tile = this.scene.map.getTile(x, y)
+      return frame === -1 || (tile && tile.index < 2)
+    })
 
-  placeTiles = () => {
-    this._getTiles().forEach(({ x, y, frame }) => {
+  placeTiles = () =>
+    this.frames.forEach(({ x, y, frame }) => {
       if (frame > -1) this.scene.map.placeTile(x, y, frame)
     })
-  }
 
-  _getTiles = () => {
-    const { x: _x, y: _y } = this.container
-    return this.layout.map((frame, index) => {
-      const x = (_x - 2) / 5 + (index % 3)
-      const y = _y / 5 + window.Math.floor(index / 3)
-      return { x, y, frame }
-    })
-  }
+  _getMinoFrames = (mino = this.mino) =>
+    mino[Math.min(this.rotation, mino.length - 1)]
 
   _render = () => {
     this.container.remove(this.container.list, true)
-    this.layout = this.containerLayout[
-      Math.min(this.rotationIndex, this.containerLayout.length - 1)
-    ]
-    this.layout.forEach((frame, index) => {
-      const x = 5 * (index % 3)
-      const y = 5 * window.Math.floor(index / 3)
 
-      if (frame > -1) {
-        const tile = this.scene.add
+    this.frames = this._getMinoFrames().map((frame, i) => ({
+      ...this._getCoords(i),
+      frame,
+    }))
+
+    this.frames.forEach(({ frame }, index) => {
+      if (frame === -1) return
+
+      const x = 5 * (index % 3)
+      const y = 5 * Math.floor(index / 3)
+      const tile = this._getTileFromIndex(index)
+      this.container.add(
+        this.scene.add
           .sprite(x, y, 'tiles', frame)
           .setOrigin(0, 0)
-          .setTint(0x44cc44)
-        tile.__index = index
-        this.container.add(tile)
-      }
+          .setTint(tile && tile.index > 1 ? 0xcc4444 : 0x44cc44),
+      )
     })
+  }
 
-    // TODO: fix tinting
-    this._getTiles().forEach(({ x, y }, index) => {
-      const tile = this.scene.map.getTile(x, y)
-      const sprite = this.container.list.find((tile) => tile.__index === index)
-      sprite && sprite.setTint(tile.index > 1 ? 0xcc4444 : 0x44cc44)
-    })
+  _generateUpcomingMinos = () => {
+    const types = Phaser.Math.RND.shuffle([
+      ...LEVELS[this.scene.registry.get('multi') - 1],
+    ])
+    return types.map((types) => Phaser.Math.RND.weightedPick(types))
+  }
+
+  _getTileFromIndex = (index) => {
+    const { x, y } = this._getCoords(index)
+    return this.scene.map.getTile(x, y)
+  }
+
+  _getCoords = (index) => {
+    const { x: _x, y: _y } = this.container
+    const x = (_x - 2) / 5 + (index % 3)
+    const y = _y / 5 + Math.floor(index / 3)
+    return { x, y }
   }
 }

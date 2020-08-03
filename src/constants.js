@@ -29,6 +29,17 @@ export const DIRECTION_ADJACENCY = {
   right: { x: 1, y: 0 },
 }
 
+export const SCORES = {
+  1000: 1,
+  5000: 2,
+  10000: 3,
+  20000: 4,
+  40000: 5,
+  80000: 6,
+  100000: 7,
+  200000: 8,
+}
+
 export const LEVELS = [
   LEVEL1,
   LEVEL2,

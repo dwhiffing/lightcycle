@@ -9,6 +9,7 @@ import Marker from '../gameObjects/marker'
 // title graphic
 // add credits/help
 // prevent marker from being outside playing area
+// add key repeat on hold
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -18,6 +19,10 @@ export default class extends Phaser.Scene {
   init() {}
 
   create() {
+    this.registry.set('score', 0)
+    this.registry.set('lives', 3)
+    this.registry.set('multi', 1)
+
     this.input.keyboard.removeAllKeys(true)
     this.keys = this.input.keyboard.addKeys('W,A,S,D,Q,E,R,SPACE')
 
@@ -38,7 +43,8 @@ export default class extends Phaser.Scene {
   }
 
   tick = () => {
-    this.ui.tickTimer()
+    this.ui.timer -= 100
+    this.ui.renderTimer()
     if (this.ui.timer < 1) this.loseLife()
   }
 
@@ -52,12 +58,14 @@ export default class extends Phaser.Scene {
       this.map.clearTiles(loop)
       this.ui.updateScore(loop.length * 100)
     }
-    this.marker.getNewTile()
+    this.marker.getNextMino()
+    this.ui.resetTimer()
   }
 
   loseLife = () => {
     this.ui.updateLives(-1)
-    this.marker.getNewTile()
+    this.marker.getNextMino()
+    this.ui.resetTimer()
     if (this.registry.get('lives') < 0) {
       this.scene.start('Menu')
     }

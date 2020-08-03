@@ -1,30 +1,20 @@
-import { TIME_DURATION, Y_OFFSET } from '../constants'
+import { TIME_DURATION, Y_OFFSET, SCORES } from '../constants'
 
 export default class {
   constructor(scene) {
     this.scene = scene
-    // TODO: Timer should be defined in game, ui should just render it?
     this.timer = TIME_DURATION
-
-    // TODO: Timer should be set in game?
-    this.scene.registry.set('score', 0)
-    this.scene.registry.set('lives', 3)
-    this.scene.registry.set('multi', 1)
 
     this._drawInterface()
 
+    const lives = this.scene.registry.get('lives')
+    const multi = this.scene.registry.get('multi')
+    const score = this.scene.registry.get('score')
+
     // TODO: make text game object
-    this.livesText = this._getText(
-      63,
-      Y_OFFSET + 2,
-      this.scene.registry.get('lives'),
-    )
-    this.multiText = this._getText(
-      57,
-      Y_OFFSET + 2,
-      this.scene.registry.get('multi'),
-    )
-    this.scoreText = this._getText(46, Y_OFFSET + 2, 0)
+    this.livesText = this._getText(63, Y_OFFSET + 2, lives)
+    this.multiText = this._getText(57, Y_OFFSET + 2, multi)
+    this.scoreText = this._getText(46, Y_OFFSET + 2, score)
   }
 
   updateScore = (score) => {
@@ -32,61 +22,48 @@ export default class {
     const newScore = +this.scene.registry.get('score') + score * multi
 
     this.scene.registry.set('score', `${newScore}`)
+    this.scene.registry.set('multi', this._getMulti())
+
     // TODO: extra lives every x points
     // if (this.scene.registry.get('loops') % 25 === 0) {
     //   this.updateLives(1)
     // }
 
-    this.scene.registry.set('multi', this._getMulti())
     this.multiText.setText(this.scene.registry.get('multi'))
     this.scoreText.setText(this.scene.registry.get('score'))
   }
 
-  updateLives = (lives) => {
-    this.scene.registry.set(
-      'lives',
-      Math.min(10, this.scene.registry.get('lives') + lives),
-    )
-    this.livesText.setText(this.scene.registry.get('lives'))
+  updateLives = (value) => {
+    const lives = this.scene.registry.get('lives')
+    this.scene.registry.set('lives', Math.min(10, lives + value))
+    this.livesText.setText(lives)
   }
 
   renderTimer = () => {
     this.timerBar.clear()
-    const percent =
-      this.timer /
-      (TIME_DURATION - (this.scene.registry.get('multi') - 1) * 600)
-    this.timerBar.fillRect(
-      0,
-      Y_OFFSET - Math.round(Y_OFFSET * percent),
-      64,
-      Math.round(Y_OFFSET * percent),
-    )
+    const percent = this.timer / this._getTimerMax()
+    const rounded = Math.round(Y_OFFSET * percent)
+    this.timerBar.fillRect(0, Y_OFFSET - rounded, 64, rounded)
   }
 
-  tickTimer = () => {
-    this.timer -= 100
+  resetTimer = () => {
+    this.timer = this._getTimerMax()
     this.renderTimer()
   }
 
-  setNextTileGraphics = (nextTile, rotationIndex) => {
-    // TODO: refactor these
-    this._setTileGraphics(
-      this.nextTileGraphics,
-      2,
-      Y_OFFSET + 2,
-      nextTile[Math.min(rotationIndex, nextTile.length - 1)],
-    )
+  renderNextMino = (nextTile) => {
+    this._setTileGraphics(this.nextTileGraphics, 2, Y_OFFSET + 2, nextTile)
   }
 
-  setHoldTileGraphics = (heldTile, rotationIndex) => {
-    // TODO: refactor these
-    this._setTileGraphics(
-      this.heldTileGraphics,
-      10,
-      Y_OFFSET + 2,
-      heldTile[Math.min(rotationIndex, heldTile.length - 1)],
-    )
+  renderHeldMino = (heldTile) => {
+    this._setTileGraphics(this.heldTileGraphics, 10, Y_OFFSET + 2, heldTile)
   }
+
+  _getTimerMax = () =>
+    TIME_DURATION - (this.scene.registry.get('multi') - 1) * 600
+
+  _getText = (x, y, string) =>
+    this.scene.add.bitmapText(x, y, 'pixel-dan', string, 5).setOrigin(1, 0)
 
   _setTileGraphics = (graphics, x, y, frames) => {
     graphics.clear()
@@ -98,8 +75,13 @@ export default class {
     })
   }
 
-  _getText = (x, y, string) =>
-    this.scene.add.bitmapText(x, y, 'pixel-dan', string, 5).setOrigin(1, 0)
+  _getMulti = () => {
+    const score = this.scene.registry.get('score')
+    for (let key in SCORES) {
+      if (score < key) return SCORES[key]
+    }
+    return 9
+  }
 
   _drawInterface = () => {
     this.uiGraphics = this.scene.add
@@ -127,18 +109,5 @@ export default class {
 
     this.nextTileGraphics = this.scene.add.graphics().fillStyle(0xffffff, 1)
     this.heldTileGraphics = this.scene.add.graphics().fillStyle(0xffffff, 1)
-  }
-
-  _getMulti = () => {
-    const score = this.scene.registry.get('score')
-    if (score < 1000) return 1
-    if (score < 5000) return 2
-    if (score < 10000) return 3
-    if (score < 20000) return 4
-    if (score < 40000) return 5
-    if (score < 80000) return 6
-    if (score < 100000) return 7
-    if (score < 200000) return 8
-    return 9
   }
 }
