@@ -1,4 +1,4 @@
-import { TYPES } from '../constants'
+import { LEVELS, SMALL_LINE } from '../constants'
 
 const TIME_DURATION = 10000
 
@@ -10,22 +10,24 @@ export default class {
     this.tickTimer = this.tickTimer.bind(this)
     this.data = this.scene.registry
     this.timer = TIME_DURATION
-    this.upcomingTypes = []
+    this.upcomingTypes = [SMALL_LINE]
 
     this.data.set('score', 0)
     this.data.set('lives', 3)
-    this.data.set('multi', 9)
+    this.data.set('multi', 1)
 
     this.drawInterface()
 
     this.pickedTileCounter = 0
     this.marker = this.scene.add.container(7, 5)
 
-    this.getNewTile()
-
     this.livesText = this.getText(63, 53, this.data.get('lives'))
     this.multiText = this.getText(57, 53, this.data.get('multi'))
     this.scoreText = this.getText(46, 53, 0)
+
+    this.updateScore(999999)
+
+    this.getNewTile()
   }
 
   updateScore(score) {
@@ -89,17 +91,16 @@ export default class {
   }
 
   getNewTile() {
-    if (!this.nextTile) {
-      this.nextTile = Phaser.Math.RND.weightedPick(TYPES)
-    }
-
-    // if (this.upcomingTypes.length === 0) {
-    //   this.upcomingTypes = Phaser.Math.RND.shuffle([...TYPES])
-    // }
-    // this.markerLayout = this.upcomingTypes.shift()
     this.canHold = true
-    this.markerLayout = this.nextTile
-    this.nextTile = Phaser.Math.RND.weightedPick(TYPES)
+    this.markerLayout = this.upcomingTypes.shift()
+    if (this.upcomingTypes.length === 0) {
+      const types = Phaser.Math.RND.shuffle([
+        ...LEVELS[this.data.get('multi') - 1],
+      ])
+      this.upcomingTypes = types.map((types) =>
+        Phaser.Math.RND.weightedPick(types),
+      )
+    }
     this.rotationIndex = Phaser.Math.RND.between(
       0,
       this.markerLayout.length - 1,
@@ -108,14 +109,15 @@ export default class {
     this.updateMarker()
     this.setNextTileGraphic()
 
-    this.timer = TIME_DURATION
+    this.timer = TIME_DURATION - (this.data.get('multi') - 1) * 600
     this.updateTimer()
     this.pickedTileCounter++
   }
 
   updateTimer() {
     this.timerBar.clear()
-    const percent = this.timer / TIME_DURATION
+    const percent =
+      this.timer / (TIME_DURATION - (this.data.get('multi') - 1) * 600)
     this.timerBar.fillRect(1, 60, 62 * percent, 3)
   }
 
@@ -177,7 +179,9 @@ export default class {
       this.nextTileGraphics,
       2,
       53,
-      this.nextTile[Math.min(this.rotationIndex, this.nextTile.length - 1)],
+      this.upcomingTypes[0][
+        Math.min(this.rotationIndex, this.upcomingTypes[0].length - 1)
+      ],
     )
   }
 
@@ -216,10 +220,10 @@ export default class {
     if (score < 5000) return 2
     if (score < 10000) return 3
     if (score < 20000) return 4
-    if (score < 50000) return 5
-    if (score < 100000) return 6
-    if (score < 200000) return 7
-    if (score < 500000) return 8
+    if (score < 40000) return 5
+    if (score < 80000) return 6
+    if (score < 100000) return 7
+    if (score < 200000) return 8
     return 9
   }
 }

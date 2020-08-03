@@ -1,11 +1,9 @@
 import Map from '../gameObjects/map'
 import UI from '../gameObjects/ui'
 
-// score multiplier (level), increases as loops are gained
-// higher level means faster timer
-// higher level means more complex pieces
 // add wildcard tile
-// show blocking tiles as red
+// show blocked tiles as red
+// clear tiles inside loop
 
 // sounds
 // fancy effects on placing/clearing tiles
