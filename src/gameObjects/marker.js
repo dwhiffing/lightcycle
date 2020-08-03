@@ -30,7 +30,7 @@ export default class {
     }
 
     this.canHold = false
-    this.scene.registry.set('heldMino', this._getMinoFrames(this.heldMino))
+    this.scene.data.set('heldMino', this._getMinoFrames(this.heldMino))
   }
 
   move = (direction) => {
@@ -68,21 +68,25 @@ export default class {
     }
 
     const nextMino = this.upcomingMinos[0]
-    this.scene.registry.set('nextMino', this._getMinoFrames(nextMino))
+    this.scene.data.set('nextMino', this._getMinoFrames(nextMino))
 
     this._render()
   }
 
-  canPlaceTiles = () =>
-    this.frames.every(({ x, y, frame }) => {
+  placeMino = () => {
+    const canPlaceMino = this.frames.every(({ x, y, frame }) => {
       const tile = this.scene.map.getTile(x, y)
       return frame === -1 || (tile && tile.index < 2)
     })
 
-  placeTiles = () =>
+    if (!canPlaceMino) return false
+
     this.frames.forEach(({ x, y, frame }) => {
       if (frame > -1) this.scene.map.placeTile(x, y, frame)
     })
+
+    return true
+  }
 
   _render = () => {
     this.container.remove(this.container.list, true)
@@ -117,7 +121,7 @@ export default class {
 
   _generateUpcomingMinos = () => {
     const types = Phaser.Math.RND.shuffle([
-      ...LEVELS[this.scene.registry.get('multi') - 1],
+      ...LEVELS[this.scene.data.get('multi') - 1],
     ])
     return types.map((types) => Phaser.Math.RND.weightedPick(types))
   }

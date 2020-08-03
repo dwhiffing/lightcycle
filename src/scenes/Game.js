@@ -1,16 +1,8 @@
 import Map from '../gameObjects/map'
 import UI from '../gameObjects/ui'
 import Marker from '../gameObjects/marker'
-import { TICK, SCORES, TIME_DURATION } from '../constants'
-
-// add wildcard tile
-// clear tiles inside loop
-// sounds
-// fancy effects on placing/clearing tiles
-// title graphic
-// add credits/help
-// prevent marker from being outside playing area
-// add key repeat on hold
+import { TICK, TIME_DURATION } from '../constants'
+import { getMultiFromScore } from '../utils'
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -20,11 +12,12 @@ export default class extends Phaser.Scene {
   init() {}
 
   create() {
-    this.registry.set('score', 0)
-    this.registry.set('lives', 3)
-    this.registry.set('multi', 1)
-    this.registry.set('timerMax', TIME_DURATION)
-    this.registry.set('timer', TIME_DURATION)
+    this.data.set('score', 0)
+    this.data.set('loops', 0)
+    this.data.set('lives', 3)
+    this.data.set('multi', 1)
+    this.data.set('timerMax', TIME_DURATION)
+    this.data.set('timer', TIME_DURATION)
 
     this.map = new Map(this)
     this.ui = new UI(this)
@@ -39,67 +32,54 @@ export default class extends Phaser.Scene {
     this.keys.Q.on('down', this.marker.rotateLeft)
     this.keys.E.on('down', this.marker.rotateRight)
     this.keys.R.on('down', this.marker.hold)
-    this.keys.SPACE.on('down', this.placeTiles)
+    this.keys.SPACE.on('down', this.placeMino)
 
     this.time.addEvent({ delay: TICK, repeat: -1, callback: this.tick })
   }
 
   tick = () => {
-    const timer = this.registry.get('timer')
-    this.registry.set('timer', timer - TICK)
+    const timer = this.data.get('timer')
+    this.data.set('timer', timer - TICK)
     if (timer < 1) this.timeOut()
-  }
-
-  placeTiles = () => {
-    if (!this.marker.canPlaceTiles()) return
-
-    this.marker.placeTiles()
-
-    const loop = this.map.getLoop()
-    if (loop) {
-      this.map.clearTiles(loop)
-      this.addScore(loop.length * 100)
-    }
-    this.marker.getNextMino()
-
-    this.registry.set('timer', this.registry.get('timerMax'))
   }
 
   timeOut = () => {
     this.updateLives(-1)
     this.marker.getNextMino()
-    this.registry.set('timer', this.registry.get('timerMax'))
-    if (this.registry.get('lives') < 0) {
+    this.data.set('timer', this.data.get('timerMax'))
+    if (this.data.get('lives') < 0) {
+      this.registry.set('score', this.data.get('score'))
       this.scene.start('Menu')
     }
   }
 
-  addScore = (score) => {
-    this.registry.set('multi', this._getMulti())
-    const newScore =
-      +this.registry.get('score') + score * this.registry.get('multi')
-    this.registry.set('score', newScore)
+  placeMino = () => {
+    if (!this.marker.placeMino()) return
 
-    this.registry.set(
-      'timerMax',
-      TIME_DURATION - (this.registry.get('multi') - 1) * 600,
-    )
+    const loop = this.map.clearLoop() || []
+    this.addScore(loop.length * 100)
+    this.data.set('timer', this.data.get('timerMax'))
+    this.marker.getNextMino()
+  }
 
-    // TODO: extra lives every x points
-    // if (this.registry.get('loops') % 25 === 0) {
-    //   this.updateLives(1)
-    // }
+  addScore = (value) => {
+    if (value === 0) return
+
+    const { loops, score, multi } = this.data.values
+    const newScore = Number(score) + value * multi
+    this.data.set('score', newScore)
+    this.data.set('multi', getMultiFromScore(newScore))
+
+    const newTimerMax = TIME_DURATION - (this.data.get('multi') - 1) * 600
+    this.data.set('timerMax', newTimerMax)
+
+    if (loops % 10 === 0) {
+      this.updateLives(1)
+    }
   }
 
   updateLives = (value) => {
-    this.registry.set('lives', Math.min(10, this.registry.get('lives') + value))
-  }
-
-  _getMulti = () => {
-    const score = this.registry.get('score')
-    for (let key in SCORES) {
-      if (score < key) return SCORES[key]
-    }
-    return 9
+    const { lives } = this.data.values
+    this.data.set('lives', Math.min(10, lives + value))
   }
 }

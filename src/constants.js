@@ -4,7 +4,7 @@ export * from './minos'
 export const MAP_SIZE_X = 12
 export const MAP_SIZE_Y = 11
 export const TICK = 20
-export const TIME_DURATION = 5000
+export const TIME_DURATION = 10000
 export const UI_Y_POS = 55
 export const DIRECTIONS = ['up', 'right', 'down', 'left']
 

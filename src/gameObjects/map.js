@@ -37,6 +37,15 @@ export default class {
     })
   }
 
+  clearLoop() {
+    const loop = this.getLoop()
+    if (loop) {
+      this.scene.data.values.loops++
+      this.clearTiles(loop)
+    }
+    return loop
+  }
+
   getLoop() {
     let tiles = this.map.layer.data.flat().filter(({ index }) => index > 1)
 

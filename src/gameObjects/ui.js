@@ -3,7 +3,7 @@ import { UI_Y_POS } from '../constants'
 export default class {
   constructor(scene) {
     this.scene = scene
-    this.data = scene.registry
+    this.data = scene.data
     this.data.events.on('changedata', this.update)
 
     this._drawInterface()
