@@ -25,7 +25,7 @@ export default class {
 
     this.livesText = this.getText(63, 53, this.data.get('lives'))
     this.multiText = this.getText(57, 53, this.data.get('multi'))
-    this.scoreText = this.getText(46, 53, `9234567`)
+    this.scoreText = this.getText(46, 53, 0)
   }
 
   updateScore(score) {
@@ -89,18 +89,24 @@ export default class {
   }
 
   getNewTile() {
+    if (!this.nextTile) {
+      this.nextTile = Phaser.Math.RND.weightedPick(TYPES)
+    }
+
     // if (this.upcomingTypes.length === 0) {
     //   this.upcomingTypes = Phaser.Math.RND.shuffle([...TYPES])
     // }
     // this.markerLayout = this.upcomingTypes.shift()
     this.canHold = true
-    this.markerLayout = Phaser.Math.RND.weightedPick(TYPES)
+    this.markerLayout = this.nextTile
+    this.nextTile = Phaser.Math.RND.weightedPick(TYPES)
     this.rotationIndex = Phaser.Math.RND.between(
       0,
       this.markerLayout.length - 1,
     )
 
     this.updateMarker()
+    this.setNextTileGraphic()
 
     this.timer = TIME_DURATION
     this.updateTimer()
@@ -162,37 +168,39 @@ export default class {
       .fillStyle(0xffffff, 1)
       .fillRect(1, 60, 62, 3)
 
-    this.nextTileGraphics = this.scene.add
-      .graphics()
-      .fillStyle(0xffffff, 1)
-      .fillRect(4, 57, 1, 1)
-      .fillRect(4, 55, 1, 1)
-      .fillRect(4, 53, 1, 1)
-
+    this.nextTileGraphics = this.scene.add.graphics().fillStyle(0xffffff, 1)
     this.heldTileGraphics = this.scene.add.graphics().fillStyle(0xffffff, 1)
   }
 
   setNextTileGraphic() {
-    this.nextTileGraphics.clear()
-    this.nextTile
-      .fillRect(12, 57, 1, 1)
-      .fillRect(12, 55, 1, 1)
-      .fillRect(12, 53, 1, 1)
+    this.setTileGraphics(
+      this.nextTileGraphics,
+      2,
+      53,
+      this.nextTile[Math.min(this.rotationIndex, this.nextTile.length - 1)],
+    )
   }
 
   setHoldTileGraphics() {
-    this.heldTileGraphics.clear()
-    this.heldTile[
-      Math.min(this.rotationIndex, this.heldTile.length - 1)
-    ].forEach((frame, index) => {
-      if (frame > 1) {
-        this.heldTileGraphics.fillRect(
-          10 + (index % 3) * 2,
-          53 + Math.floor(index / 3) * 2,
-          1,
-          1,
-        )
-      }
+    this.setTileGraphics(
+      this.heldTileGraphics,
+      10,
+      53,
+      this.heldTile[Math.min(this.rotationIndex, this.heldTile.length - 1)],
+    )
+  }
+
+  setTileGraphics(graphics, x, y, frames) {
+    graphics.clear()
+    frames.forEach((frame, index) => {
+      if (frame <= 1) return
+
+      graphics.fillRect(
+        x + (index % 3) * 2,
+        y + Math.floor(index / 3) * 2,
+        1,
+        1,
+      )
     })
   }
 

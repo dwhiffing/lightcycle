@@ -17,12 +17,8 @@ export default class extends Phaser.Scene {
     super({ key: 'Game' })
   }
 
-  init(opts) {}
-
-  create() {
-    this.map = new Map(this)
-    this.ui = new UI(this)
-
+  init(opts) {
+    this.input.keyboard.removeAllKeys(true)
     this.keys = this.input.keyboard.addKeys('W,A,S,D,Q,E,R,SPACE')
     this.keys.W.on('down', () => this.move('up'))
     this.keys.A.on('down', () => this.move('left'))
@@ -32,6 +28,11 @@ export default class extends Phaser.Scene {
     this.keys.E.on('down', () => this.rotate(1))
     this.keys.R.on('down', () => this.hold())
     this.keys.SPACE.on('down', this.placeTiles.bind(this))
+  }
+
+  create() {
+    this.map = new Map(this)
+    this.ui = new UI(this)
 
     this.time.addEvent({
       delay: 100,

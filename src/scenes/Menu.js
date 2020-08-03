@@ -3,11 +3,13 @@ export default class extends Phaser.Scene {
     super({ key: 'Menu' })
   }
 
-  init(opts) {}
-
-  create() {
+  init(opts) {
+    this.input.keyboard.removeAllKeys(true)
     this.keys = this.input.keyboard.addKeys('W,A,S,D,SPACE')
     this.keys.SPACE.on('down', this.startGame.bind(this))
+  }
+
+  create() {
     // this.keys.W.on('down', () => this.move('up'))
     // this.keys.A.on('down', () => this.move('left'))
     // this.keys.S.on('down', () => this.move('down'))
