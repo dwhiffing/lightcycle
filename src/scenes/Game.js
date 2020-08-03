@@ -71,14 +71,9 @@ export default class extends Phaser.Scene {
   }
 
   canPlaceTile() {
-    const { x, y, frames } = this.ui.marker
-    return frames.every((frame, index) => {
-      const _x = (x - 2) / 5 + (index % 3)
-      const _y = y / 5 + window.Math.floor(index / 3)
-      if (frame === -1) return true
-      const targetTile = this.map.map.getTileAt(_x, _y, frame)
-      return targetTile ? targetTile.index < 2 : false
-    })
+    return this.ui
+      .getMarkerTiles()
+      .every((tile) => (tile === -1 ? true : tile && tile.index < 2))
   }
 
   updateTimer() {

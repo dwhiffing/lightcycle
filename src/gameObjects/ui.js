@@ -8,6 +8,7 @@ export default class {
     this.moveTimer = 0
     this.moveMarker = this.moveMarker.bind(this)
     this.tickTimer = this.tickTimer.bind(this)
+    this.getMarkerTiles = this.getMarkerTiles.bind(this)
     this.data = this.scene.registry
     this.timer = TIME_DURATION
     this.upcomingTypes = [SMALL_LINE]
@@ -24,8 +25,6 @@ export default class {
     this.livesText = this.getText(63, 53, this.data.get('lives'))
     this.multiText = this.getText(57, 53, this.data.get('multi'))
     this.scoreText = this.getText(46, 53, 0)
-
-    this.updateScore(999999)
 
     this.getNewTile()
   }
@@ -60,6 +59,18 @@ export default class {
     } else if (direction === 'right') {
       this.marker.x += this.marker.x > 53 ? 0 : 5
     }
+
+    this.updateMarker()
+  }
+
+  getMarkerTiles() {
+    const { x, y } = this.marker
+    return this.marker.frames.map((frame, index) => {
+      const _x = (x - 2) / 5 + (index % 3)
+      const _y = y / 5 + window.Math.floor(index / 3)
+      if (frame === -1) return -1
+      return this.scene.map.map.getTileAt(_x, _y, frame)
+    })
   }
 
   rotateMarker(direction) {
@@ -136,12 +147,19 @@ export default class {
       const y = 5 * window.Math.floor(index / 3)
 
       if (frame > -1) {
-        this.marker.add(
-          this.scene.add
-            .sprite(x, y, 'tiles', frame)
-            .setOrigin(0, 0)
-            .setTint(0x44cc44),
-        )
+        const tile = this.scene.add
+          .sprite(x, y, 'tiles', frame)
+          .setOrigin(0, 0)
+          .setTint(0x44cc44)
+        tile.__index = index
+        this.marker.add(tile)
+      }
+    })
+
+    this.getMarkerTiles().forEach((tile, index) => {
+      if (typeof tile !== 'number') {
+        const frame = this.marker.list.find((tile) => tile.__index === index)
+        frame && frame.setTint(tile && tile.index > 1 ? 0xcc4444 : 0x44cc44)
       }
     })
   }
