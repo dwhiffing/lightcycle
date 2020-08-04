@@ -1,10 +1,19 @@
-test wild card to ensure it always clears whole line
+multiplier should be based on points earned this life instead of number of loops
+live should be gained every 10k points
+pause when tab not active
 better help
-better balance
-ensure sounds don't play at once on leave tab
-add mute
 add mobile controls
-add score system
+add mute
+test wild card to ensure it always clears whole line
+better balance
+explosion sprites need to match tile tint
 
+add color to ui?
+more dynamic background variety?
+menu shader hue shift over time?
 clear tiles inside loop?
 title graphic?
+change menu music?
+add game music?
+use dynamic backgrounds on marker and tiles?
+add outline sprite for marker?

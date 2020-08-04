@@ -1,16 +1,30 @@
 import { LEVEL1, LEVEL2, LEVEL3 } from './minos'
 export * from './minos'
 
+export const EASY_LOOP = false
+export const MULTI_COUNTER = EASY_LOOP
+  ? [-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  : [-1, 1, 2, 4, 7, 11, 16, 22, 29, 37]
 export const MAP_SIZE_X = 12
 export const MAP_SIZE_Y = 11
 export const TICK = 20
 export const TIMER_DURATION = 10000
 export const UI_Y_POS = 55
 export const DIRECTIONS = ['up', 'right', 'down', 'left']
-export const LINE_ANIM_DURATION = 17
-export const EXPLODE_ANIM_DELAY = LINE_ANIM_DURATION * 5
+
+// amount of time line takes to race around loop
+export const LINE_ANIM_DURATION = 800
+
+// amount of time between loop tile explosions
+export const EXPLODE_ANIM_DELAY = 100
+
+// amount of time tiles take to explode
 export const EXPLODE_ANIM_DURATION = 400
-export const LINE_ANIM_OFFSET = 500
+
+// lengths of loop line
+export const LINE_ANIM_OFFSET = 400
+
+// amount of time between lives
 export const TIME_OUT_DURATION = 1000
 
 export const COLORS = [

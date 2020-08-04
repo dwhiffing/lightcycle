@@ -6,7 +6,9 @@ import {
   TICK,
   TIMER_DURATION,
   EXPLODE_ANIM_DELAY,
+  MULTI_COUNTER,
   COLORS,
+  LINE_ANIM_DURATION,
 } from '../constants'
 
 export default class extends Phaser.Scene {
@@ -57,6 +59,16 @@ export default class extends Phaser.Scene {
 
     this.time.addEvent({ delay: TICK, repeat: -1, callback: this.tick })
     this.time.addEvent({ delay: 1000, callback: this.nextMino })
+
+    this.particles = this.add.particles('spark').setDepth(20)
+    this.emitter = this.particles
+      .createEmitter({
+        speed: { min: -30, max: 30 },
+        angle: { min: 0, max: 360 },
+        alpha: { start: 0.5, end: 0 },
+        lifespan: { max: 800, min: 300 },
+      })
+      .stop()
   }
 
   tick = () => {
@@ -87,6 +99,14 @@ export default class extends Phaser.Scene {
     this.updateColor()
     this.marker.clear()
     this.sound.play('timeout', { volume: 0.5 })
+
+    this.emitter.setPosition(
+      this.marker.container.x + 7,
+      this.marker.container.y + 7,
+    )
+    this.emitter.setTint(this.cursorColor.color)
+    this.emitter.explode(100)
+
     if (!this.marker.getIsWildcard()) {
       this.updateLives(-1)
     }
@@ -105,6 +125,7 @@ export default class extends Phaser.Scene {
 
     this.sound.play('click', { volume: 0.2 })
     this.data.set('minosPlaced', this.data.get('minosPlaced') + 1)
+    const multi = this.data.get('multi')
 
     const loop = this.map.clearLoop() || []
 
@@ -112,12 +133,15 @@ export default class extends Phaser.Scene {
       loop.length *
       (loop.filter((t) => [4, 5, 6, 7].includes(t.index)).length + 1)
 
-    loop.length > 0 && this.sound.play('loop')
-
+    loop.length > 0 && this.sound.play('loop', { rate: 0.7 + 0.05 * multi })
+    const lineAnimDelay = LINE_ANIM_DURATION - 70 * multi
+    const loopAnimDelay = loop.length * (EXPLODE_ANIM_DELAY - 5 * multi)
+    const minoDelay = 1000 - 100 * multi
     this.time.addEvent({
-      delay: loop.length * EXPLODE_ANIM_DELAY + 200,
+      delay: loop.length > 1 ? lineAnimDelay + loopAnimDelay : 0,
       callback: () => {
-        this.nextMino()
+        this.time.addEvent({ delay: minoDelay, callback: this.nextMino })
+
         this.addScore(score)
       },
     })
@@ -127,16 +151,17 @@ export default class extends Phaser.Scene {
     if (value === 0) return
 
     if (this.data.get('loops') % 10 === 0) this.updateLives(1)
-
-    const newScore = +this.data.get('score') + value * this.data.get('multi')
+    const increase = value * this.data.get('multi')
+    const newScore = +this.data.get('score') + increase
     this.data.set('score', newScore)
+    this.ui.setPointText(increase)
 
     if (
       this.data.get('multiCounter') >= MULTI_COUNTER[this.data.get('multi')] &&
       this.data.get('multi') < 9
     ) {
       this.time.addEvent({
-        delay: 500,
+        delay: 100,
         callback: () => {
           const multi = this.data.get('multi')
           this.sound.play(`multi${Math.min(6, multi)}`, {
@@ -150,7 +175,6 @@ export default class extends Phaser.Scene {
         },
       })
     }
-    this.ui.setPointText(newScore)
 
     const newTimerMax = TIMER_DURATION - (this.data.get('multi') - 1) * 600
     this.data.set('timerMax', newTimerMax)
@@ -164,31 +188,10 @@ export default class extends Phaser.Scene {
     this.baseColor = new Phaser.Display.Color().setTo(
       ...COLORS[Math.min(9, this.data.get('multi') - 1)],
     )
-    this.bgColor = this.baseColor.clone()
-    this.bgColor.brighten(20)
-    const hsv = Phaser.Display.Color.RGBToHSV(
-      this.baseColor.red,
-      this.baseColor.green,
-      this.baseColor.blue,
-    )
-    const hsv2 = Phaser.Display.Color.RGBToHSV(
-      this.baseColor.red,
-      this.baseColor.green,
-      this.baseColor.blue,
-    )
-    hsv.h += 0.3
-    const rgb = Phaser.Display.Color.HSVToRGB(hsv.h, hsv.s, hsv.v)
-
-    hsv2.h -= 0.3
-    const rgb2 = Phaser.Display.Color.HSVToRGB(hsv2.h, hsv2.s, hsv2.v)
-    this.cursorErrorColor = new Phaser.Display.Color(rgb.r, rgb.g, rgb.b)
-      .desaturate(10)
-      .darken(10)
-    this.cursorColor = new Phaser.Display.Color(rgb2.r, rgb2.g, rgb2.b)
+    this.bgColor = this.baseColor.clone().brighten(20)
+    this.cursorColor = this.baseColor.clone().brighten(50).saturate(40)
+    this.cursorErrorColor = this.cursorColor.clone().darken(50).desaturate(50)
     this.map && this.map.render()
     this.marker && this.marker._render()
   }
 }
-
-// const MULTI_COUNTER = [-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-const MULTI_COUNTER = [-1, 1, 2, 4, 7, 11, 16, 22, 29, 37]

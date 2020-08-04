@@ -114,15 +114,3 @@ export const LEVEL3 = [
   ],
   [SMALL_SNAKE_LEFT, SMALL_SNAKE_RIGHT, BIG_SNAKE_LEFT, BIG_SNAKE_RIGHT],
 ]
-
-export const LEVELS = [
-  LEVEL1,
-  LEVEL1,
-  LEVEL1,
-  LEVEL2,
-  LEVEL2,
-  LEVEL2,
-  LEVEL3,
-  LEVEL3,
-  LEVEL3,
-]

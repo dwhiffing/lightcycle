@@ -1,12 +1,12 @@
 import { generateUpcomingMinos } from '../utils'
+import { EASY_LOOP } from '../constants'
 import { WILDCARD, SMALL_CORNER, BIG_ARCH } from '../minos'
 
 export default class {
   constructor(scene) {
     this.scene = scene
     this.data = scene.data
-    this.upcomingMinos = [SMALL_CORNER]
-    // this.upcomingMinos = [BIG_ARCH]
+    this.upcomingMinos = EASY_LOOP ? [BIG_ARCH] : [SMALL_CORNER]
     this.container = this.scene.add.container(7, 5).setDepth(9)
     this.frames = []
   }
@@ -151,6 +151,10 @@ export default class {
           ),
       )
     })
+
+    this.container.add(
+      this.scene.add.sprite(5, 5, 'tiles', 0).setOrigin(0, 0).setAlpha(0.8),
+    )
 
     const { x: _x, y: _y, list } = this.container
     if (!list.every(({ x }) => x + _x > -1)) this.moveRight()

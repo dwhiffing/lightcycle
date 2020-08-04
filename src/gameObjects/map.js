@@ -5,15 +5,16 @@ import {
   MAP_SIZE_Y,
   MAP_SIZE_X,
   LINE_ANIM_DURATION,
-  EXPLODE_ANIM_DELAY,
   EXPLODE_ANIM_DURATION,
+  EXPLODE_ANIM_DELAY,
   LINE_ANIM_OFFSET,
 } from '../constants'
 
 export default class {
   constructor(scene) {
     this.scene = scene
-    this.activeIndex = -70
+    this.data = scene.data
+    this.activeIndex = 0
     const data = []
     for (let y = 0; y < MAP_SIZE_Y; y++) {
       data.push(new Array(MAP_SIZE_X).fill(1))
@@ -36,10 +37,18 @@ export default class {
     this.particles = this.scene.add.particles('spark').setDepth(20)
     this.emitter = this.particles
       .createEmitter({
-        speed: { min: -30, max: 30 },
+        speed: 10,
         angle: { min: 0, max: 360 },
         alpha: { start: 0.5, end: 0 },
-        lifespan: { max: 800, min: 300 },
+        lifespan: { max: 800, min: 200 },
+      })
+      .stop()
+    this.emitter2 = this.particles
+      .createEmitter({
+        speed: 20,
+        angle: { min: 0, max: 360 },
+        alpha: { start: 0.5, end: 0 },
+        lifespan: { max: 1200, min: 400 },
       })
       .stop()
   }
@@ -48,10 +57,7 @@ export default class {
 
   placeTile = (x, y, index) => {
     if (index < 8 && this.map.getTileAt(x, y).index > 1) return null
-
-    this.emitter.setPosition(x * 5 + 2, y * 5)
-    this.emitter.setTint(this.scene.bgColor.color)
-    this.emitter.explode(3)
+    this._setEmitters(x * 5 + 2, y * 5, 3)
 
     this.map.putTileAt(index, x, y)
     return true
@@ -67,26 +73,52 @@ export default class {
     this.scene.marker._render()
   }
 
+  getOffset = (value, index, amount) =>
+    Math.abs(((value + index) % amount) - amount / 2)
+
   render = () => {
     if (!this.map.layer) return
+    this.activeIndex += this.data.get('multi') / 3
 
-    this.activeIndex += this.scene.data.get('multi')
-    if (this.activeIndex >= 180) this.activeIndex = -70
+    this.map.layer.data.flat().forEach((tile, index, tiles) => {
+      const numTiles = tiles.length
+      const color = this.scene.bgColor.clone()
 
-    this.map.layer.data.flat().forEach((tile, index) => {
+      const amount = numTiles * 3
+      const offset = this.getOffset(this.activeIndex, index, amount)
+      const hueShift = (offset - amount / 2) / 2000
+      color._h = Phaser.Math.Clamp(hueShift + color._h, 0, 1)
+
       if (tile.index > 1) {
-        tile.tint = this.scene.bgColor.color
+        const offset = this.getOffset(this.activeIndex * 1.5, index, numTiles)
+        color.darken(Phaser.Math.Clamp(offset, 5, 35)).desaturate(10)
       } else {
-        const color = this.scene.bgColor.clone()
-        const darken = Phaser.Math.Clamp(
-          Math.abs(this.activeIndex - index),
-          20,
-          70,
-        )
-        color.darken(darken)
-        tile.tint = color.color
+        const offset = this.getOffset(this.activeIndex, index, numTiles * 1.5)
+        color.darken(Phaser.Math.Clamp(offset, 30, 70))
       }
+
+      tile.tint = color.color
     })
+  }
+
+  _setEmitters = (x, y, amount) => {
+    this.emitter.setPosition(x, y)
+    this.emitter2.setPosition(x, y)
+
+    const factor = 0.01 + 0.01 * this.data.get('multi')
+
+    const color1 = this.scene.bgColor.clone()
+    color1._h = Phaser.Math.Clamp(color1._h + factor, 0, 1)
+
+    color1.saturate(10)
+    this.emitter.setTint(color1.color)
+    this.emitter.explode(amount)
+
+    const color2 = this.scene.bgColor.clone()
+    color2._h = Phaser.Math.Clamp(color2._h - factor, 0, 1)
+    color2.saturate(10)
+    this.emitter2.setTint(color2.color)
+    this.emitter2.explode(amount)
   }
 
   // TODO: need to refactor
@@ -97,17 +129,19 @@ export default class {
       .sprite(tile.pixelX + 4, tile.pixelY + 2, 'tiles', tile.index)
       .setDepth(5)
       .setTint(this.scene.bgColor.color)
-
-    this._drawTileLine(tile, tiles[index + 1], index, sprite)
+    const lineDuration = LINE_ANIM_DURATION - 60 * this.data.get('multi')
+    const speed = lineDuration / (tiles.length * 5)
+    this._drawTileLine(tile, tiles[index + 1], index, sprite, speed)
 
     if (index === tiles.length - 1) {
-      this._drawTileLine(tile, tiles[0], index, sprite)
+      this._drawTileLine(tile, tiles[0], index, sprite, speed)
     }
 
-    const explodeDelay = LINE_ANIM_DURATION * 30 + index * EXPLODE_ANIM_DELAY
+    const explodeDelay =
+      lineDuration + index * (EXPLODE_ANIM_DELAY - 5 * this.data.get('multi'))
 
     this.scene.time.addEvent({
-      delay: LINE_ANIM_DURATION * 5 * tiles.length + LINE_ANIM_OFFSET,
+      delay: lineDuration + LINE_ANIM_OFFSET,
       callback: () => {
         this.lineGraphics.clear()
       },
@@ -124,31 +158,31 @@ export default class {
         sprite.destroy()
       },
       callback: () => {
-        this.emitter.setPosition(sprite.x, sprite.y)
-        const multi = this.scene.data.get('multi')
+        this._setEmitters(sprite.x, sprite.y, 20)
+        const multi = this.data.get('multi')
         this.scene.sound.play(`place${Math.min(7, multi)}`, {
           rate: Math.min(1.55, 0.35 + 0.02 * index + (multi - 1) * 0.15),
         })
-        this.emitter.explode(20)
       },
     })
   }
 
-  _drawTileLine = (tile, nextTile, index, sprite) => {
+  _drawTileLine = (tile, nextTile, index, sprite, speed) => {
     for (let i = 0; i < 5; i++) {
       let { x, y } = sprite
-      const delay = index * LINE_ANIM_DURATION * 5 + LINE_ANIM_DURATION * i
+      const delay = index * speed * 5 + speed * i
       if (nextTile && nextTile.x !== tile.x) {
         x = nextTile.x > tile.x ? x + i : x - i
       }
       if (nextTile && nextTile.y !== tile.y) {
         y = nextTile.y > tile.y ? y + i : y - i
       }
-
+      const color = this.scene.bgColor.clone()
+      color.brighten(20)
       this.scene.time.addEvent({
         delay: delay,
         callback: () =>
-          this.lineGraphics.fillStyle(0xffffff).fillRect(x, y, 1, 1),
+          this.lineGraphics.fillStyle(color.color).fillRect(x, y, 1, 1),
       })
 
       this.scene.time.addEvent({
@@ -162,8 +196,8 @@ export default class {
   clearLoop() {
     const loop = this.getLoop()
     if (loop) {
-      this.scene.data.values.loops++
-      this.scene.data.values.multiCounter++
+      this.data.values.loops++
+      this.data.values.multiCounter++
       this.clearTiles(loop)
     }
     return loop

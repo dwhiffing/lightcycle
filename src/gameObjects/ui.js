@@ -35,8 +35,7 @@ export default class {
     } = this.data.getAll()
 
     if (this.pointText.alpha > 0) {
-      this.pointText.y -= 0.05
-      this.pointText.alpha -= 0.01
+      this.pointText.alpha -= 0.025
     }
 
     this.multiText.setText(multi)
@@ -60,10 +59,12 @@ export default class {
   }
 
   setPointText = (score) => {
-    this.pointText.x = 32
-    this.pointText.y = 25
-    this.pointText.alpha = 1
+    this.pointText.setScale(2).setOrigin(0.5)
+    this.pointText.x = 40
+    this.pointText.y = 32
+    this.pointText.alpha = 0.5
     this.pointText.setText(score)
+    this.pointText.setTint(this.scene.bgColor.clone().brighten(20).color)
   }
 
   _getText = (x, y, string) =>
