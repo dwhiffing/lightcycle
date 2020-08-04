@@ -15,10 +15,12 @@ export default class {
     this.livesText = this._getText(63, UI_Y_POS + 2, lives)
     this.multiText = this._getText(57, UI_Y_POS + 2, multi)
     this.scoreText = this._getText(46, UI_Y_POS + 2, score)
+
+    // TODO: point text should update as tiles disappear from match
     this.pointText = this._getText(32, 32, `20`)
       .setOrigin(0.5)
       .setAlpha(0)
-      .setDepth(99)
+      .setDepth(10)
   }
 
   update = () => {
@@ -60,7 +62,10 @@ export default class {
   }
 
   _getText = (x, y, string) =>
-    this.scene.add.bitmapText(x, y, 'pixel-dan', string, 5).setOrigin(1, 0)
+    this.scene.add
+      .bitmapText(x, y, 'pixel-dan', string, 5)
+      .setOrigin(1, 0)
+      .setDepth(3)
 
   _renderMino = (graphics, x, y, frames) => {
     graphics.clear()
@@ -75,6 +80,7 @@ export default class {
   _drawInterface = () => {
     this.uiGraphics = this.scene.add
       .graphics()
+      .setDepth(1)
       // draw frame
       .fillStyle(0xffffff, 0.25)
       .fillRect(0, UI_Y_POS, 64, 13)
@@ -98,12 +104,15 @@ export default class {
       .fillRect(50, UI_Y_POS + 4, 1, 1)
       .fillRect(50, UI_Y_POS + 6, 1, 1)
 
-    this.timerBar = this.scene.add
+    this.timerBar = this.scene.add.graphics().fillStyle(0xffffff, 1).setDepth(2)
+
+    this.nextMinoGraphics = this.scene.add
       .graphics()
       .fillStyle(0xffffff, 1)
-      .setDepth(-1)
-
-    this.nextMinoGraphics = this.scene.add.graphics().fillStyle(0xffffff, 1)
-    this.heldMinoGraphics = this.scene.add.graphics().fillStyle(0xffffff, 1)
+      .setDepth(1)
+    this.heldMinoGraphics = this.scene.add
+      .graphics()
+      .fillStyle(0xffffff, 1)
+      .setDepth(1)
   }
 }

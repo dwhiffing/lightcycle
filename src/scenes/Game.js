@@ -51,7 +51,9 @@ export default class extends Phaser.Scene {
 
   tick = () => {
     const timer = this.data.get('timer')
-    this.data.set('timer', timer - TICK)
+    if (this.marker.mino) {
+      this.data.set('timer', timer - TICK)
+    }
     if (timer < 1) this.timeOut()
   }
 
@@ -64,7 +66,10 @@ export default class extends Phaser.Scene {
       this.updateLives(-1)
     }
 
-    this.marker.getNextMino()
+    this.time.addEvent({
+      delay: 1000,
+      callback: this.marker.getNextMino,
+    })
     this.cameras.main.shake(100)
 
     if (this.data.get('lives') < 0) {
@@ -77,13 +82,20 @@ export default class extends Phaser.Scene {
     if (!this.marker.placeMino()) return
 
     this.data.set('minosPlaced', this.data.get('minosPlaced') + 1)
-    this.data.set('timer', this.data.get('timerMax'))
 
     const loop = this.map.clearLoop() || []
+
     const score =
       loop.length *
       (loop.filter((t) => [4, 5, 6, 7].includes(t.index)).length + 1)
-    this.addScore(score)
+    this.time.addEvent({
+      delay: loop.length > 0 ? 1500 : 0,
+      callback: () => {
+        this.marker.getNextMino()
+        this.data.set('timer', this.data.get('timerMax'))
+        this.addScore(score)
+      },
+    })
   }
 
   addScore = (value) => {
@@ -100,6 +112,7 @@ export default class extends Phaser.Scene {
 
     const newTimerMax = TIME_DURATION - (this.data.get('multi') - 1) * 600
     this.data.set('timerMax', newTimerMax)
+    this.data.set('timer', this.data.get('timerMax'))
   }
 
   updateLives = (value) =>

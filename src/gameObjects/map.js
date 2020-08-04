@@ -15,7 +15,10 @@ export default class {
     }
 
     this.map = this.scene.make.tilemap({ data, tileWidth: 5, tileHeight: 5 })
-    this.map.createDynamicLayer(0, this.map.addTilesetImage('tiles'), 2, 0)
+    this.map
+      .createDynamicLayer(0, this.map.addTilesetImage('tiles'), 2, 0)
+      .setDepth(3)
+
   }
 
   getTile = (x, y) => this.map.getTileAt(x, y)

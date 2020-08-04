@@ -6,7 +6,8 @@ export default class {
     this.scene = scene
     this.data = scene.data
     this.upcomingMinos = [SMALL_CORNER]
-    this.container = this.scene.add.container(7, 5)
+    // this.upcomingMinos = [BIG_ARCH]
+    this.container = this.scene.add.container(7, 5).setDepth(9)
     this.getNextMino()
   }
 
@@ -82,7 +83,7 @@ export default class {
     this._render()
   }
 
-  canPlaceTile = ({ x, y, frame }) => {
+  canPlaceMino = ({ x, y, frame }) => {
     const tile = this.scene.map.getTile(x, y)
     const isWildcard = frame === 8
     const isVacant = frame === -1 || (tile && tile.index < 2)
@@ -90,14 +91,16 @@ export default class {
   }
 
   placeMino = () => {
-    const canPlaceMino = this.frames.every(this.canPlaceTile)
+    const canPlaceMino = this.frames.every(this.canPlaceMino)
     if (!canPlaceMino) return false
 
     this.frames.forEach(({ x, y, frame }) => {
       if (frame > -1) this.scene.map.placeTile(x, y, frame)
     })
 
-    this.getNextMino()
+    this.mino = null
+    this._render()
+
     return true
   }
 
@@ -116,7 +119,7 @@ export default class {
 
       const x = 5 * (index % 3)
       const y = 5 * Math.floor(index / 3)
-      const canPlace = this.canPlaceTile({ ...this._getCoords(index), frame })
+      const canPlace = this.canPlaceMino({ ...this._getCoords(index), frame })
       this.container.add(
         this.scene.add
           .sprite(x, y, 'tiles', frame)
@@ -133,7 +136,7 @@ export default class {
   }
 
   _getMinoFrames = (mino = this.mino) =>
-    mino[Math.min(this.rotation, mino.length - 1)]
+    mino ? mino[Math.min(this.rotation, mino.length - 1)] : []
 
   _getCoords = (index) => {
     const { x: _x, y: _y } = this.container
