@@ -149,8 +149,9 @@ export default class extends Phaser.Scene {
   addScore = (value) => {
     if (value === 0) return
 
-    // TODO: this should be 10k points
-    if (this.data.get('loops') % 10 === 0) this.updateLives(1)
+    if (this.data.get('score') > 0 && this.data.get('score') % 5000 === 0)
+      this.updateLives(1)
+
     const increase = value * this.data.get('multi')
     console.log(value, this.data.get('multi'))
     const newScore = +this.data.get('score') + increase
