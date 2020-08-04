@@ -12,12 +12,7 @@ export default class extends Phaser.Scene {
     this.load.on('progress', (value) => {
       progress.clear()
       progress.fillStyle(0xffffff, 1)
-      progress.fillRect(
-        0,
-        this.sys.game.config.height / 2,
-        this.sys.game.config.width * value,
-        60,
-      )
+      progress.fillRect(0, 0, 64 * value, 64)
     })
 
     this.load.audio('menuMusic', 'assets/audio/menu-music.mp3')
@@ -56,6 +51,8 @@ export default class extends Phaser.Scene {
     })
 
     this.load.image('spark', 'assets/images/spark.png')
+    this.load.image('metal', 'assets/images/alien-metal.jpg')
+    this.load.glsl('bundle', 'assets/shader.glsl.js')
 
     this.load.on('complete', () => {
       progress.destroy()
