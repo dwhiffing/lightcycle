@@ -1,7 +1,7 @@
 import Map from '../gameObjects/map'
 import UI from '../gameObjects/ui'
 import Marker from '../gameObjects/marker'
-import { TICK, TIME_DURATION } from '../constants'
+import { TICK, TIME_DURATION, EXPLODE_ANIM_DELAY } from '../constants'
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -89,7 +89,7 @@ export default class extends Phaser.Scene {
       loop.length *
       (loop.filter((t) => [4, 5, 6, 7].includes(t.index)).length + 1)
     this.time.addEvent({
-      delay: loop.length > 0 ? 1500 : 0,
+      delay: loop.length * EXPLODE_ANIM_DELAY,
       callback: () => {
         this.marker.getNextMino()
         this.data.set('timer', this.data.get('timerMax'))

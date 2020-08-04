@@ -1,9 +1,6 @@
-revamp scoring
-  - should be based on length of loop and number of corner tiles
-  - rewrite multiplier system
-better help
 sounds
-fancy effects on placing/clearing tiles
+test wild card to ensure it always clears whole line
+better help
 
 clear tiles inside loop?
 title graphic?

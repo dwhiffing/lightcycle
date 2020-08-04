@@ -35,6 +35,8 @@ export default class extends Phaser.Scene {
       frameHeight: 5,
     })
 
+    this.load.image('spark', 'assets/images/spark.png')
+
     this.load.on('complete', () => {
       progress.destroy()
       this.scene.start('Menu')
