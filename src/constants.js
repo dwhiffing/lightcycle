@@ -7,10 +7,10 @@ export const TICK = 20
 export const TIMER_DURATION = 10000
 export const UI_Y_POS = 55
 export const DIRECTIONS = ['up', 'right', 'down', 'left']
-export const LINE_ANIM_DURATION = 10
+export const LINE_ANIM_DURATION = 17
 export const EXPLODE_ANIM_DELAY = LINE_ANIM_DURATION * 5
-export const EXPLODE_ANIM_DURATION = 600
-export const LINE_ANIM_OFFSET = 200
+export const EXPLODE_ANIM_DURATION = 400
+export const LINE_ANIM_OFFSET = 500
 export const TIME_OUT_DURATION = 1000
 
 const UP = { 0: [2, 5, 6] }

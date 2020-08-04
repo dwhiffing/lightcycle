@@ -17,13 +17,15 @@ export default class extends Phaser.Scene {
     super({ key: 'Help' })
   }
 
-  init() {
+  init() {}
+
+  create() {
+    this.add.graphics().fillStyle(0x000000).fillRect(0, 0, 64, 64).setDepth(-1)
+
     this.input.keyboard.removeAllKeys(true)
     this.keys = this.input.keyboard.addKeys('SPACE')
     this.keys.SPACE.on('down', this.next)
-  }
 
-  create() {
     this.textIndex = 0
     this.mainText = this.add
       .bitmapText(32, 28, 'pixel-dan', TEXTS[0], 5)
@@ -37,7 +39,8 @@ export default class extends Phaser.Scene {
     if (this.textIndex < TEXTS.length) {
       this.mainText.setText(TEXTS[this.textIndex])
     } else {
-      this.scene.start('Menu')
+      this.registry.set('inHelp', false)
+      this.scene.stop()
     }
   }
 

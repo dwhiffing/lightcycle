@@ -20,9 +20,18 @@ export default class extends Phaser.Scene {
       )
     })
 
-    // this.load.audio('menuMusic', 'assets/audio/menu-music.mp3')
+    this.load.audio('menuMusic', 'assets/audio/menu-music.mp3')
     // this.load.audio('gameMusic', 'assets/audio/game-music.mp3')
-    // this.load.audio('coin', 'assets/audio/coin.mp3', { instances: 5 })
+    this.load.audio('move', 'assets/audio/help-next.mp3', { instances: 5 })
+    this.load.audio('click', 'assets/audio/click.mp3', { instances: 5 })
+    this.load.audio('error', 'assets/audio/error.mp3', { instances: 5 })
+    this.load.audio('start', 'assets/audio/start.mp3')
+    this.load.audio('loop', 'assets/audio/start4.mp3')
+    this.load.audio('hold', 'assets/audio/hold.mp3')
+    this.load.audio('timeout', 'assets/audio/timeout.mp3')
+    this.load.audio('place1', 'assets/audio/place1.mp3', { instances: 5 })
+
+    this.load.audio('multi1', 'assets/audio/multi1.mp3', { instances: 5 })
 
     this.load.bitmapFont(
       'pixel-dan',

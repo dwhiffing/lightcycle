@@ -8,7 +8,7 @@ export default class {
     this.upcomingMinos = [SMALL_CORNER]
     // this.upcomingMinos = [BIG_ARCH]
     this.container = this.scene.add.container(7, 5).setDepth(9)
-    this.getNextMino()
+    this.frames = []
   }
 
   moveUp = () => this.move(0)
@@ -25,8 +25,12 @@ export default class {
   }
 
   hold = () => {
-    if (!this.canHold) return
+    if (!this.canHold) {
+      this.scene.sound.play('error', { volume: 0.3 })
+      return
+    }
 
+    this.scene.sound.play('hold')
     if (this.heldMino) {
       let temp = this.mino
       this.mino = this.heldMino
@@ -52,10 +56,18 @@ export default class {
       this.container.x += this.container.x > 50 ? 0 : 5
     }
 
+    this.scene.sound.play('move', { volume: 0.25, rate: 1.5 })
+
     this._render()
   }
 
   rotate = (direction) => {
+    if (!this.mino) {
+      this.scene.sound.play('error', { volume: 0.3 })
+      return
+    }
+    this.scene.sound.play('move', { volume: 0.3, rate: 2 })
+
     this.rotation += direction
     if (this.rotation < 0) {
       this.rotation = this.mino.length - 1
@@ -97,7 +109,10 @@ export default class {
 
   placeMino = () => {
     const canPlaceMino = this.frames.every(this.canPlaceMino)
-    if (!canPlaceMino) return false
+    if (!canPlaceMino) {
+      this.scene.sound.play('error', { volume: 0.3 })
+      return false
+    }
 
     this.frames.forEach(({ x, y, frame }) => {
       if (frame > -1) this.scene.map.placeTile(x, y, frame)

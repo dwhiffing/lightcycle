@@ -16,6 +16,7 @@ export default class extends Phaser.Scene {
   init() {}
 
   create() {
+    this.cameras.main.fadeFrom(1000, 0, 0, 0, true)
     this.data.set('minosPlaced', 0)
     this.data.set('score', 0)
     this.data.set('multiCounter', 0)
@@ -52,32 +53,39 @@ export default class extends Phaser.Scene {
     this.keys.SPACE.on('down', this.placeMino)
 
     this.time.addEvent({ delay: TICK, repeat: -1, callback: this.tick })
+    this.time.addEvent({ delay: 1000, callback: this.nextMino })
   }
 
   tick = () => {
     const timer = this.data.get('timer')
     if (this.marker.mino) {
+      if (timer && timer <= 5000 && timer % 1000 === 0) {
+        this.sound.play('move', {
+          volume: (6000 - timer) / 5000,
+          rate: 0.6 - (6000 - timer) / 15000,
+        })
+      }
       this.data.set('timer', timer - TICK)
       if (timer < 1) this.timeOut()
     }
+  }
+
+  nextMino = () => {
+    this.data.set('timer', this.data.get('timerMax'))
+    this.marker.getNextMino()
+    this.sound.play('click', { volume: 0.2, rate: 2 })
   }
 
   timeOut = () => {
     this.data.set('multi', 1)
     this.data.set('multiCounter', 0)
     this.marker.clear()
-
+    this.sound.play('timeout', { volume: 0.5 })
     if (!this.marker.getIsWildcard()) {
       this.updateLives(-1)
     }
 
-    this.time.addEvent({
-      delay: TIME_OUT_DURATION,
-      callback: () => {
-        this.marker.getNextMino()
-        this.data.set('timer', this.data.get('timerMax'))
-      },
-    })
+    this.time.addEvent({ delay: TIME_OUT_DURATION, callback: this.nextMino })
     this.cameras.main.shake(100)
 
     if (this.data.get('lives') < 0) {
@@ -89,6 +97,7 @@ export default class extends Phaser.Scene {
   placeMino = () => {
     if (!this.marker.placeMino()) return
 
+    this.sound.play('click', { volume: 0.2 })
     this.data.set('minosPlaced', this.data.get('minosPlaced') + 1)
 
     const loop = this.map.clearLoop() || []
@@ -96,11 +105,13 @@ export default class extends Phaser.Scene {
     const score =
       loop.length *
       (loop.filter((t) => [4, 5, 6, 7].includes(t.index)).length + 1)
+
+    loop.length > 0 && this.sound.play('loop')
+
     this.time.addEvent({
-      delay: loop.length * EXPLODE_ANIM_DELAY,
+      delay: loop.length * EXPLODE_ANIM_DELAY + 200,
       callback: () => {
-        this.marker.getNextMino()
-        this.data.set('timer', this.data.get('timerMax'))
+        this.nextMino()
         this.addScore(score)
       },
     })
@@ -114,8 +125,19 @@ export default class extends Phaser.Scene {
     const newScore = +this.data.get('score') + value * this.data.get('multi')
     this.data.set('score', newScore)
 
-    if (this.data.get('multiCounter') >= MULTI_COUNTER[this.data.get('multi')])
-      this.data.set('multi', this.data.get('multi') + 1)
+    if (
+      this.data.get('multiCounter') >= MULTI_COUNTER[this.data.get('multi')]
+    ) {
+      this.time.addEvent({
+        delay: 500,
+        callback: () => {
+          this.sound.play('multi1')
+          // TODO: sound should pitch up based on multi
+          // TODO: make use of other multi sounds?
+          this.data.set('multi', this.data.get('multi') + 1)
+        },
+      })
+    }
     this.ui.setPointText(newScore)
 
     const newTimerMax = TIMER_DURATION - (this.data.get('multi') - 1) * 600

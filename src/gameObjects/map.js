@@ -70,7 +70,7 @@ export default class {
       this._drawTileLine(tile, tiles[0], index, sprite)
     }
 
-    const explodeDelay = LINE_ANIM_DURATION * 15 + index * EXPLODE_ANIM_DELAY
+    const explodeDelay = LINE_ANIM_DURATION * 30 + index * EXPLODE_ANIM_DELAY
 
     this.scene.time.addEvent({
       delay: LINE_ANIM_DURATION * 5 * tiles.length + LINE_ANIM_OFFSET,
@@ -91,6 +91,8 @@ export default class {
       },
       callback: () => {
         this.emitter.setPosition(sprite.x, sprite.y)
+        // TODO: use other place sounds
+        this.scene.sound.play('place1', { rate: 0.6 + 0.075 * index })
         this.emitter.explode(10)
       },
     })
