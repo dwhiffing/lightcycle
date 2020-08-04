@@ -7,8 +7,9 @@ export default class {
     this.scene = scene
     this.data = scene.data
     this.upcomingMinos = EASY_LOOP ? [BIG_ARCH] : [SMALL_CORNER]
-    this.container = this.scene.add.container(7, 5).setDepth(9)
     this.frames = []
+    this.container =
+      this.container || this.scene.add.container(7, 5).setDepth(9)
   }
 
   moveUp = () => this.move(0)
@@ -127,6 +128,10 @@ export default class {
   getIsWildcard = () => this._getMinoFrames().some((frame) => frame === 8)
 
   _render = () => {
+    this.container =
+      this.container || this.scene.add.container(7, 5).setDepth(9)
+    if (!this.container.active) return
+
     this.frames = this._getMinoFrames().map((frame, i) => ({
       ...this._getCoords(i),
       frame,

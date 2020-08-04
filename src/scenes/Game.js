@@ -6,7 +6,7 @@ import {
   TICK,
   TIMER_DURATION,
   EXPLODE_ANIM_DELAY,
-  MULTI_COUNTER,
+  SCORE_TO_MULTI,
   COLORS,
   LINE_ANIM_DURATION,
 } from '../constants'
@@ -22,6 +22,7 @@ export default class extends Phaser.Scene {
     this.cameras.main.fadeFrom(1000, 0, 0, 0, true)
     this.data.set('minosPlaced', 0)
     this.data.set('score', 0)
+    this.data.set('scoreThisLife', 0)
     this.data.set('multiCounter', 0)
     this.data.set('loops', 0)
     this.data.set('lives', 3)
@@ -107,9 +108,8 @@ export default class extends Phaser.Scene {
     this.emitter.setTint(this.cursorColor.color)
     this.emitter.explode(100)
 
-    if (!this.marker.getIsWildcard()) {
-      this.updateLives(-1)
-    }
+    this.updateLives(-1)
+    this.data.set('scoreThisLife', 0)
 
     this.time.addEvent({ delay: TIME_OUT_DURATION, callback: this.nextMino })
     this.cameras.main.shake(100)
@@ -129,14 +129,13 @@ export default class extends Phaser.Scene {
 
     const loop = this.map.clearLoop() || []
 
-    const score =
-      loop.length *
-      (loop.filter((t) => [4, 5, 6, 7].includes(t.index)).length + 1)
+    const numCorners = loop.filter((t) => [4, 5, 6, 7].includes(t.index))
+    const score = loop.length * (numCorners.length + 1)
 
     loop.length > 0 && this.sound.play('loop', { rate: 0.7 + 0.05 * multi })
     const lineAnimDelay = LINE_ANIM_DURATION - 70 * multi
     const loopAnimDelay = loop.length * (EXPLODE_ANIM_DELAY - 5 * multi)
-    const minoDelay = 1000 - 100 * multi
+    const minoDelay = 250 - 25 * multi
     this.time.addEvent({
       delay: loop.length > 1 ? lineAnimDelay + loopAnimDelay : 0,
       callback: () => {
@@ -150,14 +149,17 @@ export default class extends Phaser.Scene {
   addScore = (value) => {
     if (value === 0) return
 
+    // TODO: this should be 10k points
     if (this.data.get('loops') % 10 === 0) this.updateLives(1)
     const increase = value * this.data.get('multi')
+    console.log(value, this.data.get('multi'))
     const newScore = +this.data.get('score') + increase
     this.data.set('score', newScore)
+    this.data.set('scoreThisLife', this.data.get('scoreThisLife') + increase)
     this.ui.setPointText(increase)
-
     if (
-      this.data.get('multiCounter') >= MULTI_COUNTER[this.data.get('multi')] &&
+      this.data.get('scoreThisLife') >=
+        SCORE_TO_MULTI[this.data.get('multi')] &&
       this.data.get('multi') < 9
     ) {
       this.time.addEvent({
@@ -190,7 +192,9 @@ export default class extends Phaser.Scene {
     )
     this.bgColor = this.baseColor.clone().brighten(20)
     this.cursorColor = this.baseColor.clone().brighten(50).saturate(40)
-    this.cursorErrorColor = this.cursorColor.clone().darken(50).desaturate(50)
+    this.cursorErrorColor = this.cursorColor.clone().darken(30)
+    this.cursorErrorColor._h + 0.2
+    this.cursorErrorColor.desaturate(50)
     this.map && this.map.render()
     this.marker && this.marker._render()
   }
