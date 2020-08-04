@@ -38,7 +38,7 @@ export default class extends Phaser.Scene {
 
     this.input.keyboard.removeAllKeys(true)
     this.keys = this.input.keyboard.addKeys(
-      'W,A,S,D,Q,E,R,UP,DOWN,LEFT,RIGHT,Z,X,C,SPACE',
+      'W,A,S,D,Q,E,R,M,UP,DOWN,LEFT,RIGHT,Z,X,C,SPACE',
     )
     this.keys.W.on('down', this.marker.moveUp).setEmitOnRepeat(true)
     this.keys.A.on('down', this.marker.moveLeft).setEmitOnRepeat(true)
@@ -55,6 +55,7 @@ export default class extends Phaser.Scene {
     this.keys.Z.on('down', this.marker.rotateLeft)
     this.keys.X.on('down', this.marker.rotateRight)
     this.keys.C.on('down', this.marker.hold)
+    this.keys.M.on('down', this.mute)
 
     this.keys.SPACE.on('down', this.placeMino)
 
@@ -70,6 +71,8 @@ export default class extends Phaser.Scene {
         lifespan: { max: 800, min: 300 },
       })
       .stop()
+
+    this._visibilityChange()
   }
 
   tick = () => {
@@ -198,5 +201,37 @@ export default class extends Phaser.Scene {
     this.cursorErrorColor.desaturate(50)
     this.map && this.map.render()
     this.marker && this.marker._render()
+  }
+
+  mute = () => {
+    this.game.sound.mute = this.game.sound.mute ? false : true
+  }
+
+  _visibilityChange = () => {
+    var hidden, visibilityChange
+    if (typeof document.hidden !== 'undefined') {
+      hidden = 'hidden'
+      visibilityChange = 'visibilitychange'
+    } else if (typeof document.msHidden !== 'undefined') {
+      hidden = 'msHidden'
+      visibilityChange = 'msvisibilitychange'
+    } else if (typeof document.webkitHidden !== 'undefined') {
+      hidden = 'webkitHidden'
+      visibilityChange = 'webkitvisibilitychange'
+    }
+
+    document.addEventListener(
+      visibilityChange,
+      () => {
+        if (document[hidden]) {
+          console.log('pause')
+          this.scene.pause()
+        } else {
+          console.log('resume')
+          this.scene.resume()
+        }
+      },
+      false,
+    )
   }
 }

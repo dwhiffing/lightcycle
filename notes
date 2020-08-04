@@ -1,16 +1,12 @@
-pause when tab not active
 add mobile controls
-add mute
-test wild card to ensure it always clears whole line
 better balance
-explosion sprites need to match tile tint
+explosion sprites need to match background tile tint
+blocked tiles should have complementary color
+test wild card to ensure it always clears whole line
 
 add color to ui?
-more dynamic background variety?
 menu shader hue shift over time?
-clear tiles inside loop?
-title graphic?
+use dynamic backgrounds on marker and tiles?
 change menu music?
 add game music?
-use dynamic backgrounds on marker and tiles?
-add outline sprite for marker?
+more dynamic background variety?

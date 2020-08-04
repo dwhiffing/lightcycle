@@ -89,7 +89,7 @@ export default class {
     }
 
     const minosPlaced = this.data.get('minosPlaced')
-    if (minosPlaced > 50 && minosPlaced % 25 === 0) {
+    if (minosPlaced > 0 && minosPlaced % 25 === 0) {
       this.upcomingMinos[
         Phaser.Math.RND.between(0, this.upcomingMinos.length - 1)
       ] = WILDCARD

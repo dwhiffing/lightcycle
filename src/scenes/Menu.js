@@ -3,7 +3,7 @@ export default class extends Phaser.Scene {
     super({ key: 'Menu' })
   }
 
-  init(opts) {}
+  init() {}
 
   create() {
     this.add.shader('Tunnel', 32, 32, 64, 64, ['metal'])
@@ -16,9 +16,10 @@ export default class extends Phaser.Scene {
     this.started = false
 
     this.input.keyboard.removeAllKeys(true)
-    this.keys = this.input.keyboard.addKeys('W,A,S,D,SPACE,UP,DOWN')
+    this.keys = this.input.keyboard.addKeys('W,A,S,D,M,SPACE,UP,DOWN')
     this.keys.SPACE.on('down', this.selectOption)
     this.keys.W.on('down', this.lastOption)
+    this.keys.M.on('down', this.mute)
     this.keys.S.on('down', this.nextOption)
     this.keys.UP.on('down', this.lastOption)
     this.keys.DOWN.on('down', this.nextOption)
@@ -103,6 +104,10 @@ export default class extends Phaser.Scene {
       this.scene.launch('Help')
       this.registry.set('inHelp', true)
     }
+  }
+
+  mute = () => {
+    this.game.sound.mute = this.game.sound.mute ? false : true
   }
 
   update() {}
