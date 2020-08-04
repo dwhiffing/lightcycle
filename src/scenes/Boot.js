@@ -51,6 +51,8 @@ export default class extends Phaser.Scene {
     })
 
     this.load.image('spark', 'assets/images/spark.png')
+    this.load.image('title', 'assets/images/title.png')
+    this.load.image('hud', 'assets/images/hud.png')
     this.load.image('metal', 'assets/images/alien-metal.jpg')
     this.load.glsl('bundle', 'assets/shader.glsl.js')
 

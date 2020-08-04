@@ -8,7 +8,7 @@ export default class extends Phaser.Scene {
   create() {
     this.add.shader('Tunnel', 32, 32, 64, 64, ['metal'])
     const graphics = this.add.graphics()
-    graphics.fillStyle(0x001144, 0.5)
+    graphics.fillStyle(0x001122, 0.8)
     graphics.fillRect(0, 0, 64, 64)
 
     this.musicObject = this.sound.add('menuMusic')
@@ -26,10 +26,10 @@ export default class extends Phaser.Scene {
     this.optionIndex = 0
     // this.optionIndex = 1
 
-    this.add.bitmapText(32, 10, 'pixel-dan', 'LOOPZ', 5).setOrigin(0.5)
+    this.add.image(32, 16, 'title').setOrigin(0.5)
 
-    this.add.bitmapText(32, 30, 'pixel-dan', 'START', 5).setOrigin(0.5)
-    this.add.bitmapText(32, 38, 'pixel-dan', 'HELP', 5).setOrigin(0.5)
+    this.add.bitmapText(32, 38, 'pixel-dan', 'START', 5).setOrigin(0.5)
+    this.add.bitmapText(32, 46, 'pixel-dan', 'HELP', 5).setOrigin(0.5)
 
     this.arrow = this.add.graphics()
     this.arrow.fillStyle(0xffffff)
@@ -78,8 +78,8 @@ export default class extends Phaser.Scene {
     if (this.optionIndex > 1) this.optionIndex = 0
     this.arrow
       .fillStyle(0xffffff)
-      .fillRect(17, 28 + 8 * this.optionIndex, 2, 3)
-      .fillRect(19, 29 + 8 * this.optionIndex, 1, 1)
+      .fillRect(17, 35 + 8 * this.optionIndex, 2, 3)
+      .fillRect(19, 36 + 8 * this.optionIndex, 1, 1)
   }
 
   selectOption = () => {
