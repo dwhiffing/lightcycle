@@ -44,6 +44,7 @@ export default class {
     const loop = this.getLoop()
     if (loop) {
       this.scene.data.values.loops++
+      this.scene.data.values.multiCounter++
       this.clearTiles(loop)
     }
     return loop

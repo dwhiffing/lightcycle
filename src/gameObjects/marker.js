@@ -1,11 +1,11 @@
-import { SMALL_LINE } from '../constants'
 import { generateUpcomingMinos } from '../utils'
+import { WILDCARD, SMALL_CORNER, BIG_ARCH } from '../minos'
 
 export default class {
   constructor(scene) {
     this.scene = scene
     this.data = scene.data
-    this.upcomingMinos = [SMALL_LINE]
+    this.upcomingMinos = [SMALL_CORNER]
     this.container = this.scene.add.container(7, 5)
     this.getNextMino()
   }
@@ -69,6 +69,13 @@ export default class {
       this.upcomingMinos = generateUpcomingMinos(this.data.get('multi') - 1)
     }
 
+    const minosPlaced = this.data.get('minosPlaced')
+    if (minosPlaced > 50 && minosPlaced % 25 === 0) {
+      this.upcomingMinos[
+        Phaser.Math.RND.between(0, this.upcomingMinos.length - 1)
+      ] = WILDCARD
+    }
+
     const nextMino = this.upcomingMinos[0]
     this.data.set('nextMino', this._getMinoFrames(nextMino))
 
@@ -93,6 +100,8 @@ export default class {
     this.getNextMino()
     return true
   }
+
+  getIsWildcard = () => this._getMinoFrames().some((frame) => frame === 8)
 
   _render = () => {
     this.frames = this._getMinoFrames().map((frame, i) => ({

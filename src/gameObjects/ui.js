@@ -15,6 +15,10 @@ export default class {
     this.livesText = this._getText(63, UI_Y_POS + 2, lives)
     this.multiText = this._getText(57, UI_Y_POS + 2, multi)
     this.scoreText = this._getText(46, UI_Y_POS + 2, score)
+    this.pointText = this._getText(32, 32, `20`)
+      .setOrigin(0.5)
+      .setAlpha(0)
+      .setDepth(99)
   }
 
   update = () => {
@@ -27,6 +31,11 @@ export default class {
       nextMino,
       heldMino,
     } = this.data.getAll()
+
+    if (this.pointText.alpha > 0) {
+      this.pointText.y -= 0.05
+      this.pointText.alpha -= 0.01
+    }
 
     this.multiText.setText(multi)
     this.scoreText.setText(score)
@@ -41,6 +50,13 @@ export default class {
       this._renderMino(this.nextMinoGraphics, 2, UI_Y_POS + 2, nextMino)
     heldMino &&
       this._renderMino(this.heldMinoGraphics, 10, UI_Y_POS + 2, heldMino)
+  }
+
+  setPointText = (score) => {
+    this.pointText.x = 32
+    this.pointText.y = 25
+    this.pointText.alpha = 1
+    this.pointText.setText(score)
   }
 
   _getText = (x, y, string) =>

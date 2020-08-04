@@ -2,7 +2,6 @@ import Map from '../gameObjects/map'
 import UI from '../gameObjects/ui'
 import Marker from '../gameObjects/marker'
 import { TICK, TIME_DURATION } from '../constants'
-import { getMultiFromScore } from '../utils'
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -12,7 +11,9 @@ export default class extends Phaser.Scene {
   init() {}
 
   create() {
+    this.data.set('minosPlaced', 0)
     this.data.set('score', 0)
+    this.data.set('multiCounter', 0)
     this.data.set('loops', 0)
     this.data.set('lives', 3)
     this.data.set('multi', 1)
@@ -55,9 +56,17 @@ export default class extends Phaser.Scene {
   }
 
   timeOut = () => {
-    this.updateLives(-1)
-    this.marker.getNextMino()
+    this.data.set('multi', 1)
+    this.data.set('multiCounter', 0)
     this.data.set('timer', this.data.get('timerMax'))
+
+    if (!this.marker.getIsWildcard()) {
+      this.updateLives(-1)
+    }
+
+    this.marker.getNextMino()
+    this.cameras.main.shake(100)
+
     if (this.data.get('lives') < 0) {
       this.registry.set('score', this.data.get('score'))
       this.scene.start('Menu')
@@ -67,9 +76,14 @@ export default class extends Phaser.Scene {
   placeMino = () => {
     if (!this.marker.placeMino()) return
 
-    const loop = this.map.clearLoop() || []
-    this.addScore(loop.length * 100)
+    this.data.set('minosPlaced', this.data.get('minosPlaced') + 1)
     this.data.set('timer', this.data.get('timerMax'))
+
+    const loop = this.map.clearLoop() || []
+    const score =
+      loop.length *
+      (loop.filter((t) => [4, 5, 6, 7].includes(t.index)).length + 1)
+    this.addScore(score)
   }
 
   addScore = (value) => {
@@ -79,7 +93,10 @@ export default class extends Phaser.Scene {
 
     const newScore = +this.data.get('score') + value * this.data.get('multi')
     this.data.set('score', newScore)
-    this.data.set('multi', getMultiFromScore(newScore))
+
+    if (this.data.get('multiCounter') >= MULTI_COUNTER[this.data.get('multi')])
+      this.data.set('multi', this.data.get('multi') + 1)
+    this.ui.setPointText(newScore)
 
     const newTimerMax = TIME_DURATION - (this.data.get('multi') - 1) * 600
     this.data.set('timerMax', newTimerMax)
@@ -88,3 +105,5 @@ export default class extends Phaser.Scene {
   updateLives = (value) =>
     this.data.set('lives', Math.min(10, this.data.get('lives') + value))
 }
+
+const MULTI_COUNTER = [-1, 1, 2, 4, 7, 11, 16, 22, 29, 37]

@@ -1,6 +1,6 @@
-import { SCORES, WILDCARD, LEVELS } from './constants'
+import { SCORES, LEVELS } from './constants'
 
-export const getMultiFromScore = (score) => {
+export const getLevelFromScore = (score) => {
   for (let key in SCORES) {
     if (score < key) return SCORES[key]
   }
