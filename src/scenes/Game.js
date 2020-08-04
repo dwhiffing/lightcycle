@@ -6,6 +6,7 @@ import {
   TICK,
   TIMER_DURATION,
   EXPLODE_ANIM_DELAY,
+  COLORS,
 } from '../constants'
 
 export default class extends Phaser.Scene {
@@ -25,6 +26,8 @@ export default class extends Phaser.Scene {
     this.data.set('multi', 1)
     this.data.set('timerMax', TIMER_DURATION)
     this.data.set('timer', TIMER_DURATION)
+
+    this.updateColor()
 
     this.map = new Map(this)
     this.ui = new UI(this)
@@ -79,6 +82,9 @@ export default class extends Phaser.Scene {
   timeOut = () => {
     this.data.set('multi', 1)
     this.data.set('multiCounter', 0)
+    const newTimerMax = TIMER_DURATION - (this.data.get('multi') - 1) * 600
+    this.data.set('timerMax', newTimerMax)
+    this.updateColor()
     this.marker.clear()
     this.sound.play('timeout', { volume: 0.5 })
     if (!this.marker.getIsWildcard()) {
@@ -126,15 +132,21 @@ export default class extends Phaser.Scene {
     this.data.set('score', newScore)
 
     if (
-      this.data.get('multiCounter') >= MULTI_COUNTER[this.data.get('multi')]
+      this.data.get('multiCounter') >= MULTI_COUNTER[this.data.get('multi')] &&
+      this.data.get('multi') < 9
     ) {
       this.time.addEvent({
         delay: 500,
         callback: () => {
-          this.sound.play('multi1')
-          // TODO: sound should pitch up based on multi
-          // TODO: make use of other multi sounds?
-          this.data.set('multi', this.data.get('multi') + 1)
+          const multi = this.data.get('multi')
+          this.sound.play(`multi${Math.min(6, multi)}`, {
+            rate: 0.7 + (multi - 1) * 0.1,
+          })
+          this.data.set('multi', multi + 1)
+          this.updateColor()
+          const color = this.bgColor.clone()
+          color.darken(70)
+          this.cameras.main.flash(900, color.red, color.green, color.blue)
         },
       })
     }
@@ -147,6 +159,36 @@ export default class extends Phaser.Scene {
 
   updateLives = (value) =>
     this.data.set('lives', Math.min(10, this.data.get('lives') + value))
+
+  updateColor = () => {
+    this.baseColor = new Phaser.Display.Color().setTo(
+      ...COLORS[Math.min(9, this.data.get('multi') - 1)],
+    )
+    this.bgColor = this.baseColor.clone()
+    this.bgColor.brighten(20)
+    const hsv = Phaser.Display.Color.RGBToHSV(
+      this.baseColor.red,
+      this.baseColor.green,
+      this.baseColor.blue,
+    )
+    const hsv2 = Phaser.Display.Color.RGBToHSV(
+      this.baseColor.red,
+      this.baseColor.green,
+      this.baseColor.blue,
+    )
+    hsv.h += 0.3
+    const rgb = Phaser.Display.Color.HSVToRGB(hsv.h, hsv.s, hsv.v)
+
+    hsv2.h -= 0.3
+    const rgb2 = Phaser.Display.Color.HSVToRGB(hsv2.h, hsv2.s, hsv2.v)
+    this.cursorErrorColor = new Phaser.Display.Color(rgb.r, rgb.g, rgb.b)
+      .desaturate(10)
+      .darken(10)
+    this.cursorColor = new Phaser.Display.Color(rgb2.r, rgb2.g, rgb2.b)
+    this.map && this.map.render()
+    this.marker && this.marker._render()
+  }
 }
 
+// const MULTI_COUNTER = [-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const MULTI_COUNTER = [-1, 1, 2, 4, 7, 11, 16, 22, 29, 37]

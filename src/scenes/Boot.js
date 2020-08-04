@@ -30,8 +30,19 @@ export default class extends Phaser.Scene {
     this.load.audio('hold', 'assets/audio/hold.mp3')
     this.load.audio('timeout', 'assets/audio/timeout.mp3')
     this.load.audio('place1', 'assets/audio/place1.mp3', { instances: 5 })
+    this.load.audio('place2', 'assets/audio/place2.mp3', { instances: 5 })
+    this.load.audio('place3', 'assets/audio/place3.mp3', { instances: 5 })
+    this.load.audio('place4', 'assets/audio/place4.mp3', { instances: 5 })
+    this.load.audio('place5', 'assets/audio/place5.mp3', { instances: 5 })
+    this.load.audio('place6', 'assets/audio/place6.mp3', { instances: 5 })
+    this.load.audio('place7', 'assets/audio/place7.mp3', { instances: 5 })
 
     this.load.audio('multi1', 'assets/audio/multi1.mp3', { instances: 5 })
+    this.load.audio('multi2', 'assets/audio/multi2.mp3', { instances: 5 })
+    this.load.audio('multi3', 'assets/audio/multi3.mp3', { instances: 5 })
+    this.load.audio('multi4', 'assets/audio/multi4.mp3', { instances: 5 })
+    this.load.audio('multi5', 'assets/audio/multi5.mp3', { instances: 5 })
+    this.load.audio('multi6', 'assets/audio/multi6.mp3', { instances: 5 })
 
     this.load.bitmapFont(
       'pixel-dan',

@@ -13,6 +13,18 @@ export const EXPLODE_ANIM_DURATION = 400
 export const LINE_ANIM_OFFSET = 500
 export const TIME_OUT_DURATION = 1000
 
+export const COLORS = [
+  [157, 76, 218],
+  [71, 96, 209],
+  [74, 194, 203],
+  [73, 190, 93],
+  [175, 234, 72],
+  [234, 228, 56],
+  [231, 170, 64],
+  [240, 116, 67],
+  [230, 33, 33],
+]
+
 const UP = { 0: [2, 5, 6] }
 const RIGHT = { 1: [3, 5, 7] }
 const DOWN = { 2: [2, 4, 7] }
@@ -58,11 +70,11 @@ export const SCORES = {
 
 export const LEVELS = [
   LEVEL1,
+  LEVEL1,
+  LEVEL1,
   LEVEL2,
-  LEVEL3,
-  LEVEL3,
-  LEVEL3,
-  LEVEL3,
+  LEVEL2,
+  LEVEL2,
   LEVEL3,
   LEVEL3,
   LEVEL3,

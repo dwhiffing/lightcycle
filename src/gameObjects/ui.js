@@ -46,7 +46,12 @@ export default class {
     this.timerBar.clear()
     const percent = timer / timerMax
     const rounded = Math.round(UI_Y_POS * percent)
-    this.timerBar.fillRect(0, UI_Y_POS - rounded, 64, rounded)
+    this.timerBar
+      .fillStyle(
+        this.scene.bgColor.color,
+        Phaser.Math.Clamp(1 - percent, 0.2, 1),
+      )
+      .fillRect(0, UI_Y_POS - rounded, 64, rounded)
 
     nextMino &&
       this._renderMino(this.nextMinoGraphics, 2, UI_Y_POS + 2, nextMino)

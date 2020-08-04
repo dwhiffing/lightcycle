@@ -13,6 +13,7 @@ import {
 export default class {
   constructor(scene) {
     this.scene = scene
+    this.activeIndex = -70
     const data = []
     for (let y = 0; y < MAP_SIZE_Y; y++) {
       data.push(new Array(MAP_SIZE_X).fill(1))
@@ -22,6 +23,14 @@ export default class {
     this.map
       .createDynamicLayer(0, this.map.addTilesetImage('tiles'), 2, 0)
       .setDepth(3)
+
+    this.render()
+
+    this.scene.time.addEvent({
+      delay: 25,
+      repeat: -1,
+      callback: this.render,
+    })
 
     this.lineGraphics = this.scene.add.graphics().setDepth(7)
     this.particles = this.scene.add.particles('spark').setDepth(20)
@@ -40,8 +49,11 @@ export default class {
   placeTile = (x, y, index) => {
     if (index < 8 && this.map.getTileAt(x, y).index > 1) return null
 
-    const tile = this.map.putTileAt(index, x, y)
-    tile.tint = 0x999999
+    this.emitter.setPosition(x * 5 + 2, y * 5)
+    this.emitter.setTint(this.scene.bgColor.color)
+    this.emitter.explode(3)
+
+    this.map.putTileAt(index, x, y)
     return true
   }
 
@@ -49,11 +61,32 @@ export default class {
     tiles.forEach(this._animateTileDestroy)
 
     tiles.forEach((tile) => {
-      tile.tint = 0xffffff
       this.map.putTileAt(1, tile.x, tile.y)
     })
 
     this.scene.marker._render()
+  }
+
+  render = () => {
+    if (!this.map.layer) return
+
+    this.activeIndex += this.scene.data.get('multi')
+    if (this.activeIndex >= 180) this.activeIndex = -70
+
+    this.map.layer.data.flat().forEach((tile, index) => {
+      if (tile.index > 1) {
+        tile.tint = this.scene.bgColor.color
+      } else {
+        const color = this.scene.bgColor.clone()
+        const darken = Phaser.Math.Clamp(
+          Math.abs(this.activeIndex - index),
+          20,
+          70,
+        )
+        color.darken(darken)
+        tile.tint = color.color
+      }
+    })
   }
 
   // TODO: need to refactor
@@ -63,6 +96,7 @@ export default class {
     const sprite = this.scene.add
       .sprite(tile.pixelX + 4, tile.pixelY + 2, 'tiles', tile.index)
       .setDepth(5)
+      .setTint(this.scene.bgColor.color)
 
     this._drawTileLine(tile, tiles[index + 1], index, sprite)
 
@@ -91,9 +125,11 @@ export default class {
       },
       callback: () => {
         this.emitter.setPosition(sprite.x, sprite.y)
-        // TODO: use other place sounds
-        this.scene.sound.play('place1', { rate: 0.6 + 0.075 * index })
-        this.emitter.explode(10)
+        const multi = this.scene.data.get('multi')
+        this.scene.sound.play(`place${Math.min(7, multi)}`, {
+          rate: Math.min(1.55, 0.35 + 0.02 * index + (multi - 1) * 0.15),
+        })
+        this.emitter.explode(20)
       },
     })
   }

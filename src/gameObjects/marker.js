@@ -144,7 +144,11 @@ export default class {
         this.scene.add
           .sprite(x, y, 'tiles', frame)
           .setOrigin(0, 0)
-          .setTint(canPlace ? 0x44cc44 : 0xcc4444),
+          .setTint(
+            canPlace
+              ? this.scene.cursorColor.color
+              : this.scene.cursorErrorColor.color,
+          ),
       )
     })
 
