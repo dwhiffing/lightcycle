@@ -19,6 +19,11 @@ export default class {
   rotateLeft = () => this.rotate(-1)
   rotateRight = () => this.rotate(1)
 
+  clear = () => {
+    this.mino = null
+    this._render()
+  }
+
   hold = () => {
     if (!this.canHold) return
 

@@ -4,13 +4,14 @@ export * from './minos'
 export const MAP_SIZE_X = 12
 export const MAP_SIZE_Y = 11
 export const TICK = 20
-export const TIME_DURATION = 10000
+export const TIMER_DURATION = 10000
 export const UI_Y_POS = 55
 export const DIRECTIONS = ['up', 'right', 'down', 'left']
 export const LINE_ANIM_DURATION = 10
 export const EXPLODE_ANIM_DELAY = LINE_ANIM_DURATION * 5
 export const EXPLODE_ANIM_DURATION = 600
 export const LINE_ANIM_OFFSET = 200
+export const TIME_OUT_DURATION = 1000
 
 const UP = { 0: [2, 5, 6] }
 const RIGHT = { 1: [3, 5, 7] }

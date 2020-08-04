@@ -1,7 +1,12 @@
 import Map from '../gameObjects/map'
 import UI from '../gameObjects/ui'
 import Marker from '../gameObjects/marker'
-import { TICK, TIME_DURATION, EXPLODE_ANIM_DELAY } from '../constants'
+import {
+  TIME_OUT_DURATION,
+  TICK,
+  TIMER_DURATION,
+  EXPLODE_ANIM_DELAY,
+} from '../constants'
 
 export default class extends Phaser.Scene {
   constructor() {
@@ -17,8 +22,8 @@ export default class extends Phaser.Scene {
     this.data.set('loops', 0)
     this.data.set('lives', 3)
     this.data.set('multi', 1)
-    this.data.set('timerMax', TIME_DURATION)
-    this.data.set('timer', TIME_DURATION)
+    this.data.set('timerMax', TIMER_DURATION)
+    this.data.set('timer', TIMER_DURATION)
 
     this.map = new Map(this)
     this.ui = new UI(this)
@@ -53,22 +58,25 @@ export default class extends Phaser.Scene {
     const timer = this.data.get('timer')
     if (this.marker.mino) {
       this.data.set('timer', timer - TICK)
+      if (timer < 1) this.timeOut()
     }
-    if (timer < 1) this.timeOut()
   }
 
   timeOut = () => {
     this.data.set('multi', 1)
     this.data.set('multiCounter', 0)
-    this.data.set('timer', this.data.get('timerMax'))
+    this.marker.clear()
 
     if (!this.marker.getIsWildcard()) {
       this.updateLives(-1)
     }
 
     this.time.addEvent({
-      delay: 1000,
-      callback: this.marker.getNextMino,
+      delay: TIME_OUT_DURATION,
+      callback: () => {
+        this.marker.getNextMino()
+        this.data.set('timer', this.data.get('timerMax'))
+      },
     })
     this.cameras.main.shake(100)
 
@@ -110,7 +118,7 @@ export default class extends Phaser.Scene {
       this.data.set('multi', this.data.get('multi') + 1)
     this.ui.setPointText(newScore)
 
-    const newTimerMax = TIME_DURATION - (this.data.get('multi') - 1) * 600
+    const newTimerMax = TIMER_DURATION - (this.data.get('multi') - 1) * 600
     this.data.set('timerMax', newTimerMax)
     this.data.set('timer', this.data.get('timerMax'))
   }
