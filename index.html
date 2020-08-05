@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" type="image/png" href="./favicon.png" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="manifest" href="./manifest.json" />
+  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+  <title>Lightcycle</title>
+  <style>
+    body {
+      background-color: #111;
+      margin: 0px auto;
+      padding: 10px;
+      height: auto !important;
+      flex-direction: column;
+      display: flex;
+    }
+
+    @media only screen and (min-width: 600px) {
+      body {
+        max-width: 50vw;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="phaser-example">
+  </div>
+
+  <div style="width: 100%;display:flex; flex: 1;align-items: center; position: relative;">
+    <div style="position:relative;flex:1; display:flex; ">
+      <img style="width:100%;" src="/assets/images/dpad.png" />
+      <div
+        style="position:absolute; padding:10px; top: 0; left: 0; right: 0; bottom: 0;flex:1; display:flex; flex-wrap:wrap; transform: rotate(47deg);">
+        <img id="up-button" style="width:50%;opacity:0;" src="/assets/images/button.png" />
+        <img id="right-button" style="width:50%;opacity:0;" src="/assets/images/button.png" />
+        <img id="left-button" style="width:50%;opacity:0;" src="/assets/images/button.png" />
+        <img id="down-button" style="width:50%;opacity:0;" src="/assets/images/button.png" />
+      </div>
+    </div>
+    <div style="display:flex; flex: 1; align-items: center;">
+      <img id="a-button" style="width:50%;" src="/assets/images/button.png" />
+      <img id="b-button" style="width:50%;" src="/assets/images/button.png" />
+    </div>
+<script type="text/javascript" src="bundle.min.js"></script></body>
+
+</html>
