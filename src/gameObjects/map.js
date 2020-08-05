@@ -162,7 +162,10 @@ export default class {
         sprite.destroy()
       },
       callback: () => {
-        this._setEmitters(sprite.x, sprite.y, 20)
+        this._setEmitters(sprite.x, sprite.y, 15)
+        if ([4, 5, 6, 7].includes(sprite.frame.name)) {
+          this._setEmitters(sprite.x, sprite.y, 80)
+        }
         const level = this.data.get('level')
         this.scene.sound.play(`place${Math.min(7, level)}`, {
           rate: Math.min(1.55, 0.35 + 0.02 * index + (level - 1) * 0.15),

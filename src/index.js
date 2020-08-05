@@ -39,13 +39,16 @@ const cancel = () => {
 const attachUpDown = (el, key) => {
   el.addEventListener('pointerdown', () => {
     game.events.emit(key)
+    if (key === 'a-button') return
+    const delay = key === 'b-button' ? 400 : 200
     timeout = setTimeout(() => {
-      if (key === 'a-button' || key === 'b-button') {
+      if (key === 'b-button') {
         game.events.emit('c-button')
       } else {
-        interval = setInterval(() => game.events.emit(key), 80)
+        game.events.emit(key)
+        interval = setInterval(() => game.events.emit(key), 35)
       }
-    }, 300)
+    }, delay)
   })
 
   el.addEventListener('pointerup', cancel)
