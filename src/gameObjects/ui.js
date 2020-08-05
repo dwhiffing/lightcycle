@@ -35,7 +35,7 @@ export default class {
     } = this.data.getAll()
 
     if (this.pointText.alpha > 0) {
-      this.pointText.alpha -= 0.025
+      this.pointText.alpha -= 0.01
     }
 
     this.multiText.setText(multi)

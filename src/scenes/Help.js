@@ -74,6 +74,8 @@ export default class extends Phaser.Scene {
     this.input.keyboard.removeAllKeys(true)
     this.keys = this.input.keyboard.addKeys('SPACE')
     this.keys.SPACE.on('down', this.next)
+    this.game.events.on('a-button', this.next)
+    this.game.events.on('b-button', this.next)
 
     this.textIndex = 0
     this.mainText = this.add
@@ -81,10 +83,10 @@ export default class extends Phaser.Scene {
       .setCenterAlign()
       .setOrigin(0.5)
 
-    this.space = this.add
-      .bitmapText(32, 59, 'pixel-dan', 'PRESS SPACE', 5)
-      .setOrigin(0.5)
-      .setAlpha(0.25)
+    // this.space = this.add
+    //   .bitmapText(32, 59, 'pixel-dan', 'PRESS SPACE', 5)
+    //   .setOrigin(0.5)
+    //   .setAlpha(0.25)
     this.sprites = []
   }
 

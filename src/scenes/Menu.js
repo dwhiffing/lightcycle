@@ -11,11 +11,6 @@ export default class extends Phaser.Scene {
     graphics.fillStyle(0x001122, 0.8)
     graphics.fillRect(0, 0, 64, 64)
 
-    this.musicObject = this.sound.add('menuMusic')
-    // this.musicObject.play({ volume: 0.5 })
-    this.started = false
-
-    this.input.keyboard.removeAllKeys(true)
     this.keys = this.input.keyboard.addKeys('W,A,S,D,M,SPACE,UP,DOWN')
     this.keys.SPACE.on('down', this.selectOption)
     this.keys.W.on('down', this.lastOption)
@@ -29,14 +24,18 @@ export default class extends Phaser.Scene {
     this.game.events.on('a-button', this.selectOption)
     this.game.events.on('b-button', this.selectOption)
 
+    // this.musicObject = this.sound.add('menuMusic')
+    // this.musicObject.play({ volume: 0.5 })
+    this.started = false
+
+    // this.input.keyboard.removeAllKeys(true)
+
     this.optionIndex = 0
     // this.optionIndex = 1
 
     this.add.image(32, 16, 'title').setOrigin(0.5)
-
     this.add.bitmapText(32, 38, 'pixel-dan', 'START', 5).setOrigin(0.5)
     this.add.bitmapText(32, 46, 'pixel-dan', 'HELP', 5).setOrigin(0.5)
-
     this.arrow = this.add.graphics()
     this.arrow.fillStyle(0xffffff)
 
@@ -51,9 +50,9 @@ export default class extends Phaser.Scene {
         .setOrigin(0.5)
         .setDepth(10)
     } else {
-      this.spaceText = this.add
-        .bitmapText(32, 59, 'pixel-dan', 'PRESS SPACE', 5)
-        .setOrigin(0.5)
+      // this.spaceText = this.add
+      //   .bitmapText(32, 59, 'pixel-dan', 'PRESS SPACE', 5)
+      //   .setOrigin(0.5)
     }
 
     this.time.addEvent({
@@ -92,16 +91,20 @@ export default class extends Phaser.Scene {
     if (this.registry.get('inHelp') || this.started) return
     if (this.optionIndex === 0) {
       this.sound.play('start')
-      this.tweens.add({
-        targets: this.musicObject,
-        duration: 1900,
-        volume: 0,
-      })
+      // this.tweens.add({
+      //   targets: this.musicObject,
+      //   duration: 1900,
+      //   volume: 0,
+      // })
       this.started = true
       this.cameras.main.fade(2000, 0, 0, 0, true, (c, p) => {
         if (p === 1) {
+          this.game.events.off('up-button')
+          this.game.events.off('down-button')
+          this.game.events.off('a-button')
+          this.game.events.off('b-button')
           this.scene.start('Game')
-          this.musicObject.destroy()
+          // this.musicObject.destroy()
         }
       })
     }

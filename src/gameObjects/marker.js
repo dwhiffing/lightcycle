@@ -22,6 +22,7 @@ export default class {
 
   clear = () => {
     this.mino = null
+    this.upcomingMinos = []
     this._render()
   }
 
@@ -81,12 +82,13 @@ export default class {
 
   getNextMino = () => {
     this.canHold = true
-    this.mino = this.upcomingMinos.shift()
-    this.rotation = Phaser.Math.RND.between(0, this.mino.length - 1)
 
     if (this.upcomingMinos.length === 0) {
       this.upcomingMinos = generateUpcomingMinos(this.data.get('multi') - 1)
     }
+
+    this.mino = this.upcomingMinos.shift()
+    this.rotation = Phaser.Math.RND.between(0, this.mino.length - 1)
 
     const minosPlaced = this.data.get('minosPlaced')
     if (minosPlaced > 0 && minosPlaced % 25 === 0) {

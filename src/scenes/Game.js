@@ -86,10 +86,10 @@ export default class extends Phaser.Scene {
   tick = () => {
     const timer = this.data.get('timer')
     if (this.marker.mino) {
-      if (timer && timer <= 5000 && timer % 1000 === 0) {
+      if (timer && timer <= 4000 && timer % 1000 === 0) {
         this.sound.play('move', {
-          volume: (6000 - timer) / 5000,
-          rate: 0.6 - (6000 - timer) / 15000,
+          volume: (5000 - timer) / 4000,
+          rate: 0.6 - (5000 - timer) / 15000,
         })
       }
       this.data.set('timer', timer - TICK)
@@ -106,7 +106,7 @@ export default class extends Phaser.Scene {
   timeOut = () => {
     this.data.set('multi', 1)
     this.data.set('multiCounter', 0)
-    const newTimerMax = TIMER_DURATION - (this.data.get('multi') - 1) * 600
+    const newTimerMax = TIMER_DURATION - (this.data.get('multi') - 1) * 1000
     this.data.set('timerMax', newTimerMax)
     this.updateColor()
     this.marker.clear()
@@ -127,6 +127,13 @@ export default class extends Phaser.Scene {
 
     if (this.data.get('lives') < 0) {
       this.registry.set('score', this.data.get('score'))
+      this.game.events.off('up-button')
+      this.game.events.off('down-button')
+      this.game.events.off('left-button')
+      this.game.events.off('right-button')
+      this.game.events.off('a-button')
+      this.game.events.off('b-button')
+      this.game.events.off('c-button')
       this.scene.start('Menu')
     }
   }
@@ -160,11 +167,10 @@ export default class extends Phaser.Scene {
   addScore = (value) => {
     if (value === 0) return
 
-    if (this.data.get('score') > 0 && this.data.get('score') % 5000 === 0)
+    if (this.data.get('score') > 0 && this.data.get('score') % 1000 === 0)
       this.updateLives(1)
 
     const increase = value * this.data.get('multi')
-    console.log(value, this.data.get('multi'))
     const newScore = +this.data.get('score') + increase
     this.data.set('score', newScore)
     this.data.set('scoreThisLife', this.data.get('scoreThisLife') + increase)
@@ -190,7 +196,7 @@ export default class extends Phaser.Scene {
       })
     }
 
-    const newTimerMax = TIMER_DURATION - (this.data.get('multi') - 1) * 600
+    const newTimerMax = TIMER_DURATION - (this.data.get('multi') - 1) * 1000
     this.data.set('timerMax', newTimerMax)
     this.data.set('timer', this.data.get('timerMax'))
   }
@@ -232,10 +238,8 @@ export default class extends Phaser.Scene {
       visibilityChange,
       () => {
         if (document[hidden]) {
-          console.log('pause')
           this.scene.pause()
         } else {
-          console.log('resume')
           this.scene.resume()
         }
       },

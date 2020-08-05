@@ -94,7 +94,7 @@ export default class {
         color.darken(Phaser.Math.Clamp(offset, 5, 35)).desaturate(10)
       } else {
         const offset = this.getOffset(this.activeIndex, index, numTiles * 1.5)
-        color.darken(Phaser.Math.Clamp(offset, 30, 70))
+        color.darken(Phaser.Math.Clamp(offset, 30, 60))
       }
 
       tile.tint = color.color
