@@ -1,5 +1,5 @@
 {
-  "name": "loop-64",
+  "name": "lightcycle",
   "version": "0.0.1",
   "description": "A game",
   "main": "src/index.js",
@@ -11,7 +11,7 @@
   "author": "Daniel Whiffing <danielwhiffing@gmail.com> (http://www.infinite-ramble.com)",
   "license": "MIT",
   "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
-  "homepage": "https://github.com/dwhiffing/loop-64",
+  "homepage": "https://github.com/dwhiffing/lightcycle",
   "devDependencies": {
     "@babel/core": "^7.7.2",
     "@babel/plugin-proposal-class-properties": "^7.10.4",

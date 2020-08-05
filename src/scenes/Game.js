@@ -57,6 +57,14 @@ export default class extends Phaser.Scene {
     this.keys.C.on('down', this.marker.hold)
     this.keys.M.on('down', this.mute)
 
+    this.game.events.on('up-button', this.marker.moveUp)
+    this.game.events.on('down-button', this.marker.moveDown)
+    this.game.events.on('left-button', this.marker.moveLeft)
+    this.game.events.on('right-button', this.marker.moveRight)
+    this.game.events.on('a-button', this.marker.rotateRight)
+    this.game.events.on('b-button', this.placeMino)
+    this.game.events.on('c-button', this.marker.hold)
+
     this.keys.SPACE.on('down', this.placeMino)
 
     this.time.addEvent({ delay: TICK, repeat: -1, callback: this.tick })

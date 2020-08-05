@@ -24,6 +24,11 @@ export default class extends Phaser.Scene {
     this.keys.UP.on('down', this.lastOption)
     this.keys.DOWN.on('down', this.nextOption)
 
+    this.game.events.on('up-button', this.nextOption)
+    this.game.events.on('down-button', this.lastOption)
+    this.game.events.on('a-button', this.selectOption)
+    this.game.events.on('b-button', this.selectOption)
+
     this.optionIndex = 0
     // this.optionIndex = 1
 
