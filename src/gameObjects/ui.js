@@ -9,25 +9,26 @@ export default class {
     this._drawInterface()
 
     const lives = this.data.get('lives')
-    const multi = this.data.get('multi')
+    const loops = this.data.get('loops')
     const score = this.data.get('score')
 
     this.livesText = this._getText(63, UI_Y_POS + 2, lives)
-    this.multiText = this._getText(57, UI_Y_POS + 2, multi)
+    this.loopsText = this._getText(57, UI_Y_POS + 2, loops)
     this.scoreText = this._getText(46, UI_Y_POS + 2, score)
 
-    // TODO: point text should update as tiles disappear from match
-    this.pointText = this._getText(32, 32, `20`)
-      .setOrigin(0.5)
+    this.pointText = this.scene.add
+      .bitmapText(32, 32, 'pixel-dan', '', 15)
+      .setDepth(3)
       .setAlpha(0)
       .setDepth(10)
+      .setOrigin(0.5)
   }
 
   update = () => {
     const {
       lives,
       score,
-      multi,
+      loops,
       timer,
       timerMax,
       nextMino,
@@ -38,7 +39,7 @@ export default class {
       this.pointText.alpha -= 0.01
     }
 
-    this.multiText.setText(multi)
+    this.loopsText.setText(loops)
     this.scoreText.setText(score)
     this.livesText.setText(lives)
 
@@ -59,10 +60,7 @@ export default class {
   }
 
   setPointText = (score) => {
-    this.pointText.setScale(2).setOrigin(0.5)
-    this.pointText.x = 40
-    this.pointText.y = 32
-    this.pointText.alpha = 0.5
+    this.pointText.alpha = 1
     this.pointText.setText(score)
     this.pointText.setTint(this.scene.bgColor.clone().brighten(20).color)
   }
@@ -79,7 +77,7 @@ export default class {
       if (frame <= 1) return
       const _x = x + (index % 3) * 2
       const _y = y + Math.floor(index / 3) * 2
-      graphics.fillRect(_x, _y, 1, 1)
+      graphics.fillStyle(0xffffff).fillRect(_x, _y, 1, 1)
     })
   }
 
@@ -98,27 +96,20 @@ export default class {
       .fillRect(9, UI_Y_POS + 1, 7, 7)
       // score tile box
       .fillRect(17, UI_Y_POS + 1, 29, 7)
-      // multi box
+      // loops box
       .fillRect(47, UI_Y_POS + 1, 10, 7)
       // lives box
       .fillRect(58, UI_Y_POS + 1, 5, 7)
-      // draw multiplier x
-      .fillStyle(0xffffff)
-      .fillRect(49, UI_Y_POS + 5, 1, 1)
-      .fillRect(48, UI_Y_POS + 4, 1, 1)
-      .fillRect(48, UI_Y_POS + 6, 1, 1)
-      .fillRect(50, UI_Y_POS + 4, 1, 1)
-      .fillRect(50, UI_Y_POS + 6, 1, 1)
 
     this.timerBar = this.scene.add.graphics().fillStyle(0xffffff, 1).setDepth(2)
 
     this.nextMinoGraphics = this.scene.add
       .graphics()
       .fillStyle(0xffffff, 1)
-      .setDepth(1)
+      .setDepth(2)
     this.heldMinoGraphics = this.scene.add
       .graphics()
       .fillStyle(0xffffff, 1)
-      .setDepth(1)
+      .setDepth(2)
   }
 }

@@ -78,7 +78,7 @@ export default class {
 
   render = () => {
     if (!this.map.layer) return
-    this.activeIndex += this.data.get('multi') / 3
+    this.activeIndex += this.data.get('level') / 3
 
     this.map.layer.data.flat().forEach((tile, index, tiles) => {
       const numTiles = tiles.length
@@ -109,7 +109,7 @@ export default class {
     this.emitter.setPosition(x, y)
     this.emitter2.setPosition(x, y)
 
-    const factor = 0.02 + 0.01 * this.data.get('multi')
+    const factor = 0.02 + 0.01 * this.data.get('level')
 
     const color1 = this.scene.bgColor.clone()
     color1._h = Phaser.Math.Clamp(color1._h + factor, 0, 1)
@@ -133,7 +133,7 @@ export default class {
       .sprite(tile.pixelX + 4, tile.pixelY + 2, 'tiles', tile.index)
       .setDepth(5)
       .setTint(this.scene.bgColor.color)
-    const lineDuration = LINE_ANIM_DURATION - 60 * this.data.get('multi')
+    const lineDuration = LINE_ANIM_DURATION - 60 * this.data.get('level')
     const speed = lineDuration / (tiles.length * 5)
     this._drawTileLine(tile, tiles[index + 1], index, sprite, speed)
 
@@ -142,7 +142,7 @@ export default class {
     }
 
     const explodeDelay =
-      lineDuration + index * (EXPLODE_ANIM_DELAY - 5 * this.data.get('multi'))
+      lineDuration + index * (EXPLODE_ANIM_DELAY - 5 * this.data.get('level'))
 
     this.scene.time.addEvent({
       delay: lineDuration + LINE_ANIM_OFFSET,
@@ -163,9 +163,9 @@ export default class {
       },
       callback: () => {
         this._setEmitters(sprite.x, sprite.y, 20)
-        const multi = this.data.get('multi')
-        this.scene.sound.play(`place${Math.min(7, multi)}`, {
-          rate: Math.min(1.55, 0.35 + 0.02 * index + (multi - 1) * 0.15),
+        const level = this.data.get('level')
+        this.scene.sound.play(`place${Math.min(7, level)}`, {
+          rate: Math.min(1.55, 0.35 + 0.02 * index + (level - 1) * 0.15),
         })
       },
     })
@@ -201,7 +201,6 @@ export default class {
     const loop = this.getLoop()
     if (loop) {
       this.data.values.loops++
-      this.data.values.multiCounter++
       this.clearTiles(loop)
     }
     return loop

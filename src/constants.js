@@ -2,9 +2,17 @@ import { LEVEL1, LEVEL2, LEVEL3 } from './minos'
 export * from './minos'
 
 export const EASY_LOOP = false
-export const SCORE_TO_MULTI = false
-  ? [-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-  : [-1, 25, 100, 250, 500, 1000, 2500, 5000, 10000]
+export const SCORE_TO_LEVEL = [
+  -1,
+  250,
+  500,
+  1000,
+  2000,
+  5000,
+  10000,
+  20000,
+  50000,
+]
 export const MAP_SIZE_X = 12
 export const MAP_SIZE_Y = 11
 export const TICK = 20

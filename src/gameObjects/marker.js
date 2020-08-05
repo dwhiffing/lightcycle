@@ -84,7 +84,7 @@ export default class {
     this.canHold = true
 
     if (this.upcomingMinos.length === 0) {
-      this.upcomingMinos = generateUpcomingMinos(this.data.get('multi') - 1)
+      this.upcomingMinos = generateUpcomingMinos(this.data.get('level') - 1)
     }
 
     this.mino = this.upcomingMinos.shift()

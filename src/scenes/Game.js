@@ -6,7 +6,7 @@ import {
   TICK,
   TIMER_DURATION,
   EXPLODE_ANIM_DELAY,
-  SCORE_TO_MULTI,
+  SCORE_TO_LEVEL,
   COLORS,
   LINE_ANIM_DURATION,
 } from '../constants'
@@ -22,11 +22,9 @@ export default class extends Phaser.Scene {
     this.cameras.main.fadeFrom(1000, 0, 0, 0, true)
     this.data.set('minosPlaced', 0)
     this.data.set('score', 0)
-    this.data.set('scoreThisLife', 0)
-    this.data.set('multiCounter', 0)
     this.data.set('loops', 0)
     this.data.set('lives', 3)
-    this.data.set('multi', 1)
+    this.data.set('level', 1)
     this.data.set('timerMax', TIMER_DURATION)
     this.data.set('timer', TIMER_DURATION)
 
@@ -69,6 +67,7 @@ export default class extends Phaser.Scene {
 
     this.time.addEvent({ delay: TICK, repeat: -1, callback: this.tick })
     this.time.addEvent({ delay: 1000, callback: this.nextMino })
+    this.time.addEvent({ delay: 1000, callback: this.checkLevel })
 
     this.particles = this.add.particles('spark').setDepth(20)
     this.emitter = this.particles
@@ -104,9 +103,7 @@ export default class extends Phaser.Scene {
   }
 
   timeOut = () => {
-    this.data.set('multi', 1)
-    this.data.set('multiCounter', 0)
-    const newTimerMax = TIMER_DURATION - (this.data.get('multi') - 1) * 1000
+    const newTimerMax = TIMER_DURATION - (this.data.get('level') - 1) * 1000
     this.data.set('timerMax', newTimerMax)
     this.updateColor()
     this.marker.clear()
@@ -120,7 +117,6 @@ export default class extends Phaser.Scene {
     this.emitter.explode(100)
 
     this.updateLives(-1)
-    this.data.set('scoreThisLife', 0)
 
     this.time.addEvent({ delay: TIME_OUT_DURATION, callback: this.nextMino })
     this.cameras.main.shake(100)
@@ -143,17 +139,17 @@ export default class extends Phaser.Scene {
 
     this.sound.play('click', { volume: 0.2 })
     this.data.set('minosPlaced', this.data.get('minosPlaced') + 1)
-    const multi = this.data.get('multi')
+    const level = this.data.get('level')
 
     const loop = this.map.clearLoop() || []
 
     const numCorners = loop.filter((t) => [4, 5, 6, 7].includes(t.index))
-    const score = loop.length * (numCorners.length + 1)
+    const score = loop.length * 5 * (numCorners.length + 1)
 
-    loop.length > 0 && this.sound.play('loop', { rate: 0.7 + 0.05 * multi })
-    const lineAnimDelay = LINE_ANIM_DURATION - 70 * multi
-    const loopAnimDelay = loop.length * (EXPLODE_ANIM_DELAY - 5 * multi)
-    const minoDelay = 250 - 25 * multi
+    loop.length > 0 && this.sound.play('loop', { rate: 0.7 + 0.05 * level })
+    const lineAnimDelay = LINE_ANIM_DURATION - 70 * level
+    const loopAnimDelay = loop.length * (EXPLODE_ANIM_DELAY - 5 * level)
+    const minoDelay = 250 - 25 * level
     this.time.addEvent({
       delay: loop.length > 1 ? lineAnimDelay + loopAnimDelay : 0,
       callback: () => {
@@ -164,41 +160,51 @@ export default class extends Phaser.Scene {
     })
   }
 
-  addScore = (value) => {
-    if (value === 0) return
+  addScore = (increase) => {
+    if (increase === 0) return
 
     if (this.data.get('score') > 0 && this.data.get('score') % 1000 === 0)
       this.updateLives(1)
 
-    const increase = value * this.data.get('multi')
     const newScore = +this.data.get('score') + increase
     this.data.set('score', newScore)
-    this.data.set('scoreThisLife', this.data.get('scoreThisLife') + increase)
     this.ui.setPointText(increase)
+
+    this.checkLevel()
+  }
+
+  checkLevel = () => {
     if (
-      this.data.get('scoreThisLife') >=
-        SCORE_TO_MULTI[this.data.get('multi')] &&
-      this.data.get('multi') < 9
+      this.data.get('score') >= SCORE_TO_LEVEL[this.data.get('level')] &&
+      this.data.get('level') < 9
     ) {
+      console.log(
+        this.data.get('score'),
+        SCORE_TO_LEVEL[this.data.get('level')],
+      )
+      this.time.addEvent({
+        delay: 1000,
+        callback: this.checkLevel,
+      })
       this.time.addEvent({
         delay: 100,
         callback: () => {
-          const multi = this.data.get('multi')
-          this.sound.play(`multi${Math.min(6, multi)}`, {
-            rate: 0.7 + (multi - 1) * 0.1,
+          const level = this.data.get('level')
+          this.sound.play(`multi${Math.min(6, level)}`, {
+            rate: 0.7 + (level - 1) * 0.1,
           })
-          this.data.set('multi', multi + 1)
+          this.data.set('level', level + 1)
           this.updateColor()
           const color = this.bgColor.clone()
           color.darken(70)
           this.cameras.main.flash(900, color.red, color.green, color.blue)
+          const newTimerMax =
+            TIMER_DURATION - (this.data.get('level') - 1) * 1000
+          this.data.set('timerMax', newTimerMax)
+          this.data.set('timer', this.data.get('timerMax'))
         },
       })
     }
-
-    const newTimerMax = TIMER_DURATION - (this.data.get('multi') - 1) * 1000
-    this.data.set('timerMax', newTimerMax)
-    this.data.set('timer', this.data.get('timerMax'))
   }
 
   updateLives = (value) =>
@@ -206,7 +212,7 @@ export default class extends Phaser.Scene {
 
   updateColor = () => {
     this.baseColor = new Phaser.Display.Color().setTo(
-      ...COLORS[Math.min(9, this.data.get('multi') - 1)],
+      ...COLORS[Math.min(9, this.data.get('level') - 1)],
     )
     this.bgColor = this.baseColor.clone().brighten(20)
     this.cursorColor = this.baseColor.clone().brighten(50).saturate(40)
