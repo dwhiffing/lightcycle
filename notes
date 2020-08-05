@@ -1,7 +1,10 @@
-better balance
 explosion sprites need to match background tile tint
 blocked tiles should have complementary color
 test wild card to ensure it always clears whole line
+extra life sound
+
+don't lose multiplier on death
+allow selection of starting multi?
 
 add color to ui?
 menu shader hue shift over time?

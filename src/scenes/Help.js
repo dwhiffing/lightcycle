@@ -1,3 +1,4 @@
+const isMobile = window.innerWidth < 800
 const TEXTS = [
   `PLACE TILES TO
 CONNECT THEM IN
@@ -13,16 +14,16 @@ MORE POINTS`,
 
   `CONTROLS
 
-  ARROWS OR WASD
+${isMobile ? 'DPAD' : 'ARROWS OR WASD'}
 MOVE TILE`,
-  `SPACE
+  `${isMobile ? 'A BUTTON' : 'SPACE'}
 PLACE TILE
 
-QE OR ZX
+${isMobile ? 'B BUTTON' : 'QE OR ZX'}
 ROTATE TILE`,
   `
-C OR R
-HOLD OR SWAP
+${isMobile ? 'HOLD B BUTTON' : 'C OR R'}
+SWAP OR HOLD
 TILE
 
 M
@@ -59,6 +60,10 @@ SIMULTANEOUSLY
 
 DANIEL
 WHIFFING`,
+
+  `BASED ON LOOPZ BY
+
+MINDSCAPE`,
 ]
 
 export default class extends Phaser.Scene {
@@ -75,7 +80,7 @@ export default class extends Phaser.Scene {
     this.keys = this.input.keyboard.addKeys('SPACE')
     this.keys.SPACE.on('down', this.next)
     this.game.events.on('a-button', this.next)
-    this.game.events.on('b-button', this.next)
+    this.game.events.on('b-button', this.back)
 
     this.textIndex = 0
     this.mainText = this.add
@@ -104,9 +109,15 @@ export default class extends Phaser.Scene {
         this.sprites.push(this.add.sprite(32, 45, 'tiles', 8).setOrigin(0.5, 1))
       }
     } else {
-      this.registry.set('inHelp', false)
-      this.scene.stop()
+      this.back()
     }
+  }
+
+  back = () => {
+    this.game.events.off('a-button', this.next)
+    this.game.events.off('b-button', this.back)
+    this.registry.set('inHelp', false)
+    this.scene.stop()
   }
 
   update() {}

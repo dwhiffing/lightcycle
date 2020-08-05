@@ -16,7 +16,7 @@ export const DIRECTIONS = ['up', 'right', 'down', 'left']
 export const LINE_ANIM_DURATION = 800
 
 // amount of time between loop tile explosions
-export const EXPLODE_ANIM_DELAY = 100
+export const EXPLODE_ANIM_DELAY = 80
 
 // amount of time tiles take to explode
 export const EXPLODE_ANIM_DURATION = 400

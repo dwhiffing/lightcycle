@@ -39,7 +39,7 @@ export default class {
       .createEmitter({
         speed: 10,
         angle: { min: 0, max: 360 },
-        alpha: { start: 0.5, end: 0 },
+        alpha: { start: 0.7, end: 0 },
         lifespan: { max: 800, min: 200 },
       })
       .stop()
@@ -47,7 +47,7 @@ export default class {
       .createEmitter({
         speed: 20,
         angle: { min: 0, max: 360 },
-        alpha: { start: 0.5, end: 0 },
+        alpha: { start: 0.7, end: 0 },
         lifespan: { max: 1200, min: 400 },
       })
       .stop()
@@ -57,7 +57,7 @@ export default class {
 
   placeTile = (x, y, index) => {
     if (index < 8 && this.map.getTileAt(x, y).index > 1) return null
-    this._setEmitters(x * 5 + 2, y * 5, 3)
+    this._setEmitters(x * 5 + 4, y * 5 + 3, 5)
 
     this.map.putTileAt(index, x, y)
     return true
@@ -90,8 +90,12 @@ export default class {
       color._h = Phaser.Math.Clamp(hueShift + color._h, 0, 1)
 
       if (tile.index > 1) {
-        const offset = this.getOffset(this.activeIndex * 1.5, index, numTiles)
-        color.darken(Phaser.Math.Clamp(offset, 5, 35)).desaturate(10)
+        const offset = this.getOffset(
+          this.activeIndex * 1.2,
+          index,
+          numTiles * 2,
+        )
+        color.darken(Phaser.Math.Clamp(offset, 5, 30)).desaturate(10)
       } else {
         const offset = this.getOffset(this.activeIndex, index, numTiles * 1.5)
         color.darken(Phaser.Math.Clamp(offset, 30, 60))
@@ -105,7 +109,7 @@ export default class {
     this.emitter.setPosition(x, y)
     this.emitter2.setPosition(x, y)
 
-    const factor = 0.01 + 0.01 * this.data.get('multi')
+    const factor = 0.02 + 0.01 * this.data.get('multi')
 
     const color1 = this.scene.bgColor.clone()
     color1._h = Phaser.Math.Clamp(color1._h + factor, 0, 1)

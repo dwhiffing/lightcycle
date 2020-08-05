@@ -31,23 +31,28 @@ window.oncontextmenu = function (event) {
   return false
 }
 
+let interval, timeout
+const cancel = () => {
+  clearTimeout(timeout)
+  clearInterval(interval)
+}
 const attachUpDown = (el, key) => {
-  let interval, timeout
   el.addEventListener('pointerdown', () => {
     game.events.emit(key)
     timeout = setTimeout(() => {
-      if (key === 'a-button') {
+      if (key === 'a-button' || key === 'b-button') {
         game.events.emit('c-button')
       } else {
         interval = setInterval(() => game.events.emit(key), 80)
       }
     }, 300)
   })
-  el.addEventListener('pointerup', () => {
-    clearTimeout(timeout)
-    clearInterval(interval)
-  })
+
+  el.addEventListener('pointerup', cancel)
 }
+
+window.addEventListener('pointerup', cancel)
+window.addEventListener('pointercancel', cancel)
 
 attachUpDown(upButton, 'up-button')
 attachUpDown(downButton, 'down-button')
