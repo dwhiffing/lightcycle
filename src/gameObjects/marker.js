@@ -8,6 +8,8 @@ export default class {
     this.data = scene.data
     this.upcomingMinos = EASY_LOOP ? [BIG_ARCH] : [SMALL_CORNER]
     this.frames = []
+    this.rotation = 0
+    this.nextRotation = 0
     this.container =
       this.container || this.scene.add.container(7, 5).setDepth(9)
   }
@@ -22,7 +24,6 @@ export default class {
 
   clear = () => {
     this.mino = null
-    this.upcomingMinos = []
     this._render()
   }
 
@@ -83,22 +84,24 @@ export default class {
   getNextMino = () => {
     this.canHold = true
 
+    this.mino = this.upcomingMinos.shift()
+    this.rotation = this.nextRotation
+
     if (this.upcomingMinos.length === 0) {
       this.upcomingMinos = generateUpcomingMinos(this.data.get('level') - 1)
     }
 
-    this.mino = this.upcomingMinos.shift()
-    this.rotation = Phaser.Math.RND.between(0, this.mino.length - 1)
-
     const minosPlaced = this.data.get('minosPlaced')
-    if (minosPlaced > 0 && minosPlaced % 25 === 0) {
-      this.upcomingMinos[
-        Phaser.Math.RND.between(0, this.upcomingMinos.length - 1)
-      ] = WILDCARD
+    if (minosPlaced > 0 && minosPlaced % 50 === 0) {
+      this.upcomingMinos[0] = WILDCARD
     }
 
     const nextMino = this.upcomingMinos[0]
-    this.data.set('nextMino', this._getMinoFrames(nextMino))
+    this.nextRotation = nextMino
+      ? Phaser.Math.RND.between(0, nextMino.length - 1)
+      : 0
+
+    this.data.set('nextMino', this._getMinoFrames(nextMino, this.nextRotation))
 
     this._render()
   }
@@ -170,8 +173,8 @@ export default class {
     if (!list.every(({ y }) => y + _y < 54)) this.moveUp()
   }
 
-  _getMinoFrames = (mino = this.mino) =>
-    mino ? mino[Math.min(this.rotation, mino.length - 1)] : []
+  _getMinoFrames = (mino = this.mino, rotation = this.rotation) =>
+    mino ? mino[Math.min(rotation, mino.length - 1)] : []
 
   _getCoords = (index) => {
     const { x: _x, y: _y } = this.container

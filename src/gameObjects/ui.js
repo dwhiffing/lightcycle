@@ -73,6 +73,16 @@ export default class {
 
   _renderMino = (graphics, x, y, frames) => {
     graphics.clear()
+    const filledFrames = frames.filter((f) => f !== -1)
+    if (filledFrames.length === 1) {
+      const type = filledFrames[0]
+      SINGLE_TILE_PATTERNS[type].forEach((index) => {
+        const _x = x + (index % 3) + 1
+        const _y = y + Math.floor(index / 3) + 1
+        graphics.fillStyle(0xffffff).fillRect(_x, _y, 1, 1)
+      })
+      return
+    }
     frames.forEach((frame, index) => {
       if (frame <= 1) return
       const _x = x + (index % 3) * 2
@@ -112,4 +122,13 @@ export default class {
       .fillStyle(0xffffff, 1)
       .setDepth(2)
   }
+}
+const SINGLE_TILE_PATTERNS = {
+  2: [1, 4, 7],
+  3: [3, 4, 5],
+  4: [1, 4, 5],
+  5: [3, 4, 7],
+  6: [7, 4, 5],
+  7: [1, 3, 4],
+  8: [4],
 }
