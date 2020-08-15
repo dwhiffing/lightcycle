@@ -10,6 +10,7 @@ export default class {
     this.frames = []
     this.rotation = 0
     this.nextRotation = 0
+    this.canPlace = false
     this.container =
       this.container || this.scene.add.container(7, 5).setDepth(9)
   }
@@ -83,6 +84,7 @@ export default class {
 
   getNextMino = () => {
     this.canHold = true
+    this.canPlace = true
 
     this.mino = this.upcomingMinos.shift()
     this.rotation = this.nextRotation
@@ -114,11 +116,12 @@ export default class {
   }
 
   placeMino = () => {
-    const canPlaceMino = this.frames.every(this.canPlaceMino)
+    const canPlaceMino = this.canPlace && this.frames.every(this.canPlaceMino)
     if (!canPlaceMino) {
       this.scene.sound.play('error', { volume: 0.3 })
       return false
     }
+    this.canPlace = false
 
     this.frames.forEach(({ x, y, frame }) => {
       if (frame > -1) this.scene.map.placeTile(x, y, frame)

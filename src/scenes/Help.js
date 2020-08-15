@@ -10,7 +10,6 @@ export default class extends Phaser.Scene {
   }
 
   create() {
-    console.log(this.colorIndex)
     new Background(this, this.colorIndex)
 
     this.input.keyboard.removeAllKeys(true)
