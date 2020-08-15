@@ -19,6 +19,7 @@ export const TICK = 20
 export const TIMER_DURATION = 15000
 export const UI_Y_POS = 55
 export const DIRECTIONS = ['up', 'right', 'down', 'left']
+export const EXTRA_LIVES_SCORE = 5000
 
 // amount of time line takes to race around loop
 export const LINE_ANIM_DURATION = 800

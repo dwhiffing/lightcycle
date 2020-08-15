@@ -22,6 +22,7 @@ export default class extends Phaser.Scene {
     this.load.audio('error', 'assets/audio/error.mp3', { instances: 5 })
     this.load.audio('start', 'assets/audio/start.mp3')
     this.load.audio('loop', 'assets/audio/start4.mp3')
+    this.load.audio('life', 'assets/audio/life.mp3')
     this.load.audio('hold', 'assets/audio/hold.mp3')
     this.load.audio('timeout', 'assets/audio/timeout.mp3')
     this.load.audio('place1', 'assets/audio/place1.mp3', { instances: 5 })

@@ -6,6 +6,7 @@ import {
   TICK,
   TIMER_DURATION,
   EXPLODE_ANIM_DELAY,
+  EXTRA_LIVES_SCORE,
   SCORE_TO_LEVEL,
   COLORS,
   LINE_ANIM_DURATION,
@@ -79,7 +80,7 @@ export default class extends Phaser.Scene {
         lifespan: { max: 800, min: 300 },
       })
       .stop()
-
+    this.givenExtraLives = []
     this._visibilityChange()
   }
 
@@ -164,12 +165,17 @@ export default class extends Phaser.Scene {
   addScore = (increase) => {
     if (increase === 0) return
 
-    if (this.data.get('score') > 0 && this.data.get('score') % 1000 === 0)
-      this.updateLives(1)
-
     const newScore = +this.data.get('score') + increase
     this.data.set('score', newScore)
     this.ui.setPointText(increase)
+
+    const score = +this.data.get('score')
+    const extraLivesCount = Math.floor(score / EXTRA_LIVES_SCORE)
+    if (score > 0 && !this.givenExtraLives[extraLivesCount]) {
+      this.givenExtraLives[extraLivesCount] = true
+      this.sound.play('life')
+      this.updateLives(1)
+    }
 
     this.checkLevel()
   }
