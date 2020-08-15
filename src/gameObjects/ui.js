@@ -1,4 +1,4 @@
-import { UI_Y_POS } from '../constants'
+import { UI_Y_POS, COLORS } from '../constants'
 
 export default class {
   constructor(scene) {
@@ -7,6 +7,17 @@ export default class {
     this.data.events.on('changedata', this.update)
 
     this._drawInterface()
+
+    this.timerBar = this.scene.add.graphics().fillStyle(0xffffff, 1).setDepth(2)
+
+    this.nextMinoGraphics = this.scene.add
+      .graphics()
+      .fillStyle(0xffffff, 1)
+      .setDepth(2)
+    this.heldMinoGraphics = this.scene.add
+      .graphics()
+      .fillStyle(0xffffff, 1)
+      .setDepth(2)
 
     const lives = this.data.get('lives')
     const loops = this.data.get('loops')
@@ -92,11 +103,20 @@ export default class {
   }
 
   _drawInterface = () => {
+    this.uiGraphics && this.uiGraphics.clear()
+
     this.uiGraphics = this.scene.add
       .graphics()
       .setDepth(1)
       // draw frame
-      .fillStyle(0xffffff, 0.25)
+      .fillStyle(
+        Phaser.Display.Color.ObjectToColor(
+          new Phaser.Display.Color().setTo(
+            ...COLORS[this.data.get('level') - 1],
+          ),
+        ).color,
+        0.2,
+      )
       .fillRect(0, UI_Y_POS, 64, 13)
       // draw boxes
       .fillStyle(0x000000)
@@ -110,17 +130,6 @@ export default class {
       .fillRect(47, UI_Y_POS + 1, 10, 7)
       // lives box
       .fillRect(58, UI_Y_POS + 1, 5, 7)
-
-    this.timerBar = this.scene.add.graphics().fillStyle(0xffffff, 1).setDepth(2)
-
-    this.nextMinoGraphics = this.scene.add
-      .graphics()
-      .fillStyle(0xffffff, 1)
-      .setDepth(2)
-    this.heldMinoGraphics = this.scene.add
-      .graphics()
-      .fillStyle(0xffffff, 1)
-      .setDepth(2)
   }
 }
 const SINGLE_TILE_PATTERNS = {

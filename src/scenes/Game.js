@@ -198,6 +198,7 @@ export default class extends Phaser.Scene {
           })
           this.data.set('level', level + 1)
           this.updateColor()
+          this.ui._drawInterface()
           const color = this.bgColor.clone()
           color.darken(70)
           this.cameras.main.flash(900, color.red, color.green, color.blue)
