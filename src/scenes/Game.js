@@ -208,6 +208,7 @@ export default class extends Phaser.Scene {
           })
           this.data.set('level', level + 1)
           this.updateColor()
+          this.marker.resetQueue()
           this.ui._drawInterface()
           const color = this.bgColor.clone()
           color.darken(70)

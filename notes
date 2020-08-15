@@ -1,5 +1,3 @@
-reset tile queue when forcing level change
-clear board on death?
 finish game balance
 blocked tiles should have complementary color
 test wild card to ensure it always clears whole line
