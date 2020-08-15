@@ -63,3 +63,14 @@ attachUpDown(leftButton, 'left-button')
 attachUpDown(rightButton, 'right-button')
 attachUpDown(aButton, 'a-button')
 attachUpDown(bButton, 'b-button')
+
+window.addEventListener('keydown', (event) => {
+  if (event.key !== 'p') return
+  if (game.scene.isPaused('Game')) {
+    game.sound.play('click')
+    game.scene.resume('Game')
+  } else {
+    game.sound.play('move', { volume: 0.25, rate: 1.5 })
+    game.scene.pause('Game')
+  }
+})
