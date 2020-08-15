@@ -84,7 +84,7 @@ export default class extends Phaser.Scene {
       .stop()
     this.givenExtraLives = []
     this._visibilityChange()
-    this.checkLevel(true)
+    this.checkLevel(this.data.get('targetLevel'))
   }
 
   tick = () => {
@@ -188,7 +188,7 @@ export default class extends Phaser.Scene {
       (forceLevel ||
         this.data.get('score') >= SCORE_TO_LEVEL[this.data.get('level')]) &&
       this.data.get('level') < 9 &&
-      this.data.get('level') < this.data.get('targetLevel')
+      this.data.get('level') < forceLevel
     ) {
       this.time.addEvent({
         delay: 1000,
