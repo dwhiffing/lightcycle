@@ -112,6 +112,9 @@ export default class extends Phaser.Scene {
     this.data.set('timerMax', newTimerMax)
     this.updateColor()
     this.marker.clear()
+
+    this.map.clearBoard()
+
     this.sound.play('timeout', { volume: 0.5 })
 
     this.emitter.setPosition(

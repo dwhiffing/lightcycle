@@ -63,8 +63,8 @@ export default class {
     return true
   }
 
-  clearTiles = (tiles) => {
-    tiles.forEach(this._animateTileDestroy)
+  clearTiles = (tiles, isDeath) => {
+    tiles.forEach(this._animateTileDestroy(isDeath))
 
     tiles.forEach((tile) => {
       this.map.putTileAt(1, tile.x, tile.y)
@@ -128,28 +128,32 @@ export default class {
   // TODO: need to refactor
   // TODO: Fix wildcard cases
   // TODO: make animation start from last placed tile
-  _animateTileDestroy = (tile, index, tiles) => {
+  _animateTileDestroy = (isDeath) => (tile, index, tiles) => {
     const sprite = this.scene.add
       .sprite(tile.pixelX + 4, tile.pixelY + 2, 'tiles', tile.index)
       .setDepth(5)
       .setTint(this.scene.bgColor.color)
-    const lineDuration = LINE_ANIM_DURATION - 60 * this.data.get('level')
-    const speed = lineDuration / (tiles.length * 5)
-    this._drawTileLine(tile, tiles[index + 1], index, sprite, speed)
 
-    if (index === tiles.length - 1) {
-      this._drawTileLine(tile, tiles[0], index, sprite, speed)
+    let lineDuration = LINE_ANIM_DURATION - 60 * this.data.get('level')
+    if (!isDeath) {
+      const speed = lineDuration / (tiles.length * 5)
+      this._drawTileLine(tile, tiles[index + 1], index, sprite, speed)
+
+      if (index === tiles.length - 1) {
+        this._drawTileLine(tile, tiles[0], index, sprite, speed)
+      }
+
+      this.scene.time.addEvent({
+        delay: lineDuration + LINE_ANIM_OFFSET,
+        callback: () => {
+          this.lineGraphics.clear()
+        },
+      })
     }
 
-    const explodeDelay =
-      lineDuration + index * (EXPLODE_ANIM_DELAY - 5 * this.data.get('level'))
-
-    this.scene.time.addEvent({
-      delay: lineDuration + LINE_ANIM_OFFSET,
-      callback: () => {
-        this.lineGraphics.clear()
-      },
-    })
+    const explodeDelay = isDeath
+      ? 0
+      : lineDuration + index * (EXPLODE_ANIM_DELAY - 5 * this.data.get('level'))
 
     this.scene.tweens.add({
       delay: explodeDelay,
@@ -168,9 +172,11 @@ export default class {
         }
         const level = this.data.get('level')
         const rate = 0.4 + 0.02 * index + (level - 1) * 0.05
-        this.scene.sound.play(`place${Math.min(7, level)}`, {
-          rate: Math.min(1.55, rate),
-        })
+        if (!isDeath) {
+          this.scene.sound.play(`place${Math.min(7, level)}`, {
+            rate: Math.min(1.55, rate),
+          })
+        }
       },
     })
   }
@@ -199,6 +205,13 @@ export default class {
           this.lineGraphics.fillStyle(0x000000).fillRect(x, y, 1, 1),
       })
     }
+  }
+
+  clearBoard = () => {
+    this.clearTiles(
+      this.map.layer.data.flat().filter(({ index }) => index > 1),
+      true,
+    )
   }
 
   clearLoop() {
