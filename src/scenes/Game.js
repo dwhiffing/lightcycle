@@ -171,7 +171,7 @@ export default class extends Phaser.Scene {
 
     const score = +this.data.get('score')
     const extraLivesCount = Math.floor(score / EXTRA_LIVES_SCORE)
-    if (score > 0 && !this.givenExtraLives[extraLivesCount]) {
+    if (extraLivesCount > 0 && !this.givenExtraLives[extraLivesCount]) {
       this.givenExtraLives[extraLivesCount] = true
       this.sound.play('life')
       this.updateLives(1)
@@ -185,10 +185,6 @@ export default class extends Phaser.Scene {
       this.data.get('score') >= SCORE_TO_LEVEL[this.data.get('level')] &&
       this.data.get('level') < 9
     ) {
-      console.log(
-        this.data.get('score'),
-        SCORE_TO_LEVEL[this.data.get('level')],
-      )
       this.time.addEvent({
         delay: 1000,
         callback: this.checkLevel,
