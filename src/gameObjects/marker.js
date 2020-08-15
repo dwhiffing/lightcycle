@@ -12,7 +12,7 @@ export default class {
     this.nextRotation = 0
     this.canPlace = false
     this.container =
-      this.container || this.scene.add.container(7, 5).setDepth(9)
+      this.container || this.scene.add.container(22, 20).setDepth(9)
   }
 
   moveUp = () => this.move(0)
