@@ -29,7 +29,7 @@ export default class extends Phaser.Scene {
     this.game.events.on('b-button', this.selectOption)
 
     this.musicObject = this.sound.add('menuMusic')
-    this.musicObject.play({ volume: 0.5 })
+    this.musicObject.play({ volume: 0.5, loop: true })
     this.started = false
 
     this.optionIndex = 0
