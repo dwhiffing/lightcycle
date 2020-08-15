@@ -207,8 +207,9 @@ export default class extends Phaser.Scene {
       (!forceLevel || this.data.get('level') < forceLevel) &&
       this.data.get('level') < 9
     ) {
+      const levelDelay = 1000 // - 40 * this.data.get('level')
       this.time.addEvent({
-        delay: 1000,
+        delay: levelDelay,
         callback: () => this.checkLevel(forceLevel),
       })
       this.time.addEvent({
@@ -224,7 +225,12 @@ export default class extends Phaser.Scene {
           this.ui._drawInterface()
           const color = this.bgColor.clone()
           color.darken(70)
-          this.cameras.main.flash(900, color.red, color.green, color.blue)
+          this.cameras.main.flash(
+            levelDelay - 100,
+            color.red,
+            color.green,
+            color.blue,
+          )
           const newTimerMax =
             TIMER_DURATION - (this.data.get('level') - 1) * 1000
           this.data.set('timerMax', newTimerMax)
