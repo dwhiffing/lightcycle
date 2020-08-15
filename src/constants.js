@@ -12,14 +12,14 @@ import {
 export * from './minos'
 
 export const EASY_LOOP = false
-export const SCORE_TO_LEVEL = [-1, 500, 2000, 4000, 8000, 15000, 30000, 50000]
+export const SCORE_TO_LEVEL = [-1, 500, 2000, 4000, 8000, 15000, 25000, 50000]
 export const MAP_SIZE_X = 12
 export const MAP_SIZE_Y = 11
 export const TICK = 20
 export const TIMER_DURATION = 13000
 export const UI_Y_POS = 55
 export const DIRECTIONS = ['up', 'right', 'down', 'left']
-export const EXTRA_LIVES_SCORE = 10000
+export const EXTRA_LIVES_SCORE = 50000
 
 // amount of time line takes to race around loop
 export const LINE_ANIM_DURATION = 800
