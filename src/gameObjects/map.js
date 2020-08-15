@@ -167,8 +167,9 @@ export default class {
           this._setEmitters(sprite.x, sprite.y, 80)
         }
         const level = this.data.get('level')
+        const rate = 0.4 + 0.02 * index + (level - 1) * 0.05
         this.scene.sound.play(`place${Math.min(7, level)}`, {
-          rate: Math.min(1.55, 0.35 + 0.02 * index + (level - 1) * 0.15),
+          rate: Math.min(1.55, rate),
         })
       },
     })
