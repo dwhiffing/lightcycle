@@ -36,7 +36,7 @@ export default class extends Phaser.Scene {
 
     this.input.keyboard.removeAllKeys(true)
     this.keys = this.input.keyboard.addKeys(
-      'W,A,S,D,Q,E,R,M,UP,DOWN,LEFT,RIGHT,Z,X,C,SPACE',
+      'W,A,S,D,Q,E,R,M,F,UP,DOWN,LEFT,RIGHT,Z,X,C,SPACE',
     )
     this.keys.W.on('down', this.marker.moveUp).setEmitOnRepeat(true)
     this.keys.A.on('down', this.marker.moveLeft).setEmitOnRepeat(true)
@@ -54,6 +54,7 @@ export default class extends Phaser.Scene {
     this.keys.X.on('down', this.marker.rotateRight)
     this.keys.C.on('down', this.marker.hold)
     this.keys.M.on('down', this.mute)
+    this.keys.F.on('down', this.fullscreen)
 
     this.game.events.on('up-button', this.marker.moveUp)
     this.game.events.on('down-button', this.marker.moveDown)
@@ -225,6 +226,14 @@ export default class extends Phaser.Scene {
 
   mute = () => {
     this.game.sound.mute = this.game.sound.mute ? false : true
+  }
+
+  fullscreen = () => {
+    if (this.scale.isFullscreen) {
+      this.scale.stopFullscreen()
+    } else {
+      this.scale.startFullscreen()
+    }
   }
 
   _visibilityChange = () => {

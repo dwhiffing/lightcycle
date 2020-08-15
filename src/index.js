@@ -10,7 +10,8 @@ var config = {
   zoom: 4,
   parent: 'phaser-example',
   scale: {
-    mode: Phaser.Scale.WIDTH_CONTROLS_HEIGHT,
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   // debug: true,
   scene: Object.values(scenes),
@@ -63,6 +64,10 @@ attachUpDown(leftButton, 'left-button')
 attachUpDown(rightButton, 'right-button')
 attachUpDown(aButton, 'a-button')
 attachUpDown(bButton, 'b-button')
+
+if (window.matchMedia('(pointer: coarse)').matches) {
+  window.document.body.classList.add('touch')
+}
 
 window.addEventListener('keydown', (event) => {
   if (event.key !== 'p') return
