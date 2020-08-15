@@ -1,3 +1,5 @@
+import Background from '../gameObjects/background'
+
 export default class extends Phaser.Scene {
   constructor() {
     super({ key: 'Menu' })
@@ -6,11 +8,7 @@ export default class extends Phaser.Scene {
   init() {}
 
   create() {
-    this.add.shader('Tunnel', 32, 32, 64, 64, ['metal'])
-    const graphics = this.add.graphics()
-    graphics.fillStyle(0x001122, 0.8)
-    graphics.fillRect(0, 0, 64, 64)
-
+    this.background = new Background(this)
     this.keys = this.input.keyboard.addKeys('W,A,S,D,M,SPACE,UP,DOWN')
     this.keys.SPACE.on('down', this.selectOption)
     this.keys.W.on('down', this.lastOption)
@@ -24,18 +22,15 @@ export default class extends Phaser.Scene {
     this.game.events.on('a-button', this.selectOption)
     this.game.events.on('b-button', this.selectOption)
 
-    // this.musicObject = this.sound.add('menuMusic')
-    // this.musicObject.play({ volume: 0.5 })
+    this.musicObject = this.sound.add('menuMusic')
+    this.musicObject.play({ volume: 0.5 })
     this.started = false
 
-    // this.input.keyboard.removeAllKeys(true)
-
     this.optionIndex = 0
-    // this.optionIndex = 1
 
     this.add.image(32, 16, 'title').setOrigin(0.5)
-    this.add.bitmapText(32, 38, 'pixel-dan', 'START', 5).setOrigin(0.5)
-    this.add.bitmapText(32, 46, 'pixel-dan', 'HELP', 5).setOrigin(0.5)
+    this.add.bitmapText(32, 51, 'pixel-dan', 'START', 5).setOrigin(0.5)
+    this.add.bitmapText(32, 59, 'pixel-dan', 'HELP', 5).setOrigin(0.5)
     this.arrow = this.add.graphics()
     this.arrow.fillStyle(0xffffff)
 
@@ -46,13 +41,9 @@ export default class extends Phaser.Scene {
       this.optionIndex = 0
 
       this.add
-        .bitmapText(32, 59, 'pixel-dan', `SCORE ${score}`, 5)
+        .bitmapText(32, 40, 'pixel-dan', `SCORE ${score}`, 5)
         .setOrigin(0.5)
         .setDepth(10)
-    } else {
-      // this.spaceText = this.add
-      //   .bitmapText(32, 59, 'pixel-dan', 'PRESS SPACE', 5)
-      //   .setOrigin(0.5)
     }
 
     this.time.addEvent({
@@ -83,19 +74,19 @@ export default class extends Phaser.Scene {
     if (this.optionIndex > 1) this.optionIndex = 0
     this.arrow
       .fillStyle(0xffffff)
-      .fillRect(17, 35 + 8 * this.optionIndex, 2, 3)
-      .fillRect(19, 36 + 8 * this.optionIndex, 1, 1)
+      .fillRect(17, 48 + 8 * this.optionIndex, 2, 3)
+      .fillRect(19, 49 + 8 * this.optionIndex, 1, 1)
   }
 
   selectOption = () => {
     if (this.registry.get('inHelp') || this.started) return
     if (this.optionIndex === 0) {
       this.sound.play('start')
-      // this.tweens.add({
-      //   targets: this.musicObject,
-      //   duration: 1900,
-      //   volume: 0,
-      // })
+      this.tweens.add({
+        targets: this.musicObject,
+        duration: 1900,
+        volume: 0,
+      })
       this.started = true
       this.cameras.main.fade(2000, 0, 0, 0, true, (c, p) => {
         if (p === 1) {
@@ -104,12 +95,12 @@ export default class extends Phaser.Scene {
           this.game.events.off('a-button')
           this.game.events.off('b-button')
           this.scene.start('Game')
-          // this.musicObject.destroy()
+          this.musicObject.destroy()
         }
       })
     }
     if (this.optionIndex === 1) {
-      this.scene.launch('Help')
+      this.scene.launch('Help', { startIndex: this.background.colorIndex })
       this.registry.set('inHelp', true)
     }
   }

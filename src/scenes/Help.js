@@ -1,3 +1,64 @@
+import Background from '../gameObjects/background'
+
+export default class extends Phaser.Scene {
+  constructor() {
+    super({ key: 'Help' })
+  }
+
+  init(data) {
+    this.colorIndex = data.startIndex
+  }
+
+  create() {
+    console.log(this.colorIndex)
+    new Background(this, this.colorIndex)
+
+    this.input.keyboard.removeAllKeys(true)
+    this.keys = this.input.keyboard.addKeys('SPACE')
+    this.keys.SPACE.on('down', this.next)
+    this.game.events.on('a-button', this.next)
+    this.game.events.on('b-button', this.back)
+
+    this.textIndex = 0
+    this.mainText = this.add
+      .bitmapText(32, 27, 'pixel-dan', TEXTS[0], 5)
+      .setCenterAlign()
+      .setOrigin(0.5)
+
+    // this.space = this.add
+    //   .bitmapText(32, 59, 'pixel-dan', 'PRESS SPACE', 5)
+    //   .setOrigin(0.5)
+    //   .setAlpha(0.25)
+    this.sprites = []
+  }
+
+  next = () => {
+    this.sprites.forEach((s) => s.destroy())
+    this.sprites = []
+    this.textIndex++
+    if (this.textIndex < TEXTS.length) {
+      const text = TEXTS[this.textIndex]
+      this.mainText.setText(text)
+      if (text.match(/NEXT PIECE|MULTIPLIER|LIVES/)) {
+        this.sprites.push(this.add.sprite(0, 64, 'hud').setOrigin(0, 1))
+      }
+      if (text.includes('PARTIAL')) {
+        this.sprites.push(this.add.sprite(32, 45, 'tiles', 8).setOrigin(0.5, 1))
+      }
+    } else {
+      this.back()
+    }
+  }
+
+  back = () => {
+    this.game.events.off('a-button', this.next)
+    this.game.events.off('b-button', this.back)
+    this.registry.set('inHelp', false)
+    this.scene.stop()
+  }
+
+  update() {}
+}
 const isMobile = window.innerWidth < 800
 const TEXTS = [
   `PLACE TILES TO
@@ -65,60 +126,3 @@ WHIFFING`,
 
 MINDSCAPE`,
 ]
-
-export default class extends Phaser.Scene {
-  constructor() {
-    super({ key: 'Help' })
-  }
-
-  init() {}
-
-  create() {
-    this.add.graphics().fillStyle(0x000000).fillRect(0, 0, 64, 64).setDepth(-1)
-
-    this.input.keyboard.removeAllKeys(true)
-    this.keys = this.input.keyboard.addKeys('SPACE')
-    this.keys.SPACE.on('down', this.next)
-    this.game.events.on('a-button', this.next)
-    this.game.events.on('b-button', this.back)
-
-    this.textIndex = 0
-    this.mainText = this.add
-      .bitmapText(32, 27, 'pixel-dan', TEXTS[0], 5)
-      .setCenterAlign()
-      .setOrigin(0.5)
-
-    // this.space = this.add
-    //   .bitmapText(32, 59, 'pixel-dan', 'PRESS SPACE', 5)
-    //   .setOrigin(0.5)
-    //   .setAlpha(0.25)
-    this.sprites = []
-  }
-
-  next = () => {
-    this.sprites.forEach((s) => s.destroy())
-    this.sprites = []
-    this.textIndex++
-    if (this.textIndex < TEXTS.length) {
-      const text = TEXTS[this.textIndex]
-      this.mainText.setText(text)
-      if (text.match(/NEXT PIECE|MULTIPLIER|LIVES/)) {
-        this.sprites.push(this.add.sprite(0, 64, 'hud').setOrigin(0, 1))
-      }
-      if (text.includes('PARTIAL')) {
-        this.sprites.push(this.add.sprite(32, 45, 'tiles', 8).setOrigin(0.5, 1))
-      }
-    } else {
-      this.back()
-    }
-  }
-
-  back = () => {
-    this.game.events.off('a-button', this.next)
-    this.game.events.off('b-button', this.back)
-    this.registry.set('inHelp', false)
-    this.scene.stop()
-  }
-
-  update() {}
-}
