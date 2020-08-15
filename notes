@@ -1,14 +1,8 @@
-explosion sprites need to match background tile tint
+reset tile queue when forcing level change
+clear board on death?
+finish game balance
 blocked tiles should have complementary color
 test wild card to ensure it always clears whole line
-extra life sound
 
-don't lose multiplier on death
-allow selection of starting multi?
-
-add color to ui?
-menu shader hue shift over time?
-use dynamic backgrounds on marker and tiles?
-change menu music?
-add game music?
 more dynamic background variety?
+explosion sprites need to match background tile tint?

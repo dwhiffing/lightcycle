@@ -1,25 +1,25 @@
-import { LEVEL1, LEVEL2, LEVEL3 } from './minos'
+import {
+  LEVEL1,
+  LEVEL2,
+  LEVEL3,
+  LEVEL4,
+  LEVEL5,
+  LEVEL6,
+  LEVEL7,
+  LEVEL8,
+  LEVEL9,
+} from './minos'
 export * from './minos'
 
 export const EASY_LOOP = false
-export const SCORE_TO_LEVEL = [
-  -1,
-  250,
-  500,
-  1000,
-  2000,
-  5000,
-  10000,
-  20000,
-  50000,
-]
+export const SCORE_TO_LEVEL = [-1, 500, 2000, 4000, 8000, 15000, 30000, 50000]
 export const MAP_SIZE_X = 12
 export const MAP_SIZE_Y = 11
 export const TICK = 20
-export const TIMER_DURATION = 15000
+export const TIMER_DURATION = 13000
 export const UI_Y_POS = 55
 export const DIRECTIONS = ['up', 'right', 'down', 'left']
-export const EXTRA_LIVES_SCORE = 5000
+export const EXTRA_LIVES_SCORE = 10000
 
 // amount of time line takes to race around loop
 export const LINE_ANIM_DURATION = 800
@@ -93,12 +93,12 @@ export const DIRECTION_ADJACENCY = {
 
 export const LEVELS = [
   LEVEL1,
-  LEVEL1,
-  LEVEL1,
-  LEVEL2,
-  LEVEL2,
   LEVEL2,
   LEVEL3,
-  LEVEL3,
-  LEVEL3,
+  LEVEL4,
+  LEVEL5,
+  LEVEL6,
+  LEVEL7,
+  LEVEL8,
+  LEVEL9,
 ]

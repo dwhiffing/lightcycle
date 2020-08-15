@@ -149,7 +149,7 @@ export default class extends Phaser.Scene {
     const loop = this.map.clearLoop() || []
 
     const numCorners = loop.filter((t) => [4, 5, 6, 7].includes(t.index))
-    const score = loop.length * 5 * (numCorners.length + 1)
+    const score = loop.length * (numCorners.length + 1) * 10
 
     loop.length > 0 && this.sound.play('loop', { rate: 0.7 + 0.05 * level })
     const lineAnimDelay = LINE_ANIM_DURATION - 70 * level
