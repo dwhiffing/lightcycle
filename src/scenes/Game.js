@@ -156,7 +156,7 @@ export default class extends Phaser.Scene {
 
     loop.length > 0 && this.sound.play('loop', { rate: 0.7 + 0.03 * level })
     const lineAnimDelay = LINE_ANIM_DURATION - 70 * level
-    const loopAnimDelay = loop.length * (EXPLODE_ANIM_DELAY - 5 * level)
+    const loopAnimDelay = loop.length * (EXPLODE_ANIM_DELAY - 2 * level)
     const minoDelay = 250 - 25 * level
     this.time.addEvent({
       delay: loop.length > 1 ? lineAnimDelay + loopAnimDelay : 0,
@@ -231,7 +231,7 @@ export default class extends Phaser.Scene {
     )
     this.bgColor = this.baseColor.clone().brighten(20)
     this.cursorColor = this.baseColor.clone().brighten(30).saturate(30)
-    this.cursorErrorColor = this.cursorColor.clone().darken(30)
+    this.cursorErrorColor = this.cursorColor.clone().brighten(100)
     this.cursorErrorColor._h + 0.2
     this.cursorErrorColor.desaturate(50)
     this.map && this.map.render()
