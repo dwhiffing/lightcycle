@@ -224,7 +224,7 @@ export default class extends Phaser.Scene {
       ...COLORS[Math.min(9, this.data.get('level') - 1)],
     )
     this.bgColor = this.baseColor.clone().brighten(20)
-    this.cursorColor = this.baseColor.clone().brighten(50).saturate(40)
+    this.cursorColor = this.baseColor.clone().brighten(30).saturate(30)
     this.cursorErrorColor = this.cursorColor.clone().darken(30)
     this.cursorErrorColor._h + 0.2
     this.cursorErrorColor.desaturate(50)

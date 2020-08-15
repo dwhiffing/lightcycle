@@ -37,14 +37,25 @@ export const LINE_ANIM_OFFSET = 400
 export const TIME_OUT_DURATION = 1000
 
 export const COLORS = [
+  // purple
   [157, 76, 218],
+  // blue
   [71, 96, 209],
+  // cyan
   [74, 194, 203],
+
+  // green
   [73, 190, 93],
-  [175, 234, 72],
+  // yellow-green
+  [127, 234, 32],
+  // yellow
   [234, 228, 56],
-  [231, 170, 64],
-  [240, 116, 67],
+
+  // yellow-orange
+  [250, 133, 0],
+  // orange
+  [240, 86, 46],
+  // red
   [230, 33, 33],
 ]
 
