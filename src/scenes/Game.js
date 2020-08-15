@@ -90,10 +90,10 @@ export default class extends Phaser.Scene {
   tick = () => {
     const timer = this.data.get('timer')
     if (this.marker.mino) {
-      if (timer && timer <= 4000 && timer % 1000 === 0) {
+      if (timer && timer <= 3000 && timer % 1000 === 0) {
         this.sound.play('move', {
-          volume: (5000 - timer) / 4000,
-          rate: 0.6 - (5000 - timer) / 15000,
+          volume: (4000 - timer) / 4000,
+          rate: 0.6 - (4000 - timer) / 15000,
         })
       }
       this.data.set('timer', timer - TICK)
@@ -154,7 +154,7 @@ export default class extends Phaser.Scene {
     const numCorners = loop.filter((t) => [4, 5, 6, 7].includes(t.index))
     const score = loop.length * (numCorners.length + 1) * 10
 
-    loop.length > 0 && this.sound.play('loop', { rate: 0.7 + 0.05 * level })
+    loop.length > 0 && this.sound.play('loop', { rate: 0.7 + 0.03 * level })
     const lineAnimDelay = LINE_ANIM_DURATION - 70 * level
     const loopAnimDelay = loop.length * (EXPLODE_ANIM_DELAY - 5 * level)
     const minoDelay = 250 - 25 * level

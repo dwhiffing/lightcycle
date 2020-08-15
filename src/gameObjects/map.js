@@ -153,7 +153,7 @@ export default class {
 
     const explodeDelay = isDeath
       ? 0
-      : lineDuration + index * (EXPLODE_ANIM_DELAY - 5 * this.data.get('level'))
+      : lineDuration + index * (EXPLODE_ANIM_DELAY - 2 * this.data.get('level'))
 
     this.scene.tweens.add({
       delay: explodeDelay,
@@ -171,10 +171,11 @@ export default class {
           this._setEmitters(sprite.x, sprite.y, 80)
         }
         const level = this.data.get('level')
-        const rate = 0.4 + 0.02 * index + (level - 1) * 0.05
+        const rate = 0.4 + 0.02 * index + (level - 1) * 0.02
         if (!isDeath) {
           this.scene.sound.play(`place${Math.min(7, level)}`, {
             rate: Math.min(1.55, rate),
+            volume: 0.6,
           })
         }
       },
