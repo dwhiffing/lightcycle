@@ -184,11 +184,13 @@ export default class extends Phaser.Scene {
   }
 
   checkLevel = (forceLevel) => {
+    const hasEnoughScoreToLevel =
+      this.data.get('score') >= SCORE_TO_LEVEL[this.data.get('level')]
+
     if (
-      (forceLevel ||
-        this.data.get('score') >= SCORE_TO_LEVEL[this.data.get('level')]) &&
-      this.data.get('level') < 9 &&
-      this.data.get('level') < forceLevel
+      (forceLevel || hasEnoughScoreToLevel) &&
+      (!forceLevel || this.data.get('level') < forceLevel) &&
+      this.data.get('level') < 9
     ) {
       this.time.addEvent({
         delay: 1000,
