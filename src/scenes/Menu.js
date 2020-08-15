@@ -117,12 +117,16 @@ export default class extends Phaser.Scene {
   }
 
   easierDifficulty = () => {
+    if (this.started) return
+    this.sound.play('move')
     this.difficultyIndex--
     if (this.difficultyIndex < 1) this.difficultyIndex = 1
     this.difficultyText.text = this.difficultyIndex
   }
 
   harderDifficulty = () => {
+    if (this.started) return
+    this.sound.play('move')
     this.difficultyIndex++
     if (this.difficultyIndex > 9) this.difficultyIndex = 9
     this.difficultyText.text = this.difficultyIndex

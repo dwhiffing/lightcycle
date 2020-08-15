@@ -122,6 +122,7 @@ export default class {
       return false
     }
     this.canPlace = false
+    this.canHold = false
 
     this.frames.forEach(({ x, y, frame }) => {
       if (frame > -1) this.scene.map.placeTile(x, y, frame)
