@@ -182,12 +182,18 @@ export default class extends Phaser.Scene {
     this.ui.setPointText(increase)
 
     const score = +this.data.get('score')
-    const extraLivesCount = Math.floor(score / EXTRA_LIVES_SCORE)
-    if (extraLivesCount > 0 && !this.givenExtraLives[extraLivesCount]) {
-      this.givenExtraLives[extraLivesCount] = true
-      this.sound.play('life')
-      this.updateLives(1)
-    }
+
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        const extraLivesCount = Math.floor(score / EXTRA_LIVES_SCORE)
+        if (extraLivesCount > 0 && !this.givenExtraLives[extraLivesCount]) {
+          this.givenExtraLives[extraLivesCount] = true
+          this.sound.play('life')
+          this.updateLives(1)
+        }
+      },
+    })
 
     this.checkLevel()
   }
