@@ -17,7 +17,9 @@ export default class extends Phaser.Scene {
     super({ key: 'Game' })
   }
 
-  init() {}
+  init(data) {
+    this.data.set('targetLevel', data.difficultyIndex)
+  }
 
   create() {
     this.cameras.main.fadeFrom(1000, 0, 0, 0, true)
@@ -82,6 +84,7 @@ export default class extends Phaser.Scene {
       .stop()
     this.givenExtraLives = []
     this._visibilityChange()
+    this.checkLevel(true)
   }
 
   tick = () => {
@@ -180,14 +183,16 @@ export default class extends Phaser.Scene {
     this.checkLevel()
   }
 
-  checkLevel = () => {
+  checkLevel = (forceLevel) => {
     if (
-      this.data.get('score') >= SCORE_TO_LEVEL[this.data.get('level')] &&
-      this.data.get('level') < 9
+      (forceLevel ||
+        this.data.get('score') >= SCORE_TO_LEVEL[this.data.get('level')]) &&
+      this.data.get('level') < 9 &&
+      this.data.get('level') < this.data.get('targetLevel')
     ) {
       this.time.addEvent({
         delay: 1000,
-        callback: this.checkLevel,
+        callback: () => this.checkLevel(forceLevel),
       })
       this.time.addEvent({
         delay: 100,

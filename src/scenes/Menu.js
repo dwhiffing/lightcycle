@@ -9,13 +9,19 @@ export default class extends Phaser.Scene {
 
   create() {
     this.background = new Background(this)
-    this.keys = this.input.keyboard.addKeys('W,A,S,D,M,SPACE,UP,DOWN')
+    this.keys = this.input.keyboard.addKeys(
+      'W,A,S,D,M,SPACE,UP,DOWN,LEFT,RIGHT',
+    )
     this.keys.SPACE.on('down', this.selectOption)
     this.keys.W.on('down', this.lastOption)
-    this.keys.M.on('down', this.mute)
     this.keys.S.on('down', this.nextOption)
+    this.keys.A.on('down', this.easierDifficulty)
+    this.keys.D.on('down', this.harderDifficulty)
     this.keys.UP.on('down', this.lastOption)
     this.keys.DOWN.on('down', this.nextOption)
+    this.keys.LEFT.on('down', this.easierDifficulty)
+    this.keys.RIGHT.on('down', this.harderDifficulty)
+    this.keys.M.on('down', this.mute)
 
     this.game.events.on('up-button', this.nextOption)
     this.game.events.on('down-button', this.lastOption)
@@ -27,9 +33,14 @@ export default class extends Phaser.Scene {
     this.started = false
 
     this.optionIndex = 0
+    this.difficultyIndex = 1
 
     this.add.image(32, 16, 'title').setOrigin(0.5)
     this.add.bitmapText(32, 51, 'pixel-dan', 'START', 5).setOrigin(0.5)
+    this.difficultyText = this.add
+      .bitmapText(46, 51, 'pixel-dan', '1', 5)
+      .setAlpha(0.5)
+      .setOrigin(0.5)
     this.add.bitmapText(32, 59, 'pixel-dan', 'HELP', 5).setOrigin(0.5)
     this.arrow = this.add.graphics()
     this.arrow.fillStyle(0xffffff)
@@ -94,7 +105,7 @@ export default class extends Phaser.Scene {
           this.game.events.off('down-button')
           this.game.events.off('a-button')
           this.game.events.off('b-button')
-          this.scene.start('Game')
+          this.scene.start('Game', { difficultyIndex: this.difficultyIndex })
           this.musicObject.destroy()
         }
       })
@@ -103,6 +114,18 @@ export default class extends Phaser.Scene {
       this.scene.launch('Help', { startIndex: this.background.colorIndex })
       this.registry.set('inHelp', true)
     }
+  }
+
+  easierDifficulty = () => {
+    this.difficultyIndex--
+    if (this.difficultyIndex < 1) this.difficultyIndex = 1
+    this.difficultyText.text = this.difficultyIndex
+  }
+
+  harderDifficulty = () => {
+    this.difficultyIndex++
+    if (this.difficultyIndex > 9) this.difficultyIndex = 9
+    this.difficultyText.text = this.difficultyIndex
   }
 
   mute = () => {
