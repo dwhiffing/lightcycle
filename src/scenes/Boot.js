@@ -16,8 +16,7 @@ export default class extends Phaser.Scene {
     })
 
     this.load.audio('menuMusic', 'assets/audio/menu-music.mp3')
-    // this.load.audio('gameMusic', 'assets/audio/game-music.mp3')
-    this.load.audio('move', 'assets/audio/help-next.mp3', { instances: 5 })
+    this.load.audio('move', 'assets/audio/move.mp3', { instances: 5 })
     this.load.audio('click', 'assets/audio/click.mp3', { instances: 5 })
     this.load.audio('error', 'assets/audio/error.mp3', { instances: 5 })
     this.load.audio('start', 'assets/audio/start.mp3')
@@ -32,7 +31,6 @@ export default class extends Phaser.Scene {
     this.load.audio('place5', 'assets/audio/place5.mp3', { instances: 5 })
     this.load.audio('place6', 'assets/audio/place6.mp3', { instances: 5 })
     this.load.audio('place7', 'assets/audio/place7.mp3', { instances: 5 })
-
     this.load.audio('multi1', 'assets/audio/multi1.mp3', { instances: 5 })
     this.load.audio('multi2', 'assets/audio/multi2.mp3', { instances: 5 })
     this.load.audio('multi3', 'assets/audio/multi3.mp3', { instances: 5 })
