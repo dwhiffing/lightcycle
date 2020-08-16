@@ -64,8 +64,8 @@ export default class {
     return true
   }
 
-  clearTiles = (tiles, isDeath) => {
-    tiles.forEach(this._animateTileDestroy(isDeath))
+  clearTiles = (tiles, opts = {}) => {
+    tiles.forEach(this._animateTileDestroy(opts.isDeath, opts.isWildcard))
 
     tiles.forEach((tile) => {
       this.map.putTileAt(1, tile.x, tile.y)
@@ -125,7 +125,7 @@ export default class {
   // TODO: need to refactor
   // TODO: Fix wildcard cases
   // TODO: make animation start from last placed tile
-  _animateTileDestroy = (isDeath) => (tile, index, tiles) => {
+  _animateTileDestroy = (isDeath, isWildcard) => (tile, index, tiles) => {
     const sprite = this.scene.add
       .sprite(tile.pixelX + 4, tile.pixelY + 2, 'tiles', tile.index)
       .setDepth(5)
@@ -136,7 +136,7 @@ export default class {
       const speed = lineDuration / (tiles.length * 5)
       this._drawTileLine(tile, tiles[index + 1], index, sprite, speed)
 
-      if (index === tiles.length - 1) {
+      if (index === tiles.length - 1 && !isWildcard) {
         this._drawTileLine(tile, tiles[0], index, sprite, speed)
       }
 
@@ -185,8 +185,7 @@ export default class {
       const delay = index * speed * 5 + speed * i
       if (nextTile && nextTile.x !== tile.x) {
         x = nextTile.x > tile.x ? x + i : x - i
-      }
-      if (nextTile && nextTile.y !== tile.y) {
+      } else if (nextTile && nextTile.y !== tile.y) {
         y = nextTile.y > tile.y ? y + i : y - i
       }
       const color = this.scene.bgColor.clone()
@@ -208,7 +207,7 @@ export default class {
   clearBoard = () => {
     this.clearTiles(
       this.map.layer.data.flat().filter(({ index }) => index > 1),
-      true,
+      { isDeath: true },
     )
   }
 
@@ -216,7 +215,15 @@ export default class {
     const loop = this.getLoop()
     if (loop) {
       this.data.values.loops++
-      this.clearTiles(loop)
+      const wildcardIndex = loop.findIndex((t) => t.index === 8)
+      if (wildcardIndex > -1) {
+        const firstHalf = loop.slice(0, wildcardIndex)
+        const secondHalf = loop.slice(wildcardIndex)
+        this.clearTiles(firstHalf, { isWildcard: true })
+        this.clearTiles(secondHalf, { isWildcard: true })
+      } else {
+        this.clearTiles(loop)
+      }
     }
     return loop
   }
@@ -245,15 +252,18 @@ export default class {
       if (loop.some((t) => t.index === 8)) {
         this.loopDirection = null
         let tiles = allTiles.filter((t) => !loop.find((_t) => t === _t))
-        current = this._getNextTileInLoop(tiles, loop[0])
-
+        let otherSide = []
+        current = this._getNextTileInLoop(
+          tiles,
+          loop.find((t) => t.index === 8),
+        )
         while (current) {
-          loop.push(current)
+          otherSide.push(current)
           tiles = tiles.filter((t) => t !== current)
           current = this._getNextTileInLoop(tiles, current)
         }
 
-        return loop
+        return [...otherSide, ...loop]
       }
     }
   }

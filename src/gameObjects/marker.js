@@ -1,5 +1,5 @@
 import { generateUpcomingMinos } from '../utils'
-import { EASY_LOOP } from '../constants'
+import { EASY_LOOP, TILES_PLACED_PER_WILDCARD } from '../constants'
 import { WILDCARD, SMALL_CORNER, BIG_ARCH } from '../minos'
 
 export default class {
@@ -99,7 +99,7 @@ export default class {
     }
 
     const minosPlaced = this.data.get('minosPlaced')
-    if (minosPlaced > 0 && minosPlaced % 50 === 0) {
+    if (minosPlaced > 0 && minosPlaced % TILES_PLACED_PER_WILDCARD === 0) {
       this.upcomingMinos[0] = WILDCARD
     }
 

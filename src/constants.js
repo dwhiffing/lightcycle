@@ -20,6 +20,7 @@ export const TIMER_DURATION = 13000
 export const UI_Y_POS = 55
 export const DIRECTIONS = ['up', 'right', 'down', 'left']
 export const EXTRA_LIVES_SCORE = 50000
+export const TILES_PLACED_PER_WILDCARD = 50
 
 // amount of time line takes to race around loop
 export const LINE_ANIM_DURATION = 800
@@ -40,7 +41,7 @@ export const COLORS = [
   // purple
   [157, 76, 218],
   // blue
-  [10, 66, 229],
+  [40, 66, 229],
   // cyan
   [74, 194, 203],
 
