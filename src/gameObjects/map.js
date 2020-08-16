@@ -35,6 +35,7 @@ export default class {
 
     this.lineGraphics = this.scene.add.graphics().setDepth(7)
     this.particles = this.scene.add.particles('spark').setDepth(20)
+    this.effectsDisabled = JSON.parse(localStorage.getItem('effectsDisabled'))
     this.emitter = this.particles
       .createEmitter({
         speed: 10,
@@ -73,32 +74,28 @@ export default class {
     this.scene.marker._render()
   }
 
-  getOffset = (value, index, amount) =>
-    Math.abs(((value + index) % amount) - amount / 2)
+  // subtract half of amount to create yoyoing number
+  getOffset = (value, amount) => Math.abs((value % amount) - amount / 2)
 
   render = () => {
     if (!this.map.layer) return
-    this.activeIndex += this.data.get('level') / 3
-
+    // increase the speed of the effect as you level
+    this.activeIndex += this.data.get('level') / 6 + 1
     this.map.layer.data.flat().forEach((tile, index, tiles) => {
-      const numTiles = tiles.length
       const color = this.scene.bgColor.clone()
 
-      const amount = numTiles * 3
-      const offset = this.getOffset(this.activeIndex, index, amount)
-      const hueShift = (offset - amount / 2) / 2000
-      color._h = Phaser.Math.Clamp(hueShift + color._h, 0, 1)
-
       if (tile.index > 1) {
-        const offset = this.getOffset(
-          this.activeIndex * 1.2,
-          index,
-          numTiles * 2
-        )
-        color.darken(Phaser.Math.Clamp(offset, 5, 30)).desaturate(10)
+        const offset = this.effectsDisabled
+          ? 20
+          : this.getOffset(this.activeIndex + index, 400) * 0.15 + 5
+        // darken filled tiles less than the background
+        color.darken(offset).desaturate(10)
       } else {
-        const offset = this.getOffset(this.activeIndex, index, numTiles * 1.5)
-        color.darken(Phaser.Math.Clamp(offset, 30, 50))
+        const offset = this.effectsDisabled
+          ? 40
+          : this.getOffset(this.activeIndex + index, 400) * 0.25 + 10
+        // darken background tiles
+        color.darken(offset)
       }
 
       tile.tint = color.color
@@ -261,6 +258,11 @@ export default class {
     }
   }
 
+  toggleEffects = () => {
+    this.effectsDisabled = !this.effectsDisabled
+    localStorage.setItem('effectsDisabled', this.effectsDisabled)
+  }
+
   _getNextTileInLoop(tiles, sourceTile) {
     const directions = this.loopDirection
       ? [TILE_DIRECTIONS[sourceTile.index][this.loopDirection]]
@@ -270,7 +272,7 @@ export default class {
       directions.some((direction) => {
         this.loopDirection = direction
         return this._getIsConnected(tile, sourceTile, direction)
-      })
+      }),
     )
   }
 

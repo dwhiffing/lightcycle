@@ -9,6 +9,7 @@ export default class extends Phaser.Scene {
 
   create() {
     this.background = new Background(this)
+    this.input.keyboard.removeAllKeys(true)
     this.keys = this.input.keyboard.addKeys(
       'W,A,S,D,M,SPACE,UP,DOWN,LEFT,RIGHT',
     )
@@ -35,7 +36,7 @@ export default class extends Phaser.Scene {
     this.optionIndex = 0
     this.difficultyIndex = 1
 
-    this.add.image(32, 16, 'title').setOrigin(0.5)
+    this.add.image(32, 16, 'title').setOrigin(0.5).setAlpha(0.8)
     this.add.bitmapText(32, 51, 'pixel-dan', 'START', 5).setOrigin(0.5)
     this.difficultyText = this.add
       .bitmapText(46, 51, 'pixel-dan', '1', 5)

@@ -11,10 +11,14 @@ export default class Background {
 
   nextColor = () => {
     const nextIndex = (this.colorIndex + 1) % COLORS.length
-    this.fromColor = new Phaser.Display.Color().setTo(
-      ...COLORS[this.colorIndex],
-    )
-    this.toColor = new Phaser.Display.Color().setTo(...COLORS[nextIndex])
+    this.fromColor = new Phaser.Display.Color()
+      .setTo(...COLORS[this.colorIndex])
+      .darken(40)
+      .desaturate(15)
+    this.toColor = new Phaser.Display.Color()
+      .setTo(...COLORS[nextIndex])
+      .darken(40)
+      .desaturate(15)
     this.colorIndex = nextIndex
     this.tweenBg()
   }
@@ -34,8 +38,6 @@ export default class Background {
         this.graphics
           .clear()
           .fillStyle(Phaser.Display.Color.ObjectToColor(tint).color, 0.7)
-          .fillRect(0, 0, 64, 64)
-          .fillStyle(0x000, 0.6)
           .fillRect(0, 0, 64, 64)
       },
       onComplete: this.nextColor,

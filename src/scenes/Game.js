@@ -39,7 +39,7 @@ export default class extends Phaser.Scene {
 
     this.input.keyboard.removeAllKeys(true)
     this.keys = this.input.keyboard.addKeys(
-      'W,A,S,D,Q,E,R,M,F,UP,DOWN,LEFT,RIGHT,Z,X,C,SPACE',
+      'W,A,S,D,Q,E,R,M,F,G,UP,DOWN,LEFT,RIGHT,Z,X,C,SPACE',
     )
     this.keys.W.on('down', this.marker.moveUp).setEmitOnRepeat(true)
     this.keys.A.on('down', this.marker.moveLeft).setEmitOnRepeat(true)
@@ -58,6 +58,7 @@ export default class extends Phaser.Scene {
     this.keys.C.on('down', this.marker.hold)
     this.keys.M.on('down', this.mute)
     this.keys.F.on('down', this.fullscreen)
+    this.keys.G.on('down', this.map.toggleEffects)
 
     this.game.events.on('up-button', this.marker.moveUp)
     this.game.events.on('down-button', this.marker.moveDown)
@@ -71,7 +72,10 @@ export default class extends Phaser.Scene {
 
     this.time.addEvent({ delay: TICK, repeat: -1, callback: this.tick })
     this.time.addEvent({ delay: 1000, callback: this.nextMino })
-    this.time.addEvent({ delay: 1000, callback: this.checkLevel })
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => this.checkLevel(this.data.get('targetLevel')),
+    })
 
     this.particles = this.add.particles('spark').setDepth(20)
     this.emitter = this.particles
@@ -84,7 +88,6 @@ export default class extends Phaser.Scene {
       .stop()
     this.givenExtraLives = []
     this._visibilityChange()
-    this.checkLevel(this.data.get('targetLevel'))
   }
 
   tick = () => {

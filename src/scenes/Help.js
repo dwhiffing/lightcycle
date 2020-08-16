@@ -89,6 +89,14 @@ TILE
 M
 TOGGLE MUTE
 `,
+  `
+P
+PAUSE
+
+G
+TOGGLE BG
+EFFECTS
+`,
   `1
 NEXT PIECE
 
