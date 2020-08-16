@@ -60,10 +60,10 @@ export const COLORS = [
   [230, 33, 33],
 ]
 
-const UP = { 0: [2, 5, 6] }
-const RIGHT = { 1: [3, 5, 7] }
-const DOWN = { 2: [2, 4, 7] }
-const LEFT = { 3: [3, 4, 6] }
+const UP = { 0: [2, 5, 6, 8] }
+const RIGHT = { 1: [3, 5, 7, 8] }
+const DOWN = { 2: [2, 4, 7, 8] }
+const LEFT = { 3: [3, 4, 6, 8] }
 
 export const TILE_CONNECTIONS = {
   2: { ...DOWN, ...UP },

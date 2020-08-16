@@ -229,6 +229,7 @@ export default class {
   }
 
   // TODO: this does not always clear wildcard unfinished loops completely
+  // TODO: should potentially reorder arrays to always start from wildcard
   getLoop() {
     let allTiles = this.map.layer.data.flat().filter(({ index }) => index > 1)
     let tiles = [...allTiles]
@@ -261,6 +262,12 @@ export default class {
           otherSide.push(current)
           tiles = tiles.filter((t) => t !== current)
           current = this._getNextTileInLoop(tiles, current)
+          if (!current && tiles.length > 0) {
+            current = this._getNextTileInLoop(
+              tiles,
+              loop.find((t) => t.index === 8),
+            )
+          }
         }
 
         return [...otherSide, ...loop]
