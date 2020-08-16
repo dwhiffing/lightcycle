@@ -67,6 +67,8 @@ export default class extends Phaser.Scene {
     this.game.events.on('a-button', this.placeMino)
     this.game.events.on('b-button', this.marker.rotateRight)
     this.game.events.on('c-button', this.marker.hold)
+    this.game.events.on('mute-button', this.mute)
+    this.game.events.on('effects-button', this.map.toggleEffects)
 
     this.keys.SPACE.on('down', this.placeMino)
 

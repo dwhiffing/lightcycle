@@ -25,6 +25,9 @@ const upButton = document.getElementById('up-button')
 const downButton = document.getElementById('down-button')
 const leftButton = document.getElementById('left-button')
 const rightButton = document.getElementById('right-button')
+const pauseButton = document.getElementById('pause-button')
+const muteButton = document.getElementById('mute-button')
+const effectsButton = document.getElementById('effects-button')
 
 window.oncontextmenu = function (event) {
   event.preventDefault()
@@ -45,7 +48,7 @@ const cancel = () => {
 const attachUpDown = (el, key) => {
   el.addEventListener('pointerdown', () => {
     emit(key)
-    
+
     if (key === 'a-button') return
     const delay = key === 'b-button' ? 400 : 200
     timeout = setTimeout(() => {
@@ -70,13 +73,15 @@ attachUpDown(leftButton, 'left-button')
 attachUpDown(rightButton, 'right-button')
 attachUpDown(aButton, 'a-button')
 attachUpDown(bButton, 'b-button')
+attachUpDown(pauseButton, 'pause-button')
+attachUpDown(muteButton, 'mute-button')
+attachUpDown(effectsButton, 'effects-button')
 
 if (window.matchMedia('(pointer: coarse)').matches) {
   window.document.body.classList.add('touch')
 }
 
-window.addEventListener('keydown', (event) => {
-  if (event.key !== 'p') return
+const togglePause = () => {
   if (game.scene.isPaused('Game')) {
     game.sound.play('click')
     game.scene.resume('Game')
@@ -84,4 +89,10 @@ window.addEventListener('keydown', (event) => {
     game.sound.play('move', { volume: 0.25, rate: 1.5 })
     game.scene.pause('Game')
   }
+}
+
+window.addEventListener('keydown', (event) => {
+  if (event.key !== 'p') return
+  togglePause()
 })
+game.events.on('pause-button', togglePause)

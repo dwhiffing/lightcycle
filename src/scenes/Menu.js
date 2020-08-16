@@ -26,8 +26,11 @@ export default class extends Phaser.Scene {
 
     this.game.events.on('up-button', this.nextOption)
     this.game.events.on('down-button', this.lastOption)
+    this.game.events.on('left-button', this.easierDifficulty)
+    this.game.events.on('right-button', this.harderDifficulty)
     this.game.events.on('a-button', this.selectOption)
     this.game.events.on('b-button', this.selectOption)
+    this.game.events.on('mute-button', this.mute)
 
     this.musicObject = this.sound.add('menuMusic')
     this.musicObject.play({ volume: 0.5, loop: true })
