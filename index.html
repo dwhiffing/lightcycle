@@ -12,10 +12,10 @@
     body {
       background-color: #111;
       margin: 0px auto;
-      padding: 10px;
-      height: auto !important;
       flex-direction: column;
       display: flex;
+      height: 100vh;
+      justify-content: center;
     }
 
     img {
@@ -23,10 +23,31 @@
       -webkit-touch-callout: none;
     }
 
-    @media only screen and (min-width: 600px) {
-      body {
-        max-width: 30vw;
-      }
+    body.touch {
+      padding: 10px;
+      height: auto !important;
+    }
+
+    #phaser-example {
+      height: 98vh;
+      width: 98vw;
+    }
+
+    body.touch #phaser-example {
+      height: 95vw;
+      width: 95vw;
+    }
+
+    body div.controls {
+      width: 100%;
+      display: none;
+      flex: 1;
+      align-items: center;
+      position: relative;
+    }
+
+    body.touch .controls {
+      display: flex;
     }
   </style>
 </head>
@@ -35,7 +56,7 @@
   <div id="phaser-example">
   </div>
 
-  <div style="width: 100%;display:flex; flex: 1;align-items: center; position: relative;">
+  <div class="controls">
     <div style="position:relative;flex:1; display:flex;margin-left:-20px;">
       <img style="width:100%;" src="https://dwhiffing.github.io/lightcycle/assets/images/dpad.png" />
       <div
