@@ -93,12 +93,12 @@ export default class {
         const offset = this.getOffset(
           this.activeIndex * 1.2,
           index,
-          numTiles * 2,
+          numTiles * 2
         )
         color.darken(Phaser.Math.Clamp(offset, 5, 30)).desaturate(10)
       } else {
         const offset = this.getOffset(this.activeIndex, index, numTiles * 1.5)
-        color.darken(Phaser.Math.Clamp(offset, 30, 60))
+        color.darken(Phaser.Math.Clamp(offset, 30, 50))
       }
 
       tile.tint = color.color
@@ -270,7 +270,7 @@ export default class {
       directions.some((direction) => {
         this.loopDirection = direction
         return this._getIsConnected(tile, sourceTile, direction)
-      }),
+      })
     )
   }
 

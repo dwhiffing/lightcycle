@@ -32,6 +32,11 @@ window.oncontextmenu = function (event) {
   return false
 }
 
+const emit = (key) => {
+  game.events.emit(key)
+  window.navigator.vibrate && window.navigator.vibrate(50)
+}
+
 let interval, timeout
 const cancel = () => {
   clearTimeout(timeout)
@@ -39,15 +44,16 @@ const cancel = () => {
 }
 const attachUpDown = (el, key) => {
   el.addEventListener('pointerdown', () => {
-    game.events.emit(key)
+    emit(key)
+    
     if (key === 'a-button') return
     const delay = key === 'b-button' ? 400 : 200
     timeout = setTimeout(() => {
       if (key === 'b-button') {
-        game.events.emit('c-button')
+        emit('c-button')
       } else {
-        game.events.emit(key)
-        interval = setInterval(() => game.events.emit(key), 35)
+        emit(key)
+        interval = setInterval(() => emit(key), 35)
       }
     }, delay)
   })
