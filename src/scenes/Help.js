@@ -38,7 +38,7 @@ export default class extends Phaser.Scene {
     if (this.textIndex < TEXTS.length) {
       const text = TEXTS[this.textIndex]
       this.mainText.setText(text)
-      if (text.match(/NEXT PIECE|MULTIPLIER|LIVES/)) {
+      if (text.match(/NEXT TILE|MULTIPLIER|LIVES/)) {
         this.sprites.push(this.add.sprite(0, 64, 'hud').setOrigin(0, 1))
       }
       if (text.includes('PARTIAL')) {
@@ -98,10 +98,10 @@ TOGGLE BG
 EFFECTS
 `,
   `1
-NEXT PIECE
+NEXT TILE
 
 2
-HELD PIECE`,
+HELD TILE`,
   `3
 SCORE
 
